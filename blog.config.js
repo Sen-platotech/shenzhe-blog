@@ -3,7 +3,7 @@
 const BLOG = {
   API_BASE_URL: 'https://www.notion.so/api/v3',
   NOTION_PAGE_ID: '2f7009062c378165bd1dc6120f6a2b44',
-  NOTION_TOKEN_V2: 'ntn_TD15139947955tBCWLKULvciiSb9JhwVYvHAJSDuhAP5H7',
+  NOTION_TOKEN_V2: 'ntn_fb151399479ao8L51BnDKpF0UOGvbYi3SwFSsDhfwX6dsh',
   THEME: 'simple',
   LANG: process.env.NEXT_PUBLIC_LANG || 'zh-CN', // e.g 'zh-CN','en-US'  see /lib/lang.js for more.
   SINCE: process.env.NEXT_PUBLIC_SINCE || 2021, // e.g if leave this empty, current year will be used.
