@@ -1,13 +1,10 @@
 // 注: process.env.XX是Vercel的环境变量，配置方式见：https://docs.tangly1024.com/article/how-to-config-notion-next#c4768010ae7d44609b744e79e2f9959a
 
 const BLOG = {
-  API_BASE_URL: process.env.API_BASE_URL || 'https://www.notion.so/api/v3', // API默认请求地址,可以配置成自己的地址例如：https://[xxxxx].notion.site/api/v3
-  // Important page_id！！！Duplicate Template from  https://tanghh.notion.site/02ab3b8678004aa69e9e415905ef32a5
-  NOTION_PAGE_ID:
-    process.env.NOTION_PAGE_ID ||
-    '2f7009062c378165bd1dc6120f6a2b44',
-  NOTION_TOKEN_V2: process.env.NOTION_TOKEN || 'ntn_TD15139947955tBCWLKULvciiSb9JhwVYvHAJSDuhAP5H7',
-  THEME: process.env.NEXT_PUBLIC_THEME || 'simple', // 当前主题，在themes文件夹下可找到所有支持的主题；主题名称就是文件夹名，例如 example,fukasawa,gitbook,heo,hexo,landing,matery,medium,next,nobelium,plog,simple
+  API_BASE_URL: 'https://www.notion.so/api/v3',
+  NOTION_PAGE_ID: '2f7009062c378165bd1dc6120f6a2b44',
+  NOTION_TOKEN_V2: 'ntn_TD15139947955tBCWLKULvciiSb9JhwVYvHAJSDuhAP5H7',
+  THEME: 'simple',
   LANG: process.env.NEXT_PUBLIC_LANG || 'zh-CN', // e.g 'zh-CN','en-US'  see /lib/lang.js for more.
   SINCE: process.env.NEXT_PUBLIC_SINCE || 2021, // e.g if leave this empty, current year will be used.
 
