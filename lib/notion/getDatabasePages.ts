@@ -5,6 +5,7 @@ import type {
   QueryDatabaseParameters,
 } from '@notionhq/client/build/src/api-endpoints'
 import { notion, databaseId, notionCall } from './client'
+import { env } from '@/config/env'
 import { getPageType, getStatus } from './mappers'
 
 type Sort = QueryDatabaseParameters['sorts']
@@ -18,6 +19,9 @@ export const getAllPages = cache(async (): Promise<PageObjectResponse[]> => {
   const sorts: Sort = [{ property: 'date', direction: 'descending' }]
   const results: PageObjectResponse[] = []
   let cursor: string | undefined
+
+  // No token -> serve an empty site rather than spamming failed API calls.
+  if (!env.hasNotion) return results
 
   try {
     do {

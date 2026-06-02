@@ -1,37 +1,54 @@
 import 'server-only'
-import { z } from 'zod'
 
 /**
- * Layer 2 — environment variables.
+ * Layer 2 — environment variables (secrets / deployment-bound values).
  *
- * Only secrets and deployment-bound values live here. Validated once at module
- * load so a missing/invalid value fails fast instead of producing confusing
- * runtime errors. This module is server-only and must never be imported from a
- * client component (it would leak NOTION_TOKEN into the browser bundle).
+ * Server-only: never import from a client component (would leak NOTION_TOKEN).
+ *
+ * This module intentionally does NOT throw when values are missing. Instead the
+ * data layer degrades to an empty (but live) site, and ISR fills content in once
+ * the token is present. Missing values are surfaced as a build warning.
  */
-const EnvSchema = z.object({
-  NOTION_TOKEN: z.string().min(1, 'NOTION_TOKEN is required'),
-  // The blog database id. NOTION_DATA_SOURCE_ID is accepted as a legacy alias.
-  NOTION_DATABASE_ID: z.string().min(1, 'NOTION_DATABASE_ID is required'),
-  SITE_URL: z.string().url().optional(),
-})
 
-const parsed = EnvSchema.safeParse({
-  ...process.env,
-  NOTION_DATABASE_ID:
-    process.env.NOTION_DATABASE_ID ?? process.env.NOTION_DATA_SOURCE_ID,
-})
+// The blog database id is not secret; default to the known id so only the token
+// must be configured. Accept the common alias names too.
+const KNOWN_DATABASE_ID = '2f7009062c378165bd1dc6120f6a2b44'
 
-if (!parsed.success) {
-  const issues = parsed.error.issues.map((i) => `  - ${i.path.join('.')}: ${i.message}`).join('\n')
-  throw new Error(`Invalid environment configuration:\n${issues}`)
+function firstNonEmpty(...values: Array<string | undefined>): string {
+  for (const v of values) if (v && v.trim()) return v.trim()
+  return ''
 }
 
-export const env = parsed.data
+const NOTION_TOKEN = firstNonEmpty(
+  process.env.NOTION_TOKEN,
+  process.env.NOTION_ACCESS_TOKEN,
+  process.env.NOTION_API_KEY,
+  process.env.NOTION_SECRET,
+)
 
-/** Public Giscus values are safe to read from NEXT_PUBLIC_* on the client too. */
+const NOTION_DATABASE_ID = firstNonEmpty(
+  process.env.NOTION_DATABASE_ID,
+  process.env.NOTION_DATA_SOURCE_ID,
+  process.env.NOTION_PAGE_ID,
+  process.env.NEXT_PUBLIC_NOTION_PAGE_ID,
+  KNOWN_DATABASE_ID,
+)
+
+if (!NOTION_TOKEN) {
+  console.warn(
+    '[config/env] NOTION_TOKEN is not set — the site will build and run but show no Notion content until it is configured.',
+  )
+}
+
+export const env = {
+  NOTION_TOKEN,
+  NOTION_DATABASE_ID,
+  /** True when a Notion token is available; used to skip pointless API calls. */
+  hasNotion: Boolean(NOTION_TOKEN),
+}
+
 export const envDerived = {
-  siteUrl: env.SITE_URL,
+  siteUrl: firstNonEmpty(process.env.SITE_URL, process.env.NEXT_PUBLIC_SITE_URL) || undefined,
   giscus: {
     repo: process.env.NEXT_PUBLIC_GISCUS_REPO ?? '',
     repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID ?? '',
