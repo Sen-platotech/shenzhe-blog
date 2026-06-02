@@ -1,12 +1,8 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
-
-# testing
-/coverage
+.yarn/install-state.gz
 
 # next.js
 /.next/
@@ -23,32 +19,18 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
-# local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# env files (never commit secrets) — keep the example
 .env
+.env.*
+!.env.example
 
-# vercel
-.vercel
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
-# dev
-/data.json
-/pnpm-lock.yaml
-.idea
-.vscode
-
-
-# sitemap
-/public/robots.txt
-/public/sitemap.xml
-/public/rss/*
-/sitemap.xml
-
-# yarn
-package-lock.json
-# yarn.lock
-
-.notion-api-lock
+# editor / os
+.idea/
+.vscode/
+Thumbs.db

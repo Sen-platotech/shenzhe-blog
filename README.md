@@ -1,79 +1,113 @@
-# 帮助教程
+# Shen Zhe's Blog
 
-访问帮助：[NotionNext帮助手册](https://docs.tangly1024.com/)
+A self-built, **Notion-powered** personal blog on **Next.js 15 (App Router) + TypeScript + Tailwind**.
+Content lives in a Notion database and is fetched through the **official Notion API**
+(`@notionhq/client`); pages are rendered by a small, fully-owned block renderer and served
+with **ISR**. No third-party blog template.
 
-> 本项目教程为免费、公开资源，仅限个人学习使用，禁止利用本教程建立的博客发布非法内容、进行违法犯罪活动。严禁任何个人或组织将本教程用于商业用途，包括但不限于直接售卖、间接收费、或其他变相盈利行为。转载、复制或介绍本教程内容时，须保留作者信息并明确注明来源。 
-> 本项目仅提供由作者团队授权的付费咨询服务，请注意辨别，谨防诈骗行为。任何未经授权的收费服务均可能存在法律风险。
+## Features
 
-Notion是一个能让效率暴涨的生产力引擎，可以帮你书写文档、管理笔记，搭建知识库，甚至可以为你规划项目、时间管理、组织团队、提高生产力、还有当前最强大的AI技术加持。
+- 📝 Posts, static pages, categories, tags, archive
+- 🔎 Client-side fuzzy search (Fuse.js) over title / summary / tags / category
+- 🎨 Custom Notion block renderer: rich text, headings, lists, quotes, callouts, toggles,
+  code (shiki, dual light/dark), math (KaTeX + mhchem), mermaid, images, video, embeds
+  (YouTube / Bilibili), bookmarks, files, PDF, tables, columns, synced blocks …
+- 🌗 Dark mode (next-themes, no flash)
+- 💬 Comments via Giscus (theme-synced)
+- 📡 RSS, sitemap, robots, OpenGraph + JSON-LD
+- 🧩 **Notion-driven** navigation (`Menu`/`SubMenu`), site config (`Config`) and a
+  dismissible announcement banner (`Notice`) — edit Notion, no redeploy
+- 🖼 Image proxy that refreshes Notion's ~1h-expiring S3 URLs so images never break
 
-> 若希望进一步探索Notion的功能，欢迎购买《[Notion笔记从入门到精通进阶课程](https://docs.tangly1024.com/article/notion-tutorial)》
+## Quick start
 
-> 若希望获得稳定、高速、不限设备数量的VPN科学上网服务，欢迎使用[飞鸟VPN](https://fbinv02.fbaff.cc/auth/register?code=kaA7t4kh)，这是我目前在用的VPN，仅作友情推广
+```bash
+cp .env.example .env.local   # fill in the values below
+npm install
+npm run dev
+```
 
-# NotionNext
+### Environment variables
 
-<p>
-  <a aria-label="GitHub commit activity" href="https://github.com/tangly1024/NotionNext/commits/main" title="GitHub commit activity">
-    <img src="https://img.shields.io/github/commit-activity/m/tangly1024/NotionNext?style=for-the-badge"/>
-  </a>
-  <a aria-label="GitHub contributors" href="https://github.com/tangly1024/NotionNext/graphs/contributors" title="GitHub contributors">
-    <img src="https://img.shields.io/github/contributors/tangly1024/NotionNext?color=orange&style=for-the-badge"/>
-  </a>
-  <a aria-label="Build status" href="#" title="Build status">
-    <img src="https://img.shields.io/github/deployments/tangly1024/NotionNext/Production?logo=Vercel&style=for-the-badge"/>
-  </a>
-  <a aria-label="Powered by Vercel" href="https://vercel.com?utm_source=Craigary&utm_campaign=oss" title="Powered by Vercel">
-    <img src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" height="28"/>
-  </a>
-</p>
+| Variable | Required | Notes |
+| --- | --- | --- |
+| `NOTION_TOKEN` | ✅ | Internal integration secret. **Server-only — never `NEXT_PUBLIC_`.** |
+| `NOTION_DATABASE_ID` | ✅ | The blog database id (32 chars from its URL). |
+| `SITE_URL` | ✅ (prod) | Canonical URL, no trailing slash. Used for SEO/sitemap/RSS. |
+| `NEXT_PUBLIC_GISCUS_*` | optional | From https://giscus.app — leave blank to disable comments. |
 
-中文文档 | [README in English](./README_EN.md)
+### Notion integration setup
 
-<hr/>
+1. Create an internal integration at https://www.notion.so/my-integrations and copy the secret
+   into `NOTION_TOKEN`.
+2. Open the blog database in Notion → **⋯ → Connections → Add** your integration so it can read
+   the pages.
+3. Put the database id into `NOTION_DATABASE_ID`.
 
-一个使用 NextJS + Notion API 实现的，部署在 Vercel 上的静态博客系统。为Notion和所有创作者设计。
+> Rotate the old leaked token: revoke it in *My integrations*, generate a fresh secret, and set
+> it only in `.env.local` / the Vercel dashboard.
 
-支持多种部署方案
+> **Network policy:** the runtime must be able to reach `api.notion.com`. On Vercel this is fine;
+> in a restricted sandbox, allowlist that host.
 
-## 预览效果
+## Content model (Notion database)
 
-在线演示：[https://preview.tangly1024.com/](https://preview.tangly1024.com/) ，点击左下角挂件可以切换主题，没找到喜欢的主题？[贡献](/CONTRIBUTING.md)一个吧~
+One database drives everything; the `type` select decides how a row is used:
 
-| Next                                                                                                  | Medium                                                                                                      | Hexo                                                                                                  | Fukasawa                                                                                                          |
-| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| <img src='./docs/theme-next.png' width='300'/> [预览NEXT](https://preview.tangly1024.com/?theme=next) | <img src='./docs/theme-medium.png' width='300'/> [预览MEDIUM](https://preview.tangly1024.com/?theme=medium) | <img src='./docs/theme-hexo.png' width='300'/> [预览HEXO](https://preview.tangly1024.com/?theme=hexo) | <img src='./docs/theme-fukasawa.png' width='300'/> [预览FUKASAWA](https://preview.tangly1024.com/?theme=fukasawa) |
+| `type` | Used as |
+| --- | --- |
+| `Post` | A blog article at `/article/<slug>` |
+| `Page` | A standalone page at `/<slug>` (e.g. `about`) |
+| `Menu` / `SubMenu` | Navigation. A `SubMenu` attaches to the most recent `Menu`; order comes from the `date` property. `slug` is the link (empty = a pure dropdown parent; `http(s)://…` = external). |
+| `Notice` | First Published row renders as a dismissible top banner. |
+| `Config` | Runtime site config — see below. |
 
-## 致谢
+`status`: `Published` (listed), `Invisible` (reachable by direct link, hidden from lists),
+`Draft` (excluded everywhere).
 
-感谢Craig Hart发起的Nobelium项目
+Other properties: `title`, `slug`, `summary`, `category`, `tags`, `date`, `icon`, `password`.
 
-<table><tr align="left">
-  <td align="center"><a href="https://github.com/craigary" title="Craig Hart"><img src="https://avatars.githubusercontent.com/u/10571717" width="64px;"alt="Craig Hart"/></a><br/><a href="https://github.com/craigary" title="Craig Hart">Craig Hart</a></td>
-</tr></table>
+### Site config from Notion (`type = Config`)
 
-## 贡献者
+Create a row with `type = Config`, open it, and put a single **code block** containing JSON.
+Only whitelisted keys are applied (anything else is ignored):
 
-致敬每一位开发者！
+```json
+{
+  "title": "Shen Zhe",
+  "description": "知行合一 · 研究分享 · 心情随笔",
+  "bio": "写一些关于研究、工具与生活的思考。",
+  "brandColor": "79 70 229",
+  "postsPerPage": 10,
+  "social": [{ "name": "GitHub", "href": "https://github.com/sen-platotech" }]
+}
+```
 
-[![Contributors](https://contrib.rocks/image?repo=tangly1024/NotionNext)](https://github.com/tangly1024/NotionNext/graphs/contributors)
+Config resolves in three layers (highest wins): **Notion `Config` → environment variables →
+compile-time defaults** in `config/static.config.ts`.
 
-## 引用技术
+## Project structure
 
-- **框架**: [Next.js](https://nextjs.org)
-- **样式**: [Tailwind CSS](https://www.tailwindcss.cn/)
-- **渲染**: [React-notion-x](https://github.com/NotionX/react-notion-x)
-- **评论**: [Twikoo](https://github.com/imaegoo/twikoo), [Giscus](https://giscus.app/zh-CN), [Gitalk](https://gitalk.github.io), [Cusdis](https://cusdis.com), [Utterances](https://utteranc.es)
-- **图标**: [Fontawesome](https://fontawesome.com/v6/icons/)
+```
+config/        # 3-layer typed config (schema.ts / static.config.ts / env.ts / index.ts)
+lib/notion/    # official-API data layer (client, fetch, mappers, url, menus, notice, config)
+lib/shiki.ts   # server-side code highlighting
+components/    # UI + components/notion/* block renderer
+app/           # App Router routes (home, article, pages, taxonomy, search, rss, sitemap, image proxy)
+```
 
-## 🔗 友情链接
+The canonical URL for any page comes from a single function, `lib/notion/url.ts#getPostPath`,
+reused by sitemap, RSS and links so paths can never drift.
 
-- [Elog](https://github.com/LetTTGACO/elog) Markdown 批量导出工具、开放式跨平台博客解决方案，随意组合写作平台(语雀/Notion/FlowUs/飞书)和博客平台(Hexo/Vitepress/Halo/Confluence/WordPress等)
+> Article URLs use the `article` prefix (`config/static.config.ts → postUrlPrefix`). If you
+> change the prefix, rename `app/article/` to match.
+
+## Deploy (Vercel)
+
+1. Import the repo, set `NOTION_TOKEN`, `NOTION_DATABASE_ID`, `SITE_URL` (and optional Giscus vars).
+2. Deploy. Content revalidates every 30 minutes (ISR); editing Notion updates the site without a
+   redeploy.
 
 ## License
 
-The MIT License.
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=tangly1024/NotionNext&type=Date)](https://star-history.com/#tangly1024/NotionNext&Date)
+MIT
