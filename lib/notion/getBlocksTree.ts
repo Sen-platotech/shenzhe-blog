@@ -1,5 +1,6 @@
 import 'server-only'
 import { cache } from 'react'
+import { APIResponseError } from '@notionhq/client'
 import type { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints'
 import { notion, notionCall } from './client'
 import { richTextToPlain } from './mappers'
@@ -26,6 +27,28 @@ async function listChildren(blockId: string): Promise<BlockObjectResponse[]> {
   return out
 }
 
+/**
+ * List a block's children, tolerating blocks whose content lives outside the
+ * integration's reach. Synced blocks (and the occasional linked child) point at
+ * a source page that may not be shared with the integration; the API then 404s
+ * with `object_not_found`. A single unreadable nested block must not fail the
+ * whole page render (and, at build time, the entire deployment), so we log it
+ * and treat the block as if it had no children.
+ */
+async function listChildrenSafe(blockId: string): Promise<BlockObjectResponse[]> {
+  try {
+    return await listChildren(blockId)
+  } catch (err) {
+    if (err instanceof APIResponseError && err.code === 'object_not_found') {
+      console.warn(
+        `[notion] skipping unreadable children of block ${blockId} (not shared with the integration): ${err.message}`,
+      )
+      return []
+    }
+    throw err
+  }
+}
+
 async function toNode(block: BlockObjectResponse): Promise<BlockNode> {
   const node: BlockNode = { ...block, children: [] }
 
@@ -37,7 +60,7 @@ async function toNode(block: BlockObjectResponse): Promise<BlockNode> {
   }
 
   if (block.has_children) {
-    const children = await listChildren(block.id)
+    const children = await listChildrenSafe(block.id)
     node.children = await Promise.all(children.map(toNode))
   }
   return node
@@ -49,6 +72,6 @@ async function toNode(block: BlockObjectResponse): Promise<BlockNode> {
  * this recursion. Concurrency is bounded by the limiter in client.ts.
  */
 export const getBlocksTree = cache(async (rootId: string): Promise<BlockNode[]> => {
-  const top = await listChildren(rootId)
+  const top = await listChildrenSafe(rootId)
   return Promise.all(top.map(toNode))
 })
