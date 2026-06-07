@@ -203,6 +203,145 @@ const Style = () => {
         );
       }
 
+      #theme-hexo .mdx-article {
+        color: #334155;
+        font-size: 1rem;
+        line-height: 1.92;
+        letter-spacing: 0;
+        word-break: break-word;
+      }
+
+      .dark #theme-hexo .mdx-article {
+        color: #d1d5db;
+      }
+
+      #theme-hexo .mdx-article > * + * {
+        margin-top: 1.15rem;
+      }
+
+      #theme-hexo .mdx-article h2 {
+        margin-top: 2.6rem;
+        padding-top: 0.4rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+        color: #111827;
+        font-size: 1.55rem;
+        font-weight: 700;
+        line-height: 1.45;
+      }
+
+      .dark #theme-hexo .mdx-article h2 {
+        color: #f9fafb;
+        border-bottom-color: rgba(75, 85, 99, 0.7);
+      }
+
+      #theme-hexo .mdx-article h3 {
+        margin-top: 2rem;
+        color: #1f2937;
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.55;
+      }
+
+      .dark #theme-hexo .mdx-article h3 {
+        color: #f3f4f6;
+      }
+
+      #theme-hexo .mdx-article h4 {
+        margin-top: 1.6rem;
+        color: #374151;
+        font-size: 1.08rem;
+        font-weight: 700;
+        line-height: 1.55;
+      }
+
+      .dark #theme-hexo .mdx-article h4 {
+        color: #e5e7eb;
+      }
+
+      #theme-hexo .mdx-article p {
+        margin-top: 1.05rem;
+      }
+
+      #theme-hexo .mdx-article a {
+        color: var(--theme-color);
+        border-bottom: 1px dashed color-mix(in srgb, var(--theme-color) 45%, transparent);
+        transition: border-color 150ms ease, color 150ms ease;
+      }
+
+      #theme-hexo .mdx-article a:hover {
+        border-bottom-color: var(--theme-color);
+      }
+
+      #theme-hexo .mdx-article img {
+        margin: 1.4rem auto;
+        max-width: 100%;
+        border-radius: 0.75rem;
+      }
+
+      #theme-hexo .mdx-article blockquote {
+        margin: 1.6rem 0;
+        border-left: 3px solid var(--theme-color);
+        background: color-mix(in srgb, var(--theme-color) 8%, transparent);
+        padding: 0.9rem 1rem;
+        color: #475569;
+      }
+
+      #theme-hexo .mdx-article blockquote p {
+        margin-top: 0;
+      }
+
+      #theme-hexo .mdx-article blockquote p + p {
+        margin-top: 0.65rem;
+      }
+
+      .dark #theme-hexo .mdx-article blockquote {
+        color: #cbd5e1;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      #theme-hexo .mdx-article ul,
+      #theme-hexo .mdx-article ol {
+        padding-left: 1.5rem;
+      }
+
+      #theme-hexo .mdx-article ul {
+        list-style: disc;
+      }
+
+      #theme-hexo .mdx-article ol {
+        list-style: decimal;
+      }
+
+      #theme-hexo .mdx-article li + li {
+        margin-top: 0.35rem;
+      }
+
+      #theme-hexo .mdx-article code {
+        border-radius: 0.25rem;
+        background: rgba(15, 23, 42, 0.08);
+        padding: 0.12rem 0.3rem;
+        font-size: 0.92em;
+      }
+
+      .dark #theme-hexo .mdx-article code {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      #theme-hexo .mdx-article pre {
+        margin: 1.5rem 0;
+        border-radius: 0.75rem;
+        background: #0f172a;
+        padding: 1rem;
+        color: #f8fafc;
+        overflow-x: auto;
+      }
+
+      #theme-hexo .mdx-article pre code {
+        background: transparent;
+        padding: 0;
+      }
+
       /* Custem */
       .tk-footer {
         opacity: 0;

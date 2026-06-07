@@ -22,15 +22,26 @@ const WebmentionCount = ({ target }) => {
   }
   const [counts, setCounts] = useState(initialCounts)
   const fetchCounts = async (target) => {
-    const responseData = await fetch(`https://webmention.io/api/count.json?target=${encodeURIComponent(target)}`)
-    return (responseData.json) ? await responseData.json() : responseData
+    try {
+      const responseData = await fetch(`https://webmention.io/api/count.json?target=${encodeURIComponent(target)}`)
+      if (!responseData?.ok || !responseData.json) return initialCounts
+      const data = await responseData.json()
+      return data?.type ? data : initialCounts
+    } catch {
+      return initialCounts
+    }
   }
   useEffect(() => {
+    let cancelled = false
     async function getCounts() {
       const responseCounts = await fetchCounts(target)
-      setCounts(responseCounts)
+      if (!cancelled) setCounts(responseCounts)
     }
     getCounts()
+
+    return () => {
+      cancelled = true
+    }
   }, [target])
 
   return (
@@ -61,42 +72,66 @@ const WebmentionCount = ({ target }) => {
 }
 
 const Avatar = ({ author }) => (
-  <a className='avatar-wrapper' href={author.url} key={author.name}>
-    <Image
-      className="avatar"
-      src={author.photo}
-      alt={author.name}
-      fill
-      sizes="(max-width: 768px) 100vw,
-              (max-width: 1200px) 50vw,
-              33vw"
-    />
+  <a className='avatar-wrapper' href={author.url || '#'} key={author.name}>
+    {author.photo
+      ? (
+        <Image
+          className="avatar"
+          src={author.photo}
+          alt={author.name}
+          fill
+          sizes="(max-width: 768px) 100vw,
+                  (max-width: 1200px) 50vw,
+                  33vw"
+        />
+        )
+      : (
+        <span className='avatar'>{author.name?.slice(0, 1) || '?'}</span>
+        )}
   </a>
 )
 
 const WebmentionReplies = ({ target }) => {
   const [mentions, setMentions] = useState([])
-  const fetchMentions = async (target) =>
-    fetch(
-      `https://webmention.io/api/mentions.jf2?per-page=500&target=${encodeURIComponent(target)}&token=${siteConfig('COMMENT_WEBMENTION_TOKEN')}`
-    ).then((response) => (response.json ? response.json() : response))
+  const fetchMentions = async (target) => {
+    const endpoint = siteConfig('EXPORT')
+      ? `https://webmention.io/api/mentions.jf2?per-page=500&target=${encodeURIComponent(target)}`
+      : `/api/webmention/mentions?target=${encodeURIComponent(target)}`
+    try {
+      const response = await fetch(endpoint)
+      if (!response?.ok || !response.json) return { children: [] }
+      const data = await response.json()
+      return Array.isArray(data?.children) ? data : { children: [] }
+    } catch {
+      return { children: [] }
+    }
+  }
   useEffect(() => {
+    let cancelled = false
     async function getMentions() {
       const responseMentions = await fetchMentions(target)
-      if (responseMentions.children) {
+      if (!cancelled && responseMentions.children) {
         setMentions(responseMentions.children)
       }
     }
 
     getMentions()
+
+    return () => {
+      cancelled = true
+    }
   }, [target])
 
   const distinctMentions = [
-    ...new Map(mentions.map((item) => [item.author.url, item])).values()
+    ...new Map(
+      mentions
+        .filter(item => item?.author?.url)
+        .map((item) => [item.author.url, item])
+    ).values()
   ].sort((a, b) => new Date(a['wm-received']) - new Date(b['wm-received']))
 
   const replies = mentions.filter(
-    (mention) => 'in-reply-to' in mention && 'content' in mention
+    (mention) => 'in-reply-to' in mention && mention?.content?.text && mention?.author?.url
   )
 
   return (
@@ -108,7 +143,7 @@ const WebmentionReplies = ({ target }) => {
       </p>
       <div className='webmention-avatars'>
         {distinctMentions.map((reply) => (
-          <Avatar key={reply.author.name} author={reply.author} />
+          <Avatar key={reply.author.url || reply.author.name} author={reply.author} />
         ))}
       </div>
       {replies && replies.length
@@ -119,7 +154,7 @@ const WebmentionReplies = ({ target }) => {
               {replies.map((reply) => (
                 <li className='reply' key={reply.content.text}>
                   <div>
-                    <Avatar key={reply.author.name} author={reply.author} />
+                    <Avatar key={reply.author.url || reply.author.name} author={reply.author} />
                   </div>
                   <div className='text'>
                     <p className='reply-author-name'>{reply.author.name}</p>

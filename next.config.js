@@ -35,22 +35,13 @@ const locales = (function () {
 // 编译前执行
 // eslint-disable-next-line no-unused-vars
 const preBuild = (function () {
-  if (
-    !process.env.npm_lifecycle_event === 'export' &&
-    !process.env.npm_lifecycle_event === 'build'
-  ) {
+  if (!['build', 'export'].includes(process.env.npm_lifecycle_event)) {
     return
   }
-  // 删除 public/sitemap.xml 文件 ； 否则会和/pages/sitemap.xml.js 冲突。
-  const sitemapPath = path.resolve(__dirname, 'public', 'sitemap.xml')
-  if (fs.existsSync(sitemapPath)) {
-    fs.unlinkSync(sitemapPath)
-    console.log('Deleted existing sitemap.xml from public directory')
-  }
 
-  const sitemap2Path = path.resolve(__dirname, 'sitemap.xml')
-  if (fs.existsSync(sitemap2Path)) {
-    fs.unlinkSync(sitemap2Path)
+  const rootSitemapPath = path.resolve(__dirname, 'sitemap.xml')
+  if (fs.existsSync(rootSitemapPath)) {
+    fs.unlinkSync(rootSitemapPath)
     console.log('Deleted existing sitemap.xml from root directory')
   }
 })()

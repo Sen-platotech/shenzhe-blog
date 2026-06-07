@@ -1,6 +1,6 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
-import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
+import { getContentSearchIndexProps } from '@/lib/content/site-data'
 import { DynamicLayout } from '@/themes/theme'
 import { useRouter } from 'next/router'
 
@@ -20,9 +20,19 @@ const Search = props => {
   if (keyword) {
     filteredPosts = posts.filter(post => {
       const tagContent = post?.tags ? post?.tags.join(' ') : ''
-      const categoryContent = post.category ? post.category.join(' ') : ''
-      const searchContent =
-        post.title + post.summary + tagContent + categoryContent
+      const categoryContent = Array.isArray(post.category)
+        ? post.category.join(' ')
+        : post.category || ''
+      const searchContent = [
+        post.title,
+        post.summary,
+        post.excerpt,
+        post.body,
+        tagContent,
+        categoryContent
+      ]
+        .filter(Boolean)
+        .join(' ')
       return searchContent.toLowerCase().includes(keyword.toLowerCase())
     })
   } else {
@@ -38,15 +48,8 @@ const Search = props => {
 /**
  * 浏览器前端搜索
  */
-export async function getStaticProps({ locale }) {
-  const props = await fetchGlobalAllData({
-    from: 'search-props',
-    locale
-  })
-  const { allPages } = props
-  props.posts = allPages?.filter(
-    page => page.type === 'Post' && page.status === 'Published'
-  )
+export function getStaticProps({ locale }) {
+  const props = getContentSearchIndexProps()
   return {
     props,
     revalidate: process.env.EXPORT

@@ -1,5 +1,6 @@
 // pages/sitemap.xml.js
 import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
+import { ENABLE_AUTH_ROUTES } from '@/lib/routes/legacy'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
@@ -26,6 +27,12 @@ const UI = props => {
  * @returns
  */
 export const getServerSideProps = async ctx => {
+  if (!ENABLE_AUTH_ROUTES) {
+    return {
+      notFound: true
+    }
+  }
+
   const from = `auth`
   const props = await fetchGlobalAllData({ from })
   delete props.allPages
@@ -72,9 +79,7 @@ const fetchToken = async code => {
   const encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
 
   try {
-    console.log(
-      `请求Code换取Token ${clientId}:${clientSecret} -- ${redirectUri}`
-    )
+    console.log(`请求Code换取Token ${clientId} -- ${redirectUri}`)
     const response = await axios.post(
       'https://api.notion.com/v1/oauth/token',
       {

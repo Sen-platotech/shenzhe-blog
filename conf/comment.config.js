@@ -90,12 +90,10 @@ module.exports = {
   // AUTH: Webmention使用的IndieLogin，可使用Twitter或Github个人页面连结
   // HOSTNAME: Webmention绑定之网域，通常即为本站网址
   // TWITTER_USERNAME: 评论显示区域需要的资讯
-  // TOKEN: Webmention的API token
   COMMENT_WEBMENTION_ENABLE: process.env.NEXT_PUBLIC_WEBMENTION_ENABLE || false,
   COMMENT_WEBMENTION_AUTH: process.env.NEXT_PUBLIC_WEBMENTION_AUTH || '',
   COMMENT_WEBMENTION_HOSTNAME:
     process.env.NEXT_PUBLIC_WEBMENTION_HOSTNAME || '',
   COMMENT_WEBMENTION_TWITTER_USERNAME:
-    process.env.NEXT_PUBLIC_TWITTER_USERNAME || '',
-  COMMENT_WEBMENTION_TOKEN: process.env.NEXT_PUBLIC_WEBMENTION_TOKEN || ''
+    process.env.NEXT_PUBLIC_TWITTER_USERNAME || ''
 }

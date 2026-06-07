@@ -1,5 +1,5 @@
 // pages/sitemap.xml.js
-import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
+import { ENABLE_AUTH_ROUTES, legacyRouteProps } from '@/lib/routes/legacy'
 import { useRouter } from 'next/router'
 import Slug from '../[prefix]'
 
@@ -7,13 +7,15 @@ import Slug from '../[prefix]'
 /**
  * @returns
  */
-export const getStaticProps = async () => {
-  const from = `auth`
-  const props = await fetchGlobalAllData({ from })
+export const getStaticProps = () => {
+  if (!ENABLE_AUTH_ROUTES) {
+    return {
+      notFound: true
+    }
+  }
 
-  delete props.allPages
   return {
-    props
+    props: legacyRouteProps()
   }
 }
 

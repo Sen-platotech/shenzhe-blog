@@ -2,15 +2,22 @@ import BLOG from '@/blog.config'
 import useNotification from '@/components/Notification'
 import OpenWrite from '@/components/OpenWrite'
 import { siteConfig } from '@/lib/config'
+import {
+  getContentPostProps,
+  getContentSinglePostPaths
+} from '@/lib/content/site-data'
 import { fetchGlobalAllData, resolvePostProps } from '@/lib/db/SiteDataApi'
 import { useGlobal } from '@/lib/global'
 import { getPageTableOfContents } from '@/lib/db/notion/getPageTableOfContents'
+import {
+  ENABLE_NOTION_FALLBACK,
+  ENABLE_NOTION_STATIC_PATHS
+} from '@/lib/routes/legacy'
 import { getPasswordQuery } from '@/lib/utils/password'
-import { checkSlugHasMorThanTwoSlash, checkSlugHasNoSlash, processPostData } from '@/lib/utils/post'
+import { checkSlugHasNoSlash } from '@/lib/utils/post'
 import { DynamicLayout } from '@/themes/theme'
 import md5 from 'js-md5'
 import { useRouter } from 'next/router'
-import { idToUuid } from 'notion-utils'
 import { useEffect, useState } from 'react'
 
 /**
@@ -96,10 +103,12 @@ const Slug = props => {
 }
 
 export async function getStaticPaths() {
-  if (!BLOG.isProd) {
+  const mdxPaths = getContentSinglePostPaths()
+
+  if (!BLOG.isProd || !ENABLE_NOTION_STATIC_PATHS) {
     return {
-      paths: [],
-      fallback: true
+      paths: mdxPaths,
+      fallback: ENABLE_NOTION_FALLBACK
     }
   }
 
@@ -109,13 +118,21 @@ export async function getStaticPaths() {
     ?.filter(row => checkSlugHasNoSlash(row))
     .map(row => ({ params: { prefix: row.slug } }))
   return {
-    paths: paths,
-    fallback: true
+    paths: [...mdxPaths, ...(paths || [])],
+    fallback: ENABLE_NOTION_FALLBACK
   }
 }
 
 export async function getStaticProps({ params: { prefix }, locale }) {
-  const props = await resolvePostProps({
+  const mdxProps = getContentPostProps(prefix)
+
+  if (!mdxProps && !ENABLE_NOTION_FALLBACK) {
+    return {
+      notFound: true
+    }
+  }
+
+  const props = mdxProps || await resolvePostProps({
     prefix,
     locale,
   })

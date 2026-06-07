@@ -1,6 +1,7 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
 import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
+import { ENABLE_AUTH_ROUTES } from '@/lib/routes/legacy'
 import { DynamicLayout } from '@/themes/theme'
 
 /**
@@ -14,6 +15,12 @@ const SignUp = props => {
 }
 
 export async function getStaticProps(req) {
+  if (!ENABLE_AUTH_ROUTES) {
+    return {
+      notFound: true
+    }
+  }
+
   const { locale } = req
 
   const from = 'SignIn'
@@ -37,6 +44,13 @@ export async function getStaticProps(req) {
  * @returns
  */
 export function getStaticPaths() {
+  if (!ENABLE_AUTH_ROUTES) {
+    return {
+      paths: [],
+      fallback: false
+    }
+  }
+
   return {
     paths: [
       { params: { index: [] } }, // 使 /sign-up 路径可访问

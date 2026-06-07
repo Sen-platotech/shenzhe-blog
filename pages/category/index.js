@@ -1,6 +1,6 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
-import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
+import { getContentCategoryIndexProps } from '@/lib/content/site-data'
 import { DynamicLayout } from '@/themes/theme'
 
 /**
@@ -15,9 +15,8 @@ export default function Category(props) {
   )
 }
 
-export async function getStaticProps({ locale }) {
-  const props = await fetchGlobalAllData({ from: 'category-index-props', locale })
-  delete props.allPages
+export function getStaticProps({ locale }) {
+  const props = getContentCategoryIndexProps()
   return {
     props,
     revalidate: process.env.EXPORT

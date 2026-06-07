@@ -1,8 +1,7 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
-import { fetchGlobalAllData } from '@/lib/db/SiteDataApi'
+import { getContentArchiveProps } from '@/lib/content/site-data'
 import { isBrowser } from '@/lib/utils'
-import { formatDateFmt } from '@/lib/utils/formatDate'
 import { DynamicLayout } from '@/themes/theme'
 import { useEffect } from 'react'
 
@@ -30,33 +29,8 @@ const ArchiveIndex = props => {
   return <DynamicLayout theme={theme} layoutName='LayoutArchive' {...props} />
 }
 
-export async function getStaticProps({ locale }) {
-  const props = await fetchGlobalAllData({ from: 'archive-index', locale })
-  // 处理分页
-  props.posts = props.allPages?.filter(
-    page => page.type === 'Post' && page.status === 'Published'
-  )
-  delete props.allPages
-
-  const postsSortByDate = Object.create(props.posts)
-
-  postsSortByDate.sort((a, b) => {
-    return b?.publishDate - a?.publishDate
-  })
-
-  const archivePosts = {}
-
-  postsSortByDate.forEach(post => {
-    const date = formatDateFmt(post.publishDate, 'yyyy-MM')
-    if (archivePosts[date]) {
-      archivePosts[date].push(post)
-    } else {
-      archivePosts[date] = [post]
-    }
-  })
-
-  props.archivePosts = archivePosts
-  delete props.allPages
+export function getStaticProps({ locale }) {
+  const props = getContentArchiveProps()
 
   return {
     props,

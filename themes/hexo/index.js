@@ -1,5 +1,6 @@
 import Comment from '@/components/Comment'
 import replaceSearchResult from '@/components/Mark'
+import MdxArticle from '@/components/MdxArticle'
 import NotionPage from '@/components/NotionPage'
 import ShareBar from '@/components/ShareBar'
 import { siteConfig } from '@/lib/config'
@@ -292,11 +293,15 @@ const LayoutSlug = props => {
             <article
               id='article-wrapper'
               itemScope
-              itemType='https://schema.org/Movie'
+              itemType='https://schema.org/BlogPosting'
               className='subpixel-antialiased overflow-y-hidden'>
-              {/* Notion文章主体 */}
+              {/* 文章主体 */}
               <section className='px-5 justify-center mx-auto max-w-2xl lg:max-w-full'>
-                {post && <NotionPage post={post} />}
+                {post.source === 'mdx' ? (
+                  <MdxArticle source={post.body} />
+                ) : (
+                  <NotionPage post={post} />
+                )}
               </section>
 
               {/* 分享 */}

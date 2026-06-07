@@ -1,5 +1,6 @@
 import { AdSlot } from '@/components/GoogleAdsense'
 import replaceSearchResult from '@/components/Mark'
+import MdxArticle from '@/components/MdxArticle'
 import NotionPage from '@/components/NotionPage'
 import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
@@ -234,8 +235,11 @@ const LayoutSlug = props => {
           <WWAds orientation='horizontal' className='w-full' />
 
           <div id='article-wrapper'>
-            {/* Notion文章主体 */}
-            {!lock && <NotionPage post={post} />}
+            {post.source === 'mdx' ? (
+              <MdxArticle source={post.body} />
+            ) : (
+              <NotionPage post={post} />
+            )}
           </div>
 
           {/* 分享 */}

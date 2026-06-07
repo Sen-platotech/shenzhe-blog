@@ -1,6 +1,7 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
 import { resolvePostProps } from '@/lib/db/SiteDataApi'
+import { ENABLE_DASHBOARD_ROUTES } from '@/lib/routes/legacy'
 import { DynamicLayout } from '@/themes/theme'
 
 /**
@@ -15,6 +16,12 @@ const Dashboard = props => {
 }
 
 export async function getStaticProps({ locale }) {
+  if (!ENABLE_DASHBOARD_ROUTES) {
+    return {
+      notFound: true
+    }
+  }
+
   const prefix = 'dashboard'
   const props = await resolvePostProps({
     prefix,
@@ -34,6 +41,13 @@ export async function getStaticProps({ locale }) {
 }
 
 export const getStaticPaths = () => {
+  if (!ENABLE_DASHBOARD_ROUTES) {
+    return {
+      paths: [],
+      fallback: false
+    }
+  }
+
   return {
     paths: [
       { params: { index: [] } }, // 对应首页路径

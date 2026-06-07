@@ -1,6 +1,9 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
-import { fetchGlobalAllData, getPostBlocks } from '@/lib/db/SiteDataApi'
+import {
+  getContentListPagePaths,
+  getContentListPageProps
+} from '@/lib/content/site-data'
 import { DynamicLayout } from '@/themes/theme'
 
 /**
@@ -13,54 +16,15 @@ const Page = props => {
   return <DynamicLayout theme={theme} layoutName='LayoutPostList' {...props} />
 }
 
-export async function getStaticPaths({ locale }) {
-  const from = 'page-paths'
-  const { postCount, NOTION_CONFIG } = await fetchGlobalAllData({ from, locale })
-  const totalPages = Math.ceil(
-    postCount / siteConfig('POSTS_PER_PAGE', null, NOTION_CONFIG)
-  )
+export function getStaticPaths({ locale }) {
   return {
-    // remove first page, we 're not gonna handle that.
-    paths: Array.from({ length: totalPages - 1 }, (_, i) => ({
-      params: { page: '' + (i + 2) }
-    })),
-    fallback: true
+    paths: getContentListPagePaths(),
+    fallback: false
   }
 }
 
-export async function getStaticProps({ params: { page }, locale }) {
-  const from = `page-${page}`
-  const props = await fetchGlobalAllData({ from, locale })
-  const { allPages } = props
-  const POST_PREVIEW_LINES = siteConfig(
-    'POST_PREVIEW_LINES',
-    12,
-    props?.NOTION_CONFIG
-  )
-
-  const allPosts = allPages?.filter(
-    page => page.type === 'Post' && page.status === 'Published'
-  )
-  const POSTS_PER_PAGE = siteConfig('POSTS_PER_PAGE', 12, props?.NOTION_CONFIG)
-  // 处理分页
-  props.posts = allPosts.slice(
-    POSTS_PER_PAGE * (page - 1),
-    POSTS_PER_PAGE * page
-  )
-  props.page = page
-
-  // 处理预览
-  if (siteConfig('POST_LIST_PREVIEW', false, props?.NOTION_CONFIG)) {
-    for (const i in props.posts) {
-      const post = props.posts[i]
-      if (post.password && post.password !== '') {
-        continue
-      }
-      post.blockMap = await getPostBlocks(post.id, 'slug', POST_PREVIEW_LINES)
-    }
-  }
-
-  delete props.allPages
+export function getStaticProps({ params: { page }, locale }) {
+  const props = getContentListPageProps(page)
   return {
     props,
     revalidate: process.env.EXPORT

@@ -1,6 +1,14 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
+import {
+  getContentPostPaths,
+  getContentPostProps
+} from '@/lib/content/site-data'
 import { fetchGlobalAllData, resolvePostProps } from '@/lib/db/SiteDataApi'
+import {
+  ENABLE_NOTION_FALLBACK,
+  ENABLE_NOTION_STATIC_PATHS
+} from '@/lib/routes/legacy'
 import Slug from '..'
 import { checkSlugHasOneSlash } from '@/lib/utils/post'
 
@@ -15,10 +23,12 @@ const PrefixSlug = props => {
 }
 
 export async function getStaticPaths() {
-  if (!BLOG.isProd) {
+  const mdxPaths = getContentPostPaths()
+
+  if (!BLOG.isProd || !ENABLE_NOTION_STATIC_PATHS) {
     return {
-      paths: [],
-      fallback: true
+      paths: mdxPaths,
+      fallback: ENABLE_NOTION_FALLBACK
     }
   }
 
@@ -27,24 +37,32 @@ export async function getStaticPaths() {
 
   // 根据slug中的 / 分割成prefix和slug两个字段 ; 例如 article/test
   // 最终用户可以通过  [domain]/[prefix]/[slug] 路径访问，即这里的 [domain]/article/test
-  const paths = allPages
+  const notionPaths = allPages
     ?.filter(row => checkSlugHasOneSlash(row))
     .map(row => ({
       params: { prefix: row.slug.split('/')[0], slug: row.slug.split('/')[1] }
-    }))
+    })) || []
 
   // 增加一种访问路径 允许通过 [category]/[slug] 访问文章
   // 例如文章slug 是 test ，然后文章的分类category是 production
   // 则除了 [domain]/[slug] 以外，还支持分类名访问: [domain]/[category]/[slug]
 
   return {
-    paths: paths,
-    fallback: true
+    paths: [...mdxPaths, ...notionPaths],
+    fallback: ENABLE_NOTION_FALLBACK
   }
 }
 
 export async function getStaticProps({ params: { prefix, slug }, locale }) {
-  const props = await resolvePostProps({
+  const mdxProps = getContentPostProps(`${prefix}/${slug}`)
+
+  if (!mdxProps && !ENABLE_NOTION_FALLBACK) {
+    return {
+      notFound: true
+    }
+  }
+
+  const props = mdxProps || await resolvePostProps({
     prefix,
     slug,
     locale,

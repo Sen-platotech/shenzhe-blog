@@ -1,8 +1,15 @@
 import BLOG from '@/blog.config'
 import { siteConfig } from '@/lib/config'
+import {
+  getContentCatchAllPostPaths,
+  getContentPostProps
+} from '@/lib/content/site-data'
 import { fetchGlobalAllData, resolvePostProps } from '@/lib/db/SiteDataApi'
-import { checkSlugHasMorThanTwoSlash, processPostData } from '@/lib/utils/post'
-import { idToUuid } from 'notion-utils'
+import {
+  ENABLE_NOTION_FALLBACK,
+  ENABLE_NOTION_STATIC_PATHS
+} from '@/lib/routes/legacy'
+import { checkSlugHasMorThanTwoSlash } from '@/lib/utils/post'
 import Slug from '..'
 
 /**
@@ -20,10 +27,12 @@ const PrefixSlug = props => {
  * @returns
  */
 export async function getStaticPaths() {
-  if (!BLOG.isProd) {
+  const mdxPaths = getContentCatchAllPostPaths()
+
+  if (!BLOG.isProd || !ENABLE_NOTION_STATIC_PATHS) {
     return {
-      paths: [],
-      fallback: true
+      paths: mdxPaths,
+      fallback: ENABLE_NOTION_FALLBACK
     }
   }
 
@@ -39,8 +48,8 @@ export async function getStaticPaths() {
       }
     }))
   return {
-    paths: paths,
-    fallback: true
+    paths: [...mdxPaths, ...(paths || [])],
+    fallback: ENABLE_NOTION_FALLBACK
   }
 }
 
@@ -53,7 +62,15 @@ export async function getStaticProps({
   params: { prefix, slug, suffix },
   locale
 }) {
-  const props = await resolvePostProps({
+  const mdxProps = getContentPostProps([prefix, slug, ...(suffix || [])].join('/'))
+
+  if (!mdxProps && !ENABLE_NOTION_FALLBACK) {
+    return {
+      notFound: true
+    }
+  }
+
+  const props = mdxProps || await resolvePostProps({
     prefix,
     slug,
     suffix,
