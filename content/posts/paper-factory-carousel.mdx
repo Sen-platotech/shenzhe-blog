@@ -1,0 +1,205 @@
+---
+title: "MIT 把写论文做成了流水线：论文工厂卡片文案"
+slug: "article/paper-factory-carousel"
+description: "一组面向小红书多图卡片的论文工厂拆解文案，概括多智能体论文流水线的架构与提示词设计。"
+date: "2026-06-07"
+updated: "2026-06-07"
+status: "published"
+visibility: "public"
+type: "post"
+lang: "zh"
+category: "研究分享"
+cover: "/bg_image.jpg"
+featured: false
+pinned: false
+comments: true
+seo:
+  noindex: false
+tags:
+  - "Claude"
+  - "小红书"
+  - "Prompt 工程"
+  - "多智能体"
+  - "AI 写作"
+canonicalUrl: "https://shenzhe.org/article/paper-factory-carousel"
+legacy:
+  oldUrl: "local:/Downloads/claude数据/Claude/Projects/the paper factory/小红书第4期_论文工厂拆解_carousel.md"
+---
+
+> 主题：拆解 MIT「论文工厂」的架构与提示词设计
+> 形式：多图卡片 carousel（封面 + 9 张知识卡 + 收尾卡）
+> 受众：科研 / 学术向　｜　语气：专业干货
+> 用法：每个「卡片 N」对应一张图；末尾的「正文 caption / 标签 / 配图建议」用于发布时填写。
+
+---
+
+## 🖼 封面卡
+
+**主标题：** MIT 把「写论文」做成了流水线
+
+**副标题：** 一个能自动写社科论文的多智能体系统，拆解它的架构 × 提示词
+
+**角标：** 第 4 期 · 干货拆解
+
+**底部钩子：** 16 步 · 几十个 agent · 两道质量闸——它凭什么不胡说？
+
+---
+
+## 卡片 1 ｜先认识「论文工厂」
+
+MIT Sloan 的 Nathan Wilmers 做的系统：丢进「一个研究问题 + 一份数据」，自动产出一篇完整的实证论文（跑统计 + 出 PDF）。
+
+- 16 步流水线，每步由一个独立 AI agent 完成
+- 中途还设了「批判者」「审计员」「质量闸」
+
+真正值钱的不是"它能写论文"，而是它**用工程手段逼 AI 严谨**的那套设计。
+这期拆一半架构、一半提示词。
+
+---
+
+## 卡片 2 ｜架构①：文件即状态机
+
+**▍每步都「失忆」，整体却可控**
+
+它不靠一个超长对话攒记忆，而是每一步都开一个**全新 agent**，彼此只通过磁盘文件交接。进度靠"扫描哪些产物文件已存在"反推。
+
+→ 天然可中断、可续跑、可审计
+→ 逼着每步产出落盘的硬成果，而不是只给"一个计划"
+
+出处：*"Run each step with a fresh agent context." / "Never stop at a plan or scaffold…"*
+
+【迁移】长任务别塞进一个长会话；把状态外置成文件，让每步幂等、可单独重跑。
+
+---
+
+## 卡片 3 ｜架构②：发散 → 收敛
+
+**▍并行多个候选，再「只选一个」**
+
+找发现这一步，它**同时跑 6 路独立候选**，每路只做一个聚焦小结果；然后一个 decider **只挑 1 个**，并明令"不许合并、不许综合"。
+
+为什么：把多个 AI 产出"平均 / 缝合"，会得到没有立场的浆糊。独立发散 + 显式选择，才能保住锋利度。
+
+出处：*"Do not synthesize. Do not merge packages. Pick one."*
+
+【迁移】开放式生成 = 多个独立候选 + 一个选择步，别指望一个 agent 一次到位。
+
+---
+
+## 卡片 4 ｜架构③：生成者 / 批判者 分离
+
+**▍每个「作者」都配一个「审稿人」**
+
+每个产出 agent 都配一个**上下文独立、立场对立**的 critic。批判者的任务被刻意收窄：
+
+- 只问"有没有**立刻致命**的硬伤"
+- 但"别因常规局限就毙"
+
+为什么：作者很难审判自己；换个对抗性新上下文，专抓"夸大其词 / 机械性假象"。
+
+出处：*"Does this package have an immediate fatal empirical flaw…?"* ＋ *"Do not reject … merely because it has normal limitations."*
+
+【迁移】重要产出都配独立验证者，并给它一个**狭窄、对抗性**的任务。
+
+---
+
+## 卡片 5 ｜架构④：质量闸 + 问题账本
+
+**▍「数字对了」也不算通过**
+
+两道闸职责不同：
+- Gate 1：只查"代码能否复现论文里的数字"
+- Gate 2：查"数字到底支不支持这个论断"
+
+再加一张只增不删的问题账本 `audit_issue_ledger.md` 当跨步记忆：blocking 未清 → 过不了闸，且**禁止静默删除**。专治"问题在后续步骤里凭空消失"。
+
+出处：*"Matching numbers is necessary but not sufficient for a pass."*
+
+【迁移】每步输出一行机器可读判决（`VERDICT: …`）交给代码编排；建一份只增不删的问题日志。
+
+---
+
+## 卡片 6 ｜提示词①：防偷懒 / 反走捷径
+
+**▍用条款，把 AI 的惰性按住**
+
+它在 prompt 里直接写死：别因为某个设计跑得快就选它；强设计慢，就去解决运行问题，而不是换一个弱设计。还有一条："别停在计划或脚手架上——这一步要的是落盘的具体产物。"
+
+出处：*"Do not choose a weaker design just because it runs faster… keep the design and solve the runtime problem."*
+
+【可直接抄】在 prompt 里**显式禁止**"用计划代替执行""挑好做的弱方案"。
+
+---
+
+## 卡片 7 ｜提示词②：把「嗅探」编码成清单
+
+**▍让 AI 像审稿人一样查伪结果**
+
+审计 prompt 直接列出"伪结果套路"清单：共享分母的比例回归、残差 / 补集变量、sum-to-one 恒等、room-to-move 梯度、对结果取样……并给默认严重度：
+
+> 凡核心论断靠共享分母比例回归的，**默认记为 Concern**。
+
+出处：*"If a central claim relies on a shared-denominator share regression … treat that as a default Concern."*
+
+【可直接抄】把你领域里"老手一眼能看出的坑"，写成显式 checklist 塞进 prompt。
+
+---
+
+## 卡片 8 ｜提示词③：语气绑死证据强度
+
+**▍不许 overclaim，也不许编**
+
+- 识别失败就强制改口：因果设计没过 pre-trend，就**必须**用 *suggestive / consistent with*，不许用 *causes*
+- 防幻觉护栏：**绝不编造例子或引用**，每个例子必须来自真实可引用来源；只用确信真实存在的文献；每个数字对着表格**核两遍**
+
+出处：*"you MUST use hedged language … rather than causal language."* ＋ *"Never fabricate examples… must come from a real, citable source."*
+
+【可直接抄】把"措辞强度 ↔ 证据强度"写成硬规则；在最易编造处（例子 / 引用 / 数字）下死约束 + 自动校验。
+
+---
+
+## 卡片 9 ｜提示词④：去机器人味负向清单
+
+**▍专门写一步，把「AI 味」擦掉**
+
+它有一整支 prompt 列出要删的 AI 痕迹：em dash、加粗斜体、"It's not X, it's Y"、"This suggests that"、单句成段、冒号列举、套路化主题句、滥用 *robust / striking / nuanced / landscape*……
+
+反讽也正是精髓：要让 LLM 不像 LLM，得靠**逐条契约**把它的默认倾向纠正回来。
+
+【可直接抄】把"AI 腔"列成负向清单，作为最后一道润色 prompt。
+
+---
+
+## 收尾卡 ｜一句话总结
+
+这套系统真正的护城河，不是"会写论文"，而是把**科研的严谨性，翻译成了可执行的工程约束**：
+
+状态外置 · 发散收敛 · 生成-批判分离 · 质量闸 · 问题账本 · 语气绑证据。
+
+收藏这期，下次搭你自己的 AI 工作流能直接套。
+关注我，第 5 期继续拆。
+
+---
+
+## 📝 正文 caption（发布时贴在帖子下方）
+
+MIT 有位教授把"写一篇社科论文"拆成了 16 步流水线，几十个 AI agent 接力，中间还有批判者、审计员和两道质量闸。
+
+我扒了它的提示词和架构，挑出对科研 / 做 AI 工作流最有用的 9 个设计：从"文件即状态机""发散再收敛"，到"数字对了也不算通过""把审稿人的嗅觉写成 checklist""语气必须绑死证据强度"……每条都配了原文出处，能直接抄进自己的 prompt。
+
+这是拆解系列第 4 期。你正在搭自己的多智能体 / AI 写作流程吗？评论区聊聊卡在哪一步。
+
+---
+
+## 🏷 标签
+
+#AIagent #提示词工程 #prompt #多智能体 #科研工具 #AI写作 #学术科研 #大模型 #AI干货 #MIT
+
+---
+
+## 🎨 配图 / 排版建议
+
+- **封面**：深色底 + 大字标题「MIT 把写论文做成了流水线」，右上角小角标「第 4 期」，底部一行钩子问句。
+- **内页**：统一模板。左上角卡号 ①②③…，一行卡片标题 + 3–4 条短句；英文出处用等宽小字单独一行，做"证据感"。
+- **配色**：克制、偏科研感——黑 / 白 + 一个强调色（建议蓝或品红），全程只用这一个强调色。
+- **节奏**：架构 4 张用一种强调色，提示词 4 张换另一种，帮读者区分两大板块。

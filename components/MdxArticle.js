@@ -74,6 +74,52 @@ function renderList(text, key, ordered) {
   )
 }
 
+function splitTableRow(line) {
+  return line
+    .trim()
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+    .map(cell => cell.trim())
+}
+
+function isTableSeparator(line) {
+  return /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(line.trim())
+}
+
+function renderTable(text, key) {
+  const lines = text.split('\n').filter(Boolean)
+  const headers = splitTableRow(lines[0])
+  const rows = lines.slice(2).map(splitTableRow)
+
+  return (
+    <div key={key} className='mdx-table-wrap'>
+      <table>
+        <thead>
+          <tr>
+            {headers.map((cell, cellIndex) => (
+              <th key={`${key}-h-${cellIndex}`}>
+                {inline(cell, `${key}-h-${cellIndex}`)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={`${key}-r-${rowIndex}`}>
+              {row.map((cell, cellIndex) => (
+                <td key={`${key}-r-${rowIndex}-${cellIndex}`}>
+                  {inline(cell, `${key}-r-${rowIndex}-${cellIndex}`)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 function createBlockRenderer() {
   const headingCounts = new Map()
 
@@ -82,6 +128,10 @@ function createBlockRenderer() {
     const key = `mdx-block-${index}`
 
     if (!text) return null
+
+    if (/^-{3,}$/.test(text)) {
+      return <hr key={key} />
+    }
 
     if (text.startsWith('```')) {
       const lines = text.split('\n')
@@ -105,6 +155,15 @@ function createBlockRenderer() {
           {inline(value, key)}
         </Heading>
       )
+    }
+
+    const lines = text.split('\n')
+    if (
+      lines.length >= 3 &&
+      lines[0].includes('|') &&
+      isTableSeparator(lines[1])
+    ) {
+      return renderTable(text, key)
     }
 
     if (text.startsWith('> ')) {

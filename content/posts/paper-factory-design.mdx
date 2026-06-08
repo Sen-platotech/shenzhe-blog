@@ -1,0 +1,208 @@
+---
+title: "论文工厂设计拆解：流程编排 × Prompt 工程"
+slug: "article/paper-factory-design"
+description: "拆解 Nathan Wilmers 的 local_factory：无状态编排、质量闸、问题账本与可复用的 prompt 工程手法。"
+date: "2026-06-07"
+updated: "2026-06-07"
+status: "published"
+visibility: "public"
+type: "post"
+lang: "zh"
+category: "研究分享"
+cover: "/bg_image.jpg"
+featured: false
+pinned: false
+comments: true
+seo:
+  noindex: false
+tags:
+  - "Claude"
+  - "Prompt 工程"
+  - "AI 工作流"
+  - "多智能体"
+  - "科研工具"
+canonicalUrl: "https://shenzhe.org/article/paper-factory-design"
+legacy:
+  oldUrl: "local:/Downloads/claude数据/Claude/Projects/the paper factory/论文工厂设计拆解_供学习.md"
+---
+
+> 学习笔记 · 拆解 Nathan Wilmers (MIT Sloan) 的 `local_factory`
+> 目的：搞懂这套"自动写论文"的多智能体系统**为什么这样设计**，以及 prompt 里哪些写法可以搬到你自己的项目。
+> 所有引文均摘自仓库里 `prompts/*.txt`、`STEPS.md` 原文。
+
+---
+
+## 0. 一页速览：7 个核心思想
+
+1. **无状态编排，文件即状态机** —— 每步开全新 agent，步骤之间只靠磁盘文件交接；进度靠"扫哪些文件存在"反推。
+2. **发散→收敛，绝不平均** —— 并行跑多个独立候选，再**选一个**，明令"不许合并/不许综合"。
+3. **生成者 / 批判者 角色分离** —— 每个产出 agent 都配一个上下文独立、立场对立的 critic / auditor。
+4. **质量闸 + 机器可读判决** —— 每步顶端输出 `VERDICT: …` / `GATE1: …` 单行 token，让编排脚本据此分支、回退、终止。
+5. **持久化问题账本** —— 一张 append-only 的 `audit_issue_ledger.md` 当跨步记忆，blocking 没清就过不了闸，禁止"问题凭空消失"。
+6. **逐级收窄的权威文档 + 明确的"弃用"清单** —— 每阶段指定唯一真理源；"哪些结论要丢"和"哪些要留"一样被强制执行。
+7. **把语气绑死在证据强度上** —— 识别失败就强制改用 hedged 措辞；机械性结果不许单独充当确认证据。
+
+---
+
+## 1. 架构层：6 个系统设计决策
+
+### 1.1 无状态编排，文件即状态机
+**怎么做**：`run_paper.sh` 不维护数据库，而是检查项目目录里哪些产物文件已存在（`codex_research.md`? `findings_brief.md`? `final_review.md`?），据此推断"上一步做到哪"。每一步都开一个**全新 agent 上下文**，互不共享记忆，全部沟通走文件。
+
+**真实证据**：`STEPS.md` 通用规则——
+> "Run each step with a fresh agent context." / "Never stop at a plan or scaffold if the step requires concrete outputs on disk." / "Update `checkpoint.md` after every verified step."
+
+**为什么**：长任务塞进一个超长上下文会"失忆"且不可调试。把状态外置到文件后，整条流水线天然**可中断、可 resume、可审计**；每步被逼着产出落盘的硬产物，而不是只给一个"计划"。
+
+**你能借鉴**：做长链 agent 任务时，别依赖单一长会话——把中间状态写成文件，让每步幂等、可单独重跑；用"产物是否存在"而不是内存变量来表示进度。
+
+---
+
+### 1.2 发散→收敛，不做平均
+**怎么做**：Step 2 并行跑 **6 路**独立 findings 候选，每路只做"一个聚焦的小包"；Step 3 的 decider **只选 1 个**；Step 4 又是 5 个架构师各提一篇、再选 1 篇。
+
+**真实证据**：`step3_decider.txt` 开篇——
+> "You are selecting one validated findings package to carry forward into the paper. **Do not synthesize. Do not merge packages. Pick one.**"
+
+`step2_findings_agent.txt`：
+> "Your job is not to map the whole project. … surface **one** focused, paper-worthy empirical package."
+
+**为什么**：把多个 LLM 产出"平均/缝合"会得到一锅没有立场的浆糊。让多个 agent **各自独立**做一个有锋芒的版本，再用一个选择步挑出最强的连贯方案，能保住"锋利度"和内部一致性。
+
+**你能借鉴**：开放式生成别指望"一个 agent 一次到位"，也别盲目 merge——**采样多个独立候选 + 一个显式的选择/裁决步**，质量远胜于让单 agent 大包大揽。
+
+---
+
+### 1.3 生成者 / 批判者 角色分离
+**怎么做**：每个"产出"角色都配一个上下文独立、目标对立的"审查"角色：findings agent ↔ findings **critic**；architect ↔ architecture **review**；外加 data **auditor**、methods **auditor**。critic 的任务被刻意收窄成"有没有**立刻致命**的硬伤"，而不是"够不够完美"。
+
+**真实证据**：`step2_findings_critic.txt`——
+> "Your question is narrow: Does this package have an immediate fatal empirical flaw…?" 同时又写明 "**Do not reject a package merely because it has normal limitations.**"
+
+**为什么**：生成者很难可靠地审判自己。换一个**全新上下文 + 对抗性指令**的 agent，专门抓"夸大其词""机械性假象"，比让作者自查有效得多。这是"生产"与"裁判"的职责分离。
+
+**你能借鉴**：凡是重要产出，都配一个独立验证者；并且**给验证者一个狭窄、明确的对抗性任务**，而不是泛泛的"看看有没有问题"。
+
+---
+
+### 1.4 质量闸 + 机器可读判决
+**怎么做**：关键步骤在文件**最顶端**输出一行可被 `grep` 的判决 token，编排脚本据此分支：
+- 可行性闸：`VERDICT: PASS` / `VERDICT: KILL`
+- findings 批判：`VERDICT: VALIDATED` / `VERDICT: REVISE`
+- Gate 1（复现/数字）：`GATE1: PASS` / `GATE1: REOPEN_ANALYSIS`
+- Gate 2（估计量/论断）：`VERDICT: PASS_WITH_DIRECT_FIXES` / `REOPEN_STEP10_TEXT` / `REOPEN_STEP10_ANALYSIS`
+
+两道闸**职责不同**：Gate 1 只管"代码能不能复现出论文里的数字"，Gate 2 管"这个数字到底支不支持论断"。
+
+**真实证据**：`step8_code_review.txt`——
+> "You are NOT the final authority on estimand validity just because the numbers match; unresolved conceptual risks must remain open for Gate 2."
+
+`step11_final_review.txt`——
+> "**Matching numbers is necessary but not sufficient for a pass.**"
+
+而 Step 1D 那道早期 KILL 闸是**故意宽松**的（"deliberately WEAK viability screen"），只为在烧掉整条昂贵流水线之前，廉价地砍掉根本不可行的题。
+
+**你能借鉴**：让 agent 输出**单一、可解析的决策 token**，把编排逻辑交给代码；把"廉价的早期否决"和"昂贵的后期校验"分成不同的闸；允许后置检查把任务**打回**指定的前置步骤。
+
+---
+
+### 1.5 持久化问题账本（跨步记忆）
+**怎么做**：从 Step 4 起维护一张 Markdown 表 `audit_issue_ledger.md`，列固定为：
+`Issue ID | First Raised In | Category | Severity | Blocking Until | Status | Notes`。
+后续每个审查/修订/终审步都**就地更新状态**，并且：
+
+**真实证据**：`step4_auditor.txt` / `step11_final_review.txt` 反复强调——
+> "**Do not delete old rows.**" / "Do not silently delete rows." / 终审"do NOT issue PASS … while `audit_issue_ledger.md` still contains unresolved `BLOCKING` rows, or while a major conceptual issue … has disappeared from later review documents without an explicit resolution."
+
+每个问题还带 `Blocking Until = Step10/Step11`，指明必须在哪一步前清掉。
+
+**为什么**：在"每步都失忆"的架构里，关切很容易蒸发。这本账本就是**显式的跨步记忆**，专治"问题洗白"（issue laundering）——某个隐患在后续步骤里悄悄不见了。
+
+**你能借鉴**：多 agent 协作时，建一份 **append-only 的问题日志**，带严重度 + 解决状态 + "拦截到哪一步"；**禁止静默删除**，让"未解决的 blocking"成为硬性卡点。
+
+---
+
+### 1.6 逐级收窄的权威文档 + 明确的"弃用"清单
+**怎么做**：每阶段都指定**唯一真理源**（`findings_brief.md` 全程被改写并继承；`argument_decision.md` 的 paper map 是写作 agent 必须遵循的蓝图）。同样关键的是：**显式声明"哪些结论要丢"**，并强制它们不得复活。
+
+**真实证据**：`step4_architect.txt` 的 "DISCARD DISCIPLINE"——
+> "Anything you place in `Findings to Discard` will be treated by later steps as **presumptively excluded**, especially from the Introduction, Discussion, and Conclusion."
+
+`step7_paper_writer.txt`：`dropped_findings.md` 里被 ban 的结论默认不许出现在 Intro/Discussion/Conclusion，除非后续步骤显式放行。
+
+**为什么**：多 agent 接力最容易**范围蔓延**和"僵尸结论复活"（某个诱人但站不住的结果在后文又冒出来）。把"出局名单"做成和"入选名单"一样硬的契约，能锁死论文的焦点。
+
+**你能借鉴**：每个阶段指定一个 canonical 文档；并且把**"明确排除什么"写得和"包含什么"一样强制**——负空间也要管理。
+
+---
+
+## 2. Prompt 层：13 个可复用手法
+
+| # | 手法 | 真实摘录 / 形式 | 为什么有用 |
+|---|------|----------------|-----------|
+| 1 | **角色 + 受众设定** | "You are the **editor of a top economics/sociology journal** deciding which version of a paper to develop." | 用身份和发表标准一次性校准 agent 的水准与口吻。 |
+| 2 | **强制先读、列清输入** | 几乎每支 prompt 开头都是 "Read ALL of the following before writing anything:" + 精确文件名（含 "…if it exists"）。 | 消除"用什么上下文"的歧义，也是文件状态机能运转的前提。 |
+| 3 | **严格输出契约** | 指定输出文件名、**精确的 `## 小节标题**、判决行格式、甚至 LaTeX 骨架与各节字数。 | agent 填模板而非自创结构 → 下游和脚本能稳定解析。 |
+| 4 | **防偷懒 / 防走捷径条款** | "Never stop at a plan or scaffold…"；"**Do not choose a weaker design just because it runs faster** … keep the design and solve the runtime problem." | 直接对冲 LLM"给计划代替干活""挑好跑的弱设计"的倾向。 |
+| 5 | **判决标准 + 宽/严校准** | 可行性闸："deliberately WEAK … **Do NOT kill because of** likely null effects…"；critic 给出"算致命硬伤"的清单**和**"别因常规局限就毙"。 | 同时防"过度否决"和"橡皮图章"，把"标准线"画死。 |
+| 6 | **注入领域失败模式清单** | auditor 列举伪结果套路：shared denominators、derived residual/complement、sum-to-one、room-to-move、asymmetric base rates、selection on outcome… | 把专家的"嗅探直觉"编码成显式 checklist，让 agent 像方法论审稿人一样查。 |
+| 7 | **默认严重度规则** | "If a central claim relies on a shared-denominator share regression … **treat that as a default `Concern`**." | 给模糊判断一个保守默认值，减少漏报。 |
+| 8 | **防幻觉护栏** | "**Never fabricate examples, quotes, vignettes** … must come from a real, citable source"；"Use ONLY references you are confident actually exist"；"If a citation looks wrong, drop it." | 在最容易编造的地方（例子、引用、数字）下硬约束。 |
+| 9 | **数字双重核对 + 自动脚本** | "Every number you report … must be checked **TWICE** against the actual tables"；外加 `verify_numbers.py` 自动比对论文数字 vs 日志。 | 人/agent 核对 + 机器交叉验证，双保险抓数字错配。 |
+| 10 | **语气绑定证据强度** | "If a causal design failed its pre-trend … you **MUST use hedged language** ('suggestive', 'consistent with') rather than causal language." | 让措辞无法超出识别强度去 overclaim。 |
+| 11 | **风格用范例而非形容词** | `model_papers_style.json` 编码 17 篇范文的 tone、段落结构、**theory:empirics 比例**、distinctive_features、avoids、quality_markers，让写手 emulate。 | 具体范例 >>「写好一点」这种空指令。 |
+| 12 | **去机器人味的负向清单** | step15 列出要删的 AI 痕迹：em dash、加粗/斜体、"It's not X, it's Y"、"This suggests that"、单句成段、冒号列举、套路化主题句、滥用 robust/stark/striking/nuanced/landscape/underscore。 | 一份可直接复用的"让文本不像 LLM 写的"rubric。 |
+| 13 | **就地修复 + 最小改动 + 兜底模型** | 闸口 agent"能直接修的就修，但 **Limit direct edits to the smallest span**，Freeze Introduction…"；编排上 `codex … || claude` 兜底、闸口 `codex_then_claude` 双模型互查。 | 防止"审查者大改一通引入新错误"；跨模型交叉校验。 |
+
+---
+
+## 3. 解剖一支 prompt：`step2_findings_critic`（麻雀虽小五脏俱全）
+
+按出现顺序，它把上面多条手法压进了 ~50 行：
+
+1. **角色 + 范围**："You are the critical empirical assessor for **one** candidate findings package … decide whether this package survives an **immediate** methods-first challenge, not whether it is perfect." → 角色设定 + 把任务收窄。
+2. **强制读取清单**：列出 memo、所有 `do/`、`logs/`、`tables/`、`figures/`。→ 锁定上下文。
+3. **单一核心问题**："Does this package have an immediate fatal empirical flaw…?" → 一个 agent 只回答一件事。
+4. **致命硬伤清单**：memo 夸大、机械性结果（shared denominators / 残差补集）、样本/处理支撑过薄、靠过度解读才有趣。→ 注入失败模式。
+5. **防过度否决条款**："Do not reject … merely because it has normal limitations." → 校准严格度。
+6. **输出契约 + 判决行**：固定 `## Overall Verdict` 顶部写 `VERDICT: VALIDATED` 或 `VERDICT: REVISE`，后接 Core Claim Audit / Fatal Flaws / Required Revisions / Contribution Calibration。→ 机器可读 + 可被生成者下一轮直接执行。
+
+**可迁移骨架**（把它当模板）：
+```
+你是【角色】，只负责【一个狭窄判断】，不负责【它不该做的事】。
+先读以下文件：【精确清单】。
+你的唯一问题是：【一句话的判断目标】。
+视为致命的情形：【显式失败模式清单】。
+不要因为【常规局限】就否决。
+输出到【文件名】，第一行写 VERDICT: A / B；随后小节：【固定标题…】。
+通过标准：【把"线"画死的一句话】。
+```
+
+---
+
+## 4. 把这套思路迁移到你自己的项目
+
+不管你做的是数据分析、代码生成还是写作流水线，这套"配方"基本通用：
+
+1. **拆成"全新上下文"的小步**，每步只做一件有明确产物的事；状态写进文件，别攒在一个长会话里。
+2. **每个产出配一个独立 critic**，给它狭窄的对抗任务 + 显式的失败模式清单 + 防过度否决的校准句。
+3. **让每步输出一行判决 token**，用代码（而非 agent 的自觉）来编排 advance / loop / kill。
+4. **建一份 append-only 问题账本**（带严重度、状态、拦截到哪步），blocking 未清不放行，禁止静默删除。
+5. **开放式生成用"并行候选 + 选一个"**，写明"不许合并"；同时维护一份"弃用清单"防范围蔓延。
+6. **把质量分成廉价早闸（快速 KILL）和昂贵终闸（深度校验）两层。**
+7. **风格/规范用范例和负向清单表达**，不要用形容词。
+8. **在最易出错处（例子、引用、数字）下硬护栏**，并配一个自动校验脚本兜底。
+
+---
+
+## 5. 值得反思的取舍与局限
+
+- **极其昂贵**：一篇论文要跑几十个 max-effort 长调用、单步超时 3–6 小时。这套"冗余 + 多闸 + 多候选"是拿算力换可靠性，适合高价值产出，不适合轻量任务。
+- **强领域绑定**：整条线假设"有处理变异的因果实证题 + Stata `.dta`"。换成纯描述/定性题，Step 1D 可能直接 KILL；换成 R/Python 数据需要改 `analysis_guide.md` 和相关 prompt。
+- **模型写死**：`codex --model gpt-5.5`、`claude --effort max` 都硬编码、无 env 开关，换模型要改脚本。
+- **过度工程化的风险**：这么多闸和账本对简单任务是负担；它的价值随"任务长度 × 出错代价"上升才划算。
+- **一个耐人寻味的反讽**：需要一整支 `derobotification` prompt（外加一长串"AI 痕迹"负向清单）来把模型自己写出来的机器味擦掉——说明"让 LLM 不像 LLM"本身就得靠显式规则硬掰。这恰恰是 prompt 工程的精髓：**把模型的默认倾向，逐条用契约纠正过来。**
+
+---
+
+> 想深入任何一节（例如完整解剖 `step7_paper_writer` 的输出契约，或把第 4 节做成一个你能直接套用的 prompt 模板库），跟我说即可。

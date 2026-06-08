@@ -279,6 +279,12 @@ const Style = () => {
         border-radius: 0.75rem;
       }
 
+      #theme-hexo .mdx-article hr {
+        margin: 2rem 0;
+        border: 0;
+        border-top: 1px solid rgba(148, 163, 184, 0.35);
+      }
+
       #theme-hexo .mdx-article blockquote {
         margin: 1.6rem 0;
         border-left: 3px solid var(--theme-color);
@@ -315,6 +321,37 @@ const Style = () => {
 
       #theme-hexo .mdx-article li + li {
         margin-top: 0.35rem;
+      }
+
+      #theme-hexo .mdx-article .mdx-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      #theme-hexo .mdx-article table {
+        min-width: 42rem;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+
+      #theme-hexo .mdx-article th,
+      #theme-hexo .mdx-article td {
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        padding: 0.65rem 0.75rem;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      #theme-hexo .mdx-article th {
+        background: rgba(15, 23, 42, 0.04);
+        color: #111827;
+        font-weight: 700;
+      }
+
+      .dark #theme-hexo .mdx-article th {
+        background: rgba(255, 255, 255, 0.06);
+        color: #f9fafb;
       }
 
       #theme-hexo .mdx-article code {

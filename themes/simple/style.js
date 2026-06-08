@@ -122,6 +122,12 @@ const Style = () => {
     border-bottom: 1px dashed rgba(39, 96, 119, 0.45);
   }
 
+  #theme-simple .mdx-article hr {
+    margin: 2rem 0;
+    border: 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.35);
+  }
+
   .dark #theme-simple .mdx-article blockquote {
     color: #9ca3af;
   }
@@ -137,6 +143,37 @@ const Style = () => {
 
   #theme-simple .mdx-article ol {
     list-style: decimal;
+  }
+
+  #theme-simple .mdx-article .mdx-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  #theme-simple .mdx-article table {
+    min-width: 42rem;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  #theme-simple .mdx-article th,
+  #theme-simple .mdx-article td {
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  #theme-simple .mdx-article th {
+    background: rgba(15, 23, 42, 0.04);
+    color: #111827;
+    font-weight: 700;
+  }
+
+  .dark #theme-simple .mdx-article th {
+    background: rgba(255, 255, 255, 0.06);
+    color: #f9fafb;
   }
   
   
