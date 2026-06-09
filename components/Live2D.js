@@ -1,18 +1,15 @@
 /* eslint-disable no-undef */
 import { siteConfig } from '@/lib/config'
-import { useGlobal } from '@/lib/global'
 import { isMobile, loadExternalResource } from '@/lib/utils'
 import { useEffect } from 'react'
 
 /**
- * 网页动画
+ * 宠物挂件 — 仅展示，点击不再切换主题
  * @returns
  */
 export default function Live2D() {
-  const { theme, switchTheme } = useGlobal()
   const showPet = JSON.parse(siteConfig('WIDGET_PET'))
   const petLink = siteConfig('WIDGET_PET_LINK')
-  const petSwitchTheme = siteConfig('WIDGET_PET_SWITCH_THEME')
 
   useEffect(() => {
     if (showPet && !isMobile()) {
@@ -23,7 +20,6 @@ export default function Live2D() {
         )
       ]).then(e => {
         if (typeof window?.loadlive2d !== 'undefined') {
-          // https://github.com/xiazeyu/live2d-widget-models
           try {
             loadlive2d('live2d', petLink)
           } catch (error) {
@@ -32,13 +28,7 @@ export default function Live2D() {
         }
       })
     }
-  }, [theme])
-
-  function handleClick() {
-    if (petSwitchTheme) {
-      switchTheme()
-    }
-  }
+  }, [showPet, petLink])
 
   if (!showPet) {
     return <></>
@@ -49,10 +39,7 @@ export default function Live2D() {
       id='live2d'
       width='280'
       height='250'
-      onClick={handleClick}
-      className='cursor-grab'
-      onMouseDown={e => e.target.classList.add('cursor-grabbing')}
-      onMouseUp={e => e.target.classList.remove('cursor-grabbing')}
+      className='cursor-default'
     />
   )
 }
