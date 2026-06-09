@@ -113,7 +113,7 @@ const About = props => {
               title='chi-sha（吃啥）'
               description='解决每日终极难题的决策小工具。当你不知道吃什么的时候，帮你快速做决定。'
               tags={['工具', '生活']}
-              href='https://github.com/Sen-platotech/chi-sha'
+              href='https://github.com/MissRui1/chi-sha'
               icon='fas fa-utensils'
             />
           </div>
