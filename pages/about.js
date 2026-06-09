@@ -93,9 +93,29 @@ const About = props => {
             </p>
             <p>
               实践方面，先后在华大基因研究院参与科技政策与伦理治理工作，涉及政策研究简报撰写、科研管理流程优化以及
-              多智能体伦理审查框架的设计（Ethics Council，已在 GitHub 开源）。同时也在大语言模型领域担任政治学方向的外聘专家，
+              多智能体伦理审查框架的设计。同时也在大语言模型领域担任政治学方向的外聘专家，
               参与评测数据集构建与模型能力诊断。此外还参与过财政绩效评价、社会调查（CFPS 中国家庭追踪调查）等不同类型的实务工作。
             </p>
+          </div>
+        </Section>
+
+        {/* ====== 项目 ====== */}
+        <Section title='项目' icon='fas fa-code'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <ProjectCard
+              title='Ethics Council'
+              description='多智能体伦理审查圆桌框架。模拟多方伦理委员会对科研项目进行伦理预审，覆盖知情同意、隐私保护、公平性等维度，自动生成审查意见报告。'
+              tags={['AI', '伦理', '多智能体']}
+              href='https://github.com/Sen-platotech/ethics-council'
+              icon='fas fa-balance-scale'
+            />
+            <ProjectCard
+              title='chi-sha（吃啥）'
+              description='解决每日终极难题的决策小工具。当你不知道吃什么的时候，帮你快速做决定。'
+              tags={['工具', '生活']}
+              href='https://github.com/Sen-platotech/chi-sha'
+              icon='fas fa-utensils'
+            />
           </div>
         </Section>
 
@@ -103,13 +123,21 @@ const About = props => {
         <Section title='联系' icon='fas fa-envelope'>
           <div className='text-sm text-gray-600 dark:text-gray-400 leading-relaxed text-center'>
             <p className='mb-3'>可以通过以下方式找到我：</p>
-            <div className='flex flex-wrap justify-center gap-4'>
+            <div className='flex flex-wrap justify-center gap-3'>
               <a href='mailto:szjluedu2024@163.com' className='inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors'>
-                <i className='fas fa-envelope'></i> szjluedu2024@163.com
+                <i className='fas fa-envelope'></i> 邮箱
               </a>
               <a href='https://github.com/Sen-platotech' target='_blank' rel='noreferrer' className='inline-flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'>
                 <i className='fab fa-github'></i> GitHub
               </a>
+            </div>
+            <div className='mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-500 dark:text-gray-400'>
+              <span className='inline-flex items-center gap-1.5'>
+                <i className='fas fa-feather-pointed text-rose-400'></i> 小红书：晒太阳的水母叻
+              </span>
+              <span className='inline-flex items-center gap-1.5'>
+                <i className='fas fa-comment-dots text-green-500'></i> 公众号：爱吃奶油蛋糕的人
+              </span>
             </div>
           </div>
         </Section>
@@ -156,6 +184,39 @@ function TimelineItem ({ title, period, details }) {
         </ul>
       )}
     </div>
+  )
+}
+
+function ProjectCard ({ title, description, tags, href, icon }) {
+  return (
+    <a
+      href={href}
+      target='_blank'
+      rel='noreferrer'
+      className='block p-4 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-700 transition-all group'
+    >
+      <div className='flex items-start gap-3'>
+        <div className='w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0 mt-0.5'>
+          <i className={`${icon} text-indigo-500 text-lg`}></i>
+        </div>
+        <div className='min-w-0'>
+          <h4 className='font-semibold text-sm text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors'>
+            {title}
+            <i className='fas fa-external-link-alt text-xs ml-1.5 opacity-0 group-hover:opacity-100 transition-opacity'></i>
+          </h4>
+          <p className='text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed'>
+            {description}
+          </p>
+          <div className='flex flex-wrap gap-1.5 mt-2'>
+            {tags.map(t => (
+              <span key={t} className='px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'>
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </a>
   )
 }
 
