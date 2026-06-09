@@ -132,9 +132,10 @@ const About = props => {
               </a>
             </div>
             <div className='mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-500 dark:text-gray-400'>
-              <span className='inline-flex items-center gap-1.5'>
-                <i className='fas fa-feather-pointed text-rose-400'></i> 小红书：晒太阳的水母叻
-              </span>
+             <span className='inline-flex items-center gap-1.5'>
+                <i className='fas fa-feather-pointed text-rose-400'></i>
+                <a href='https://www.xiaohongshu.com/user/profile/659e12eb000000002001d7e9' target='_blank' rel='noreferrer' className='hover:text-rose-500 transition-colors'>小红书：晒太阳的水母叻</a>
+             </span>
               <span className='inline-flex items-center gap-1.5'>
                 <i className='fas fa-comment-dots text-green-500'></i> 公众号：爱吃奶油蛋糕的人
               </span>
