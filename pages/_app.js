@@ -6,6 +6,12 @@ import '@/styles/utility-patterns.css'
 import '@/styles/notion.css' //  重写部分notion样式
 import 'react-notion-x/src/styles.css' // 原版的react-notion-x
 
+// 「书卷 · 夜读」主题全局样式（设计稿原样搬运）
+// 放在 styles/ 下而非 themes/shujuan/，避免被 themes 动态 import 的 webpack 上下文当作非 _app 的全局 CSS
+import '@/styles/shujuan/styles.css'
+import '@/styles/shujuan/article.css'
+import '@/styles/shujuan/extra.css'
+
 import useAdjustStyle from '@/hooks/useAdjustStyle'
 import { GlobalContextProvider } from '@/lib/global'
 import { getBaseLayoutByTheme } from '@/themes/theme'

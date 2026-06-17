@@ -1,0 +1,58 @@
+/* ============================================================
+   「书卷 · 夜读」页面级补充样式
+   （原设计稿 Archive.html / Categories.html / Tags.html / About.html
+     的内联 <style> 原样收拢到此，与 styles.css 配合使用）
+   ============================================================ */
+
+/* ---------- 归档 Archive ---------- */
+.year-block{margin-bottom:18px}
+.year-head{display:flex;align-items:baseline;gap:18px;margin:48px 0 6px}
+.year-head .yr{font-family:var(--label);font-size:2.4rem;font-weight:600;color:var(--accent);letter-spacing:.04em;line-height:1}
+.year-head .cnt{font-family:var(--label);font-size:.86rem;letter-spacing:.16em;color:var(--faint)}
+.year-head .ln{flex:1;height:1px;background:var(--line-soft)}
+.arch-count{display:flex;gap:36px;justify-content:center;margin-top:8px}
+.arch-count .n{font-family:var(--label);font-size:1.9rem;font-weight:600;color:var(--ink)}
+.arch-count .l{font-size:.8rem;letter-spacing:.18em;color:var(--muted);text-align:center;margin-top:4px}
+.arch-count>div{text-align:center}
+
+/* ---------- 分类 Categories（单分类详情页用，可选） ---------- */
+.cat-sec{padding:80px 0;border-top:1px solid var(--line-soft)}
+.cat-banner{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;margin-bottom:42px}
+.cat-banner__mark{width:96px;height:96px;border-radius:6px;overflow:hidden;position:relative;flex-shrink:0;box-shadow:var(--shadow)}
+.cat-banner__mark img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cat-banner__name{font-family:var(--serif-cjk);font-size:1.9rem;font-weight:600;letter-spacing:.08em;color:var(--ink);display:flex;align-items:baseline;gap:14px}
+.cat-banner__cnt{font-family:var(--label);font-size:.86rem;letter-spacing:.14em;color:var(--accent)}
+.cat-banner__desc{margin-top:10px;color:var(--muted);font-size:.98rem;line-height:1.8;max-width:56ch}
+
+/* ---------- 标签 Tags 云 ---------- */
+.cloud{display:flex;flex-wrap:wrap;gap:16px 18px;justify-content:center;max-width:760px;margin:0 auto}
+.tag{font-family:var(--serif-cjk);display:inline-flex;align-items:baseline;gap:7px;color:var(--ink-2);
+  transition:color .25s,transform .25s;line-height:1.2}
+.tag:hover{color:var(--accent);transform:translateY(-2px)}
+.tag .ct{font-family:var(--label);font-size:.62em;color:var(--faint);letter-spacing:.05em}
+.tag.s1{font-size:1rem}.tag.s2{font-size:1.3rem}.tag.s3{font-size:1.7rem;font-weight:500}
+.tag.s4{font-size:2.15rem;font-weight:600;color:var(--accent)}.tag.s5{font-size:1.5rem}
+
+/* ---------- 关于 About ---------- */
+.about-hero{padding:160px 0 80px;text-align:center;background:var(--bg-2);border-bottom:1px solid var(--line-soft)}
+.about-hero .avatar{width:120px;height:120px;font-size:2.8rem;margin:0 auto 28px}
+.about-hero h1{font-family:var(--serif-cjk);font-size:clamp(2rem,4vw,2.8rem);font-weight:600;letter-spacing:.1em;color:var(--ink)}
+.about-hero .motto{margin-top:18px;font-family:var(--serif-cjk);font-size:1.15rem;letter-spacing:.16em;color:var(--accent)}
+.ids{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.idcard{padding:34px 28px;background:var(--surface);border:1px solid var(--line-soft);border-radius:4px;
+  box-shadow:var(--shadow);text-align:center;transition:transform .4s,box-shadow .4s}
+.idcard:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.idcard .ico{width:50px;height:50px;margin:0 auto 18px;color:var(--accent)}
+.idcard h3{font-family:var(--serif-cjk);font-size:1.3rem;font-weight:600;letter-spacing:.08em;color:var(--ink)}
+.idcard p{margin-top:10px;color:var(--muted);font-size:.92rem;line-height:1.8}
+.bio-body{max-width:680px;margin:0 auto;font-size:1.1rem;line-height:2.05;color:var(--ink-2)}
+.bio-body p{margin-bottom:1.4em}
+.bio-body p:first-child::first-letter{float:left;font-family:var(--serif-cjk);font-size:3.2em;line-height:.82;font-weight:600;color:var(--accent);margin:.05em .12em 0 0}
+.now-list{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:0}
+.now-row{display:grid;grid-template-columns:130px 1fr;gap:24px;padding:20px 0;border-top:1px solid var(--line-soft);align-items:baseline}
+.now-row:last-child{border-bottom:1px solid var(--line-soft)}
+.now-row .k{font-family:var(--label);font-size:.84rem;letter-spacing:.16em;color:var(--accent)}
+.now-row .v{font-family:var(--serif-cjk);color:var(--ink);font-size:1.05rem;line-height:1.7}
+.now-row .v small{display:block;color:var(--muted);font-size:.86rem;margin-top:3px;font-family:var(--label);letter-spacing:.04em}
+.contact{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+@media(max-width:760px){.ids{grid-template-columns:1fr}.now-row{grid-template-columns:1fr;gap:6px}}

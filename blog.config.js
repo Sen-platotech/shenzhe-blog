@@ -13,7 +13,7 @@ const BLOG = {
     process.env.NOTION_TOKEN ||
     process.env.NOTION_SECRET ||
     '',
-  THEME: process.env.NEXT_PUBLIC_THEME || 'hexo',
+  THEME: process.env.NEXT_PUBLIC_THEME || 'shujuan',
   LANG: process.env.NEXT_PUBLIC_LANG || 'zh-CN', // e.g 'zh-CN','en-US'  see /lib/lang.js for more.
   SINCE: process.env.NEXT_PUBLIC_SINCE || 2021, // e.g if leave this empty, current year will be used.
 

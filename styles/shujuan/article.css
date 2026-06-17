@@ -1,0 +1,163 @@
+/* ============================================================
+   Article / reading page — 「书卷」prose
+   ============================================================ */
+
+/* reading progress */
+.read-progress{
+  position:fixed;top:0;left:0;right:0;height:2px;z-index:60;
+  background:var(--accent);transform:scaleX(0);transform-origin:left;
+  transition:transform .1s linear;
+}
+
+/* article hero */
+.art-hero{
+  padding:150px 0 50px;text-align:center;border-bottom:1px solid var(--line-soft);
+  background:var(--bg-2);position:relative;overflow:hidden;
+}
+.art-hero__inner{max-width:780px;margin:0 auto;padding:0 32px;position:relative;z-index:2}
+.art-hero__cat{margin-bottom:24px}
+.art-hero__title{
+  font-family:var(--serif-cjk);font-weight:600;
+  font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.42;letter-spacing:.02em;
+  color:var(--ink);text-wrap:balance;
+}
+.art-hero__desc{margin-top:22px;color:var(--ink-2);font-size:1.1rem;line-height:1.85;
+  max-width:40rem;margin-left:auto;margin-right:auto}
+.art-hero__meta{margin-top:30px;display:flex;align-items:center;justify-content:center;gap:16px;
+  font-family:var(--label);font-size:.88rem;letter-spacing:.08em;color:var(--muted)}
+.art-hero__meta .dot{width:3px;height:3px;border-radius:50%;background:var(--faint)}
+.art-hero__avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--serif-cjk);font-size:.92rem;color:#fff;background:var(--accent);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+
+/* cover */
+.art-cover{max-width:1040px;margin:-30px auto 0;padding:0 32px;position:relative;z-index:3}
+.art-cover img{width:100%;height:auto;aspect-ratio:16/8;object-fit:cover;border-radius:4px;
+  box-shadow:var(--shadow-lg)}
+
+/* article layout: body + sticky TOC */
+.art-wrap{max-width:1100px;margin:0 auto;padding:64px 32px 40px;
+  display:grid;grid-template-columns:1fr minmax(0,720px) 1fr;gap:0}
+.art-aside{grid-column:1;position:relative}
+.toc{position:sticky;top:120px;padding-right:30px;max-width:230px}
+.toc__title{font-family:var(--label);font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:16px}
+.toc a{display:block;font-size:.88rem;line-height:1.5;color:var(--muted);padding:6px 0 6px 14px;
+  border-left:1px solid var(--line);transition:all .25s}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:var(--accent);border-left-color:var(--accent);font-weight:500}
+.toc a.sub{padding-left:28px;font-size:.82rem}
+
+/* prose */
+.prose{grid-column:2;font-size:1.12rem;line-height:2;color:var(--ink-2);font-weight:380}
+.prose>p{margin:0 0 1.5em}
+.prose>p:first-of-type{font-size:1.18rem;color:var(--ink)}
+.prose .dropcap::first-letter{
+  float:left;font-family:var(--serif-cjk);font-size:3.4em;line-height:.82;
+  font-weight:600;color:var(--accent);margin:.06em .14em 0 0;
+}
+.prose h2{
+  font-family:var(--serif-cjk);font-weight:600;font-size:1.62rem;line-height:1.5;
+  color:var(--ink);letter-spacing:.03em;margin:2.6em 0 .9em;scroll-margin-top:110px;
+  display:flex;align-items:baseline;gap:.6em;
+}
+.prose h2 .h2-num{font-family:var(--label);font-size:.92rem;color:var(--accent);
+  letter-spacing:.1em;font-weight:600}
+.prose h3{font-family:var(--serif-cjk);font-weight:600;font-size:1.26rem;line-height:1.55;
+  color:var(--ink);margin:2em 0 .7em;scroll-margin-top:110px}
+.prose blockquote{
+  margin:1.8em 0;padding:6px 0 6px 28px;border-left:2px solid var(--accent);
+  font-family:var(--serif-cjk);font-style:normal;color:var(--ink);
+  font-size:1.16rem;line-height:1.9;letter-spacing:.02em;
+}
+.prose blockquote p{margin:0 0 .5em}
+.prose blockquote cite{display:block;font-style:normal;font-size:.9rem;color:var(--muted);
+  font-family:var(--label);letter-spacing:.06em;margin-top:.6em}
+.prose strong{color:var(--ink);font-weight:600}
+.prose em{font-style:italic;color:var(--ink)}
+.prose a{color:var(--accent);border-bottom:1px solid var(--accent-line);transition:border-color .25s}
+.prose a:hover{border-bottom-color:var(--accent)}
+.prose ul,.prose ol{margin:1.4em 0;padding-left:1.4em}
+.prose li{margin:.5em 0;position:relative}
+.prose ul li{list-style:none}
+.prose ul li::before{content:"";position:absolute;left:-1.2em;top:.95em;width:5px;height:5px;
+  border-radius:50%;background:var(--accent-line)}
+.prose ol{counter-reset:li;padding-left:0}
+.prose ol li{list-style:none;padding-left:2em;counter-increment:li}
+.prose ol li::before{content:counter(li);position:absolute;left:0;top:0;
+  font-family:var(--label);color:var(--accent);font-size:.92em}
+
+/* pull quote (full-width emphasis) */
+.pullquote{
+  margin:2.4em -10px;padding:30px 36px;text-align:center;
+  font-family:var(--serif-cjk);font-size:1.45rem;line-height:1.7;font-weight:500;
+  color:var(--ink);letter-spacing:.04em;position:relative;text-wrap:balance;
+}
+.pullquote::before,.pullquote::after{content:"";display:block;width:40px;height:1px;
+  background:var(--accent-line);margin:0 auto}
+.pullquote::before{margin-bottom:22px}
+.pullquote::after{margin-top:22px}
+
+/* figure */
+.prose figure{margin:2.2em 0}
+.prose figure img{width:100%;border-radius:4px;box-shadow:var(--shadow)}
+.prose figcaption{margin-top:12px;text-align:center;font-family:var(--label);font-size:.85rem;
+  color:var(--muted);letter-spacing:.04em}
+
+/* references */
+.refs{grid-column:2;margin-top:60px;padding-top:36px;border-top:1px solid var(--line)}
+.refs__title{font-family:var(--serif-cjk);font-size:1.2rem;font-weight:600;color:var(--ink);
+  letter-spacing:.06em;margin-bottom:20px;display:flex;align-items:center;gap:.6em}
+.refs ol{counter-reset:r;padding:0}
+.refs li{list-style:none;counter-increment:r;position:relative;padding-left:2.4em;
+  font-size:.92rem;line-height:1.8;color:var(--muted);margin:.7em 0}
+.refs li::before{content:counter(r,decimal-leading-zero);position:absolute;left:0;top:0;
+  font-family:var(--label);color:var(--accent);font-size:.82rem;letter-spacing:.05em}
+
+/* tags row */
+.art-tags{grid-column:2;margin-top:40px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.art-tags .lbl{font-family:var(--label);font-size:.8rem;letter-spacing:.16em;color:var(--faint);margin-right:6px}
+
+/* end mark */
+.art-end{grid-column:2;margin:54px 0 0;display:flex;flex-direction:column;align-items:center;gap:16px}
+.art-end .seal{width:3em;height:3em;font-size:1.1rem}
+.art-end__note{font-family:var(--serif-cjk);color:var(--muted);font-size:.92rem;letter-spacing:.2em}
+
+/* author card */
+.author-card{
+  max-width:760px;margin:64px auto 0;padding:36px 38px;display:flex;gap:26px;align-items:center;
+  background:var(--surface);border:1px solid var(--line-soft);border-radius:4px;box-shadow:var(--shadow);
+}
+.author-card__av{width:74px;height:74px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
+  font-family:var(--serif-cjk);font-size:1.7rem;color:#fff;font-weight:600;
+  background:radial-gradient(120% 120% at 30% 25%,color-mix(in srgb,var(--accent) 80%,#fff),var(--accent));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.author-card__name{font-family:var(--serif-cjk);font-size:1.2rem;font-weight:600;letter-spacing:.06em;color:var(--ink)}
+.author-card__bio{margin-top:8px;color:var(--muted);font-size:.92rem;line-height:1.8}
+
+/* prev / next */
+.art-nav{max-width:1040px;margin:56px auto 0;padding:0 32px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.art-nav a{display:flex;flex-direction:column;gap:8px;padding:26px 28px;border:1px solid var(--line-soft);
+  border-radius:4px;background:var(--surface);transition:all .35s}
+.art-nav a:hover{border-color:var(--accent-line);transform:translateY(-3px);box-shadow:var(--shadow)}
+.art-nav .dir{font-family:var(--label);font-size:.78rem;letter-spacing:.16em;color:var(--accent)}
+.art-nav .t{font-family:var(--serif-cjk);font-size:1.05rem;font-weight:600;color:var(--ink);line-height:1.5}
+.art-nav .next{text-align:right;align-items:flex-end}
+
+/* comments placeholder */
+.comments{max-width:760px;margin:56px auto 0;padding:34px 36px;border:1px dashed var(--line);
+  border-radius:4px;text-align:center;color:var(--muted)}
+.comments h4{font-family:var(--serif-cjk);font-size:1.1rem;color:var(--ink);font-weight:600;
+  letter-spacing:.06em;margin-bottom:8px}
+.comments p{font-size:.9rem;line-height:1.7}
+
+@media (max-width:980px){
+  .art-wrap{grid-template-columns:1fr;max-width:720px}
+  .art-aside{display:none}
+  .prose,.refs,.art-tags,.art-end{grid-column:1}
+}
+@media (max-width:680px){
+  .art-nav{grid-template-columns:1fr}
+  .author-card{flex-direction:column;text-align:center;align-items:center}
+  .pullquote{margin-left:0;margin-right:0}
+}
