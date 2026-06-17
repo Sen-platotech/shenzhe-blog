@@ -519,4 +519,9 @@ section{position:relative;z-index:2}
   .prow__date{text-align:left}
   .feature__body{padding:32px 26px}
   .sec-head{flex-direction:column;align-items:flex-start}
+  /* 移动端 Hero：内容顶部对齐并避开固定导航，标题居中且不再与导航重叠 */
+  .hero{justify-content:flex-start;padding-top:clamp(112px,18vh,160px);padding-bottom:56px}
+  .hero__title{letter-spacing:.12em;text-indent:.12em}
+  .hero__cards{margin-top:36px}
+  .hero__scroll{display:none}
 }
