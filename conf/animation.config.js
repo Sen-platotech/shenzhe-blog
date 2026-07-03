@@ -52,7 +52,7 @@ module.exports = {
     process.env.NEXT_PUBLIC_MOUSE_FOLLOW_EFFECT_COLOR || '#ef672a', // 鼠标点击特效颜色 #xxxxxx 或者 rgba(r,g,b,a)
 
   // 樱花飘落特效
-  SAKURA: envFlag('NEXT_PUBLIC_SAKURA', true), // 开关
+  SAKURA: envFlag('NEXT_PUBLIC_SAKURA', false), // 开关
   // 漂浮线段特效
   NEST: envFlag('NEXT_PUBLIC_NEST', false), // 开关
   // 动态彩带特效
