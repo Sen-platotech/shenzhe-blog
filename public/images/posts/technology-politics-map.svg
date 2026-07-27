@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">技术政治学的学科坐标</title>
+  <desc id="desc">技术政治学与技术哲学、技术社会学相邻，并包含计算政治学、技术政治哲学与生命政治学三个研究方向。</desc>
+  <rect width="1400" height="900" fill="#f7f5f0"/>
+  <g fill="none" stroke="#b8b2a7" stroke-width="3">
+    <path d="M430 214 C520 280 570 310 635 350"/>
+    <path d="M970 214 C880 280 830 310 765 350"/>
+    <path d="M700 500 C590 555 470 590 330 640"/>
+    <path d="M700 500 C700 555 700 590 700 640"/>
+    <path d="M700 500 C810 555 930 590 1070 640"/>
+  </g>
+  <g font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif" text-anchor="middle">
+    <text x="700" y="86" fill="#262626" font-size="34" font-weight="700">技术政治学的学科坐标</text>
+    <text x="700" y="130" fill="#66615a" font-size="21">一种工作性的概念定位</text>
+
+    <rect x="220" y="165" width="420" height="130" rx="8" fill="#e6e1d7" stroke="#8c8579" stroke-width="2"/>
+    <text x="430" y="220" fill="#282725" font-size="31" font-weight="700">技术哲学</text>
+    <text x="430" y="260" fill="#5f5a53" font-size="20">技术、主体与世界的关系</text>
+
+    <rect x="760" y="165" width="420" height="130" rx="8" fill="#dce4e8" stroke="#778994" stroke-width="2"/>
+    <text x="970" y="220" fill="#282725" font-size="31" font-weight="700">技术社会学（STS）</text>
+    <text x="970" y="260" fill="#53636b" font-size="20">技术与社会的共同建构</text>
+
+    <rect x="470" y="350" width="460" height="150" rx="8" fill="#243b53"/>
+    <text x="700" y="414" fill="#ffffff" font-size="38" font-weight="700">技术政治学</text>
+    <text x="700" y="459" fill="#dce6ed" font-size="21">技术中的权力、秩序与治理</text>
+
+    <rect x="120" y="640" width="420" height="145" rx="8" fill="#e7edf2" stroke="#6f899c" stroke-width="2"/>
+    <text x="330" y="698" fill="#243b53" font-size="30" font-weight="700">计算政治学</text>
+    <text x="330" y="740" fill="#53636b" font-size="20">方法的科学化与对象的广延</text>
+
+    <rect x="490" y="640" width="420" height="145" rx="8" fill="#f2e5de" stroke="#a66b50" stroke-width="2"/>
+    <text x="700" y="698" fill="#663c2c" font-size="30" font-weight="700">技术政治哲学</text>
+    <text x="700" y="740" fill="#795547" font-size="20">概念、规范与政治判断</text>
+
+    <rect x="860" y="640" width="420" height="145" rx="8" fill="#e4e9df" stroke="#77846d" stroke-width="2"/>
+    <text x="1070" y="698" fill="#394634" font-size="30" font-weight="700">生命政治学</text>
+    <text x="1070" y="740" fill="#596653" font-size="20">身体、生命与治理技术</text>
+
+    <text x="700" y="856" fill="#777168" font-size="18">作者绘制</text>
+  </g>
+</svg>
