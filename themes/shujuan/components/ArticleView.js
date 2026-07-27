@@ -67,7 +67,7 @@ export default function ArticleView(props) {
 
         <article className='prose' id='article-wrapper'>
           {post.source === 'mdx' ? (
-            <MdxArticle source={post.body} />
+            <MdxArticle source={post.body} indent={post.textIndent === true} />
           ) : (
             <NotionPage post={post} />
           )}

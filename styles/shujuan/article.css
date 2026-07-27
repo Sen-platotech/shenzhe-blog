@@ -50,8 +50,12 @@
 
 /* prose */
 .prose{grid-column:2;font-size:1.12rem;line-height:2;color:var(--ink-2);font-weight:380}
-.prose>p{margin:0 0 1.5em}
-.prose>p:first-of-type{font-size:1.18rem;color:var(--ink)}
+.prose>p,.prose .mdx-article>p{margin:0 0 1.5em}
+.prose>p:first-of-type,.prose .mdx-article>p:first-of-type{font-size:1.18rem;color:var(--ink)}
+.prose .mdx-article--indented>p{text-indent:2em}
+.prose .mdx-article--indented>.mdx-align-right{
+  text-align:right;text-indent:0;font-family:var(--serif-cjk);color:var(--muted);
+}
 .prose .dropcap::first-letter{
   float:left;font-family:var(--serif-cjk);font-size:3.4em;line-height:.82;
   font-weight:600;color:var(--accent);margin:.06em .14em 0 0;

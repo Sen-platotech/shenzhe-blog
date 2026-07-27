@@ -144,6 +144,15 @@ function createBlockRenderer() {
       )
     }
 
+    const alignedRight = text.match(/^:::right\s*\n([\s\S]+)\n:::$/)
+    if (alignedRight) {
+      return (
+        <p key={key} className='mdx-align-right'>
+          {inline(alignedRight[1].trim(), key)}
+        </p>
+      )
+    }
+
     const heading = text.match(/^(#{2,4})\s+(.+)$/)
     if (heading) {
       const value = heading[2]
@@ -192,7 +201,7 @@ function createBlockRenderer() {
   }
 }
 
-export default function MdxArticle({ source }) {
+export default function MdxArticle({ source, indent = false }) {
   const blocks = String(source || '')
     .replace(/^---[\s\S]*?---\n?/, '')
     .split(/\n{2,}/)
@@ -206,5 +215,10 @@ export default function MdxArticle({ source }) {
     )
   }
 
-  return <article className='mdx-article'>{blocks.map(renderBlock)}</article>
+  return (
+    <article
+      className={`mdx-article${indent ? ' mdx-article--indented' : ''}`}>
+      {blocks.map(renderBlock)}
+    </article>
+  )
 }
