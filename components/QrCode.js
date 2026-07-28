@@ -1,23 +1,28 @@
 import { loadExternalResource } from '@/lib/utils'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 /**
  * 二维码生成
  */
 export default function QrCode({ value }) {
+  const containerRef = useRef(null)
   const qrCodeCDN =
     process.env.NEXT_PUBLIC_QR_CODE_CDN ||
     'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 
   useEffect(() => {
     let qrcode
+    let cancelled = false
+    const container = containerRef.current
     if (!value) {
       return
     }
-    loadExternalResource(qrCodeCDN, 'js').then(url => {
-      const QRCode = window?.QRCode
-      if (typeof QRCode !== 'undefined') {
-        qrcode = new QRCode(document.getElementById('qrcode'), {
+    loadExternalResource(qrCodeCDN, 'js')
+      .then(() => {
+        const QRCode = window?.QRCode
+        if (cancelled || typeof QRCode === 'undefined' || !container) return
+        container.replaceChildren()
+        qrcode = new QRCode(container, {
           text: value,
           width: 256,
           height: 256,
@@ -25,15 +30,14 @@ export default function QrCode({ value }) {
           colorLight: '#ffffff',
           correctLevel: QRCode.CorrectLevel.H
         })
-        //   console.log('二维码', qrcode, value)
-      }
-    })
+      })
+      .catch(() => {})
     return () => {
-      if (qrcode) {
-        qrcode.clear() // clear the code.
-      }
+      cancelled = true
+      qrcode?.clear()
+      container?.replaceChildren()
     }
-  }, [])
+  }, [qrCodeCDN, value])
 
-  return <div id='qrcode'></div>
+  return <div ref={containerRef} aria-label='文章二维码' />
 }

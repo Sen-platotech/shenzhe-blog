@@ -5,6 +5,7 @@ import SmartLink from '@/components/SmartLink'
 import { siteConfig } from '@/lib/config'
 import CONFIG from '../config'
 import { fmtDate, readingTime, coverOf } from './helpers'
+import SharePanel from './SharePanel'
 
 /** 文章详情 —— 结构与 article.css（.art-hero/.art-cover/.art-wrap/.prose…）完全一致。 */
 export default function ArticleView(props) {
@@ -76,6 +77,8 @@ export default function ArticleView(props) {
             <span className='art-end__note cjk'>全 文 完</span>
           </div>
         </article>
+
+        {post.type === 'Post' && <SharePanel post={post} />}
 
         {(post.tags || []).length > 0 && (
           <div className='art-tags'>
