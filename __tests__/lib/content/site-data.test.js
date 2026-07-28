@@ -86,9 +86,13 @@ describe('content site data adapter', () => {
     expect(categoryPaths).toEqual(
       expect.arrayContaining([{ params: { category: '心情随笔' } }])
     )
-    expect(essay.postCount).toBe(2)
+    expect(essay.postCount).toBe(3)
     expect(essay.posts.map(post => post.title)).toEqual(
-      expect.arrayContaining(['进步的牢笼', '心情随笔'])
+      expect.arrayContaining([
+        '进步的牢笼',
+        '心情随笔',
+        '【杂谈】人工智能与计算政治学'
+      ])
     )
   })
 
