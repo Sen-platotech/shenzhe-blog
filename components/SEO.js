@@ -24,6 +24,8 @@ const SEO = props => {
   const router = useRouter()
   const meta = getSEOMeta(props, router, useGlobal()?.locale)
   const webFontUrl = siteConfig('FONT_URL')
+  const isErrorPage = ['/404', '/500'].includes(router.route)
+  let shouldRenderCanonical = !isErrorPage
 
   useEffect(() => {
     // 使用WebFontLoader字体加载
@@ -51,8 +53,17 @@ const SEO = props => {
     keywords = post?.tags?.join(',')
   }
   if (meta) {
-    url = toAbsoluteUrl(meta.canonicalUrl || meta.slug || '', siteUrl)
-    image = toAbsoluteUrl(meta.image || '/bg_image.jpg', LINK)
+    const currentPath = router.asPath?.split(/[?#]/)[0]
+    const isRouteTemplate = currentPath?.includes('[')
+    const canonicalSource =
+      meta.canonicalUrl ||
+      (!isRouteTemplate ? currentPath || meta.slug : undefined)
+    shouldRenderCanonical =
+      !isErrorPage && canonicalSource !== undefined && canonicalSource !== null
+    url = toAbsoluteUrl(canonicalSource ?? meta.slug ?? '', siteUrl)
+    const imageSource =
+      meta.image && meta.image !== 'undefined' ? meta.image : '/bg_image.jpg'
+    image = toAbsoluteUrl(imageSource, LINK)
   }
   const TITLE = siteConfig('TITLE')
   const title = meta?.title || TITLE
@@ -112,7 +123,14 @@ const SEO = props => {
         name='viewport'
         content='width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0'
       />
-      <meta name='robots' content='follow, index, max-snippet:-1, max-image-preview:large, max-video-preview:-1' />
+      <meta
+        name='robots'
+        content={
+          isErrorPage
+            ? 'noindex, nofollow'
+            : 'follow, index, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+        }
+      />
       <meta charSet='UTF-8' />
       <meta name='format-detection' content='telephone=no' />
       <meta name='mobile-web-app-capable' content='yes' />
@@ -135,7 +153,7 @@ const SEO = props => {
       )}
 
       {/* 基础SEO元数据 */}
-      <link rel='canonical' href={url} />
+      {shouldRenderCanonical && <link rel='canonical' href={url} />}
       <meta name='keywords' content={keywords} />
       <meta name='description' content={description} />
       <meta name='author' content={AUTHOR} />
@@ -151,8 +169,6 @@ const SEO = props => {
       <meta property='og:description' content={description} />
       <meta property='og:url' content={url} />
       <meta property='og:image' content={image} />
-      <meta property='og:image:width' content='1200' />
-      <meta property='og:image:height' content='630' />
       <meta property='og:image:alt' content={title} />
       <meta property='og:site_name' content={siteConfig('TITLE')} />
       <meta property='og:type' content={type} />

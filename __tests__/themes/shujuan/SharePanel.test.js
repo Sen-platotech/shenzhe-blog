@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import SharePanel from '@/themes/shujuan/components/SharePanel'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('@/components/QrCode', () => {
   function MockQrCode({ value }) {
@@ -28,6 +29,10 @@ const post = {
 describe('Shujuan SharePanel', () => {
   const originalUserAgent = window.navigator.userAgent
   const originalClipboard = window.navigator.clipboard
+  const originalExecCommandDescriptor = Object.getOwnPropertyDescriptor(
+    document,
+    'execCommand'
+  )
 
   afterEach(() => {
     Object.defineProperty(window.navigator, 'share', {
@@ -42,6 +47,15 @@ describe('Shujuan SharePanel', () => {
       configurable: true,
       value: originalClipboard
     })
+    if (originalExecCommandDescriptor) {
+      Object.defineProperty(
+        document,
+        'execCommand',
+        originalExecCommandDescriptor
+      )
+    } else {
+      Reflect.deleteProperty(document, 'execCommand')
+    }
   })
 
   it('passes the canonical article data to the native share sheet', async () => {
@@ -53,7 +67,7 @@ describe('Shujuan SharePanel', () => {
 
     render(<SharePanel post={post} />)
     fireEvent.click(
-      screen.getByRole('button', { name: '分享到朋友圈' })
+      screen.getByRole('button', { name: '分享文章' })
     )
 
     await waitFor(() => {
@@ -78,7 +92,7 @@ describe('Shujuan SharePanel', () => {
 
     render(<SharePanel post={post} />)
     fireEvent.click(
-      screen.getByRole('button', { name: '分享到朋友圈' })
+      await screen.findByRole('button', { name: '分享到朋友圈' })
     )
 
     expect(
@@ -99,7 +113,7 @@ describe('Shujuan SharePanel', () => {
 
     render(<SharePanel post={post} />)
     fireEvent.click(
-      screen.getByRole('button', { name: '分享到朋友圈' })
+      screen.getByRole('button', { name: '分享文章' })
     )
 
     expect(
@@ -117,7 +131,7 @@ describe('Shujuan SharePanel', () => {
   it('encodes the canonical article URL in the fallback QR code', async () => {
     render(<SharePanel post={post} />)
     fireEvent.click(
-      screen.getByRole('button', { name: '分享到朋友圈' })
+      screen.getByRole('button', { name: '分享文章' })
     )
 
     expect(await screen.findByTestId('share-qr')).toHaveTextContent(
@@ -133,7 +147,7 @@ describe('Shujuan SharePanel', () => {
 
     render(<SharePanel post={post} />)
     fireEvent.click(
-      screen.getByRole('button', { name: '分享到朋友圈' })
+      screen.getByRole('button', { name: '分享文章' })
     )
 
     expect(
@@ -144,11 +158,82 @@ describe('Shujuan SharePanel', () => {
     ).toBeInTheDocument()
   })
 
+  it('keeps copy and QR available when the native share sheet closes with AbortError', async () => {
+    const abortError = new Error('share sheet closed')
+    abortError.name = 'AbortError'
+    Object.defineProperty(window.navigator, 'share', {
+      configurable: true,
+      value: jest.fn().mockRejectedValue(abortError)
+    })
+
+    render(<SharePanel post={post} />)
+    fireEvent.click(screen.getByRole('button', { name: '分享文章' }))
+
+    expect(
+      await screen.findByRole('dialog', { name: '分享到朋友圈' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('系统分享已关闭，你仍可复制链接或使用二维码。')
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('share-qr')).toHaveTextContent(post.canonicalUrl)
+  })
+
+  it('tries the compatible copy fallback when Clipboard API access is denied', async () => {
+    const writeText = jest.fn().mockRejectedValue(new Error('permission denied'))
+    const execCommand = jest.fn().mockReturnValue(true)
+    Object.defineProperty(window.navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText }
+    })
+    Object.defineProperty(document, 'execCommand', {
+      configurable: true,
+      value: execCommand
+    })
+
+    render(<SharePanel post={post} />)
+    fireEvent.click(screen.getByRole('button', { name: '分享文章' }))
+    fireEvent.click(
+      await screen.findByRole('button', { name: '复制文章链接' })
+    )
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledWith(post.canonicalUrl)
+      expect(execCommand).toHaveBeenCalledWith('copy')
+    })
+    expect(await screen.findByText('链接已复制')).toBeInTheDocument()
+  })
+
+  it('shows a selectable URL when every copy method fails', async () => {
+    Object.defineProperty(window.navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: jest.fn().mockRejectedValue(new Error('permission denied'))
+      }
+    })
+    Object.defineProperty(document, 'execCommand', {
+      configurable: true,
+      value: jest.fn().mockReturnValue(false)
+    })
+
+    render(<SharePanel post={post} />)
+    fireEvent.click(screen.getByRole('button', { name: '分享文章' }))
+    fireEvent.click(
+      await screen.findByRole('button', { name: '复制文章链接' })
+    )
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '请长按下方链接复制'
+    )
+    expect(screen.getByRole('textbox', { name: '文章链接' })).toHaveValue(
+      post.canonicalUrl
+    )
+  })
+
   it('suppresses page effects while the share dialog is open', async () => {
     render(<SharePanel post={post} />)
 
     fireEvent.click(
-      screen.getByRole('button', { name: '分享到朋友圈' })
+      screen.getByRole('button', { name: '分享文章' })
     )
 
     expect(
@@ -158,5 +243,25 @@ describe('Shujuan SharePanel', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '暂不分享' }))
     expect(document.body).not.toHaveClass('share-dialog-open')
+  })
+
+  it('keeps keyboard focus inside the modal dialog', async () => {
+    const user = userEvent.setup()
+    render(<SharePanel post={post} />)
+
+    await user.click(
+      screen.getByRole('button', { name: '分享文章' })
+    )
+
+    const dialog = await screen.findByRole('dialog', {
+      name: '分享到朋友圈'
+    })
+    expect(screen.getByRole('button', { name: '关闭分享窗口' })).toHaveFocus()
+
+    await user.tab()
+    await user.tab()
+    await user.tab()
+
+    expect(dialog).toContainElement(document.activeElement)
   })
 })

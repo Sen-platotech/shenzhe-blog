@@ -61,7 +61,7 @@ describe('Shujuan ArticleView', () => {
     render(<ArticleView post={post} siteInfo={{ pageCover: '/bg.jpg' }} />)
 
     expect(
-      screen.getByRole('button', { name: '分享到朋友圈' })
+      screen.getByRole('button', { name: '分享文章' })
     ).toBeInTheDocument()
   })
 })

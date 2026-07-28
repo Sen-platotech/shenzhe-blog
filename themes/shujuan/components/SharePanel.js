@@ -1,5 +1,6 @@
 import QrCode from '@/components/QrCode'
 import { siteConfig } from '@/lib/config'
+import { Dialog } from '@headlessui/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 function shareUrlOf(post) {
@@ -26,8 +27,12 @@ function shareHostOf(url) {
 
 async function copyText(value) {
   if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(value)
-    return
+    try {
+      await navigator.clipboard.writeText(value)
+      return
+    } catch {
+      // 微信 WebView 或权限策略可能暴露 API 却拒绝调用，继续兼容降级。
+    }
   }
 
   const textarea = document.createElement('textarea')
@@ -37,8 +42,12 @@ async function copyText(value) {
   textarea.style.opacity = '0'
   document.body.appendChild(textarea)
   textarea.select()
-  const copied = document.execCommand?.('copy')
-  textarea.remove()
+  let copied = false
+  try {
+    copied = Boolean(document.execCommand?.('copy'))
+  } finally {
+    textarea.remove()
+  }
   if (!copied) {
     throw new Error('Clipboard API is unavailable')
   }
@@ -49,6 +58,7 @@ async function copyText(value) {
  */
 export default function SharePanel({ post }) {
   const [dialogMode, setDialogMode] = useState(null)
+  const [wechatBrowser, setWechatBrowser] = useState(false)
   const [copied, setCopied] = useState(false)
   const [copyFailed, setCopyFailed] = useState(false)
   const triggerRef = useRef(null)
@@ -57,7 +67,11 @@ export default function SharePanel({ post }) {
   const shareHost = shareHostOf(shareUrl)
   const siteTitle = siteConfig('TITLE', '沈哲的博客')
   const previewImage = post?.pageCoverThumbnail || post?.pageCover
-  const showQr = dialogMode === 'fallback' || dialogMode === 'error'
+  const showQr =
+    dialogMode === 'fallback' ||
+    dialogMode === 'error' ||
+    dialogMode === 'cancelled'
+  const shareButtonLabel = wechatBrowser ? '分享到朋友圈' : '分享文章'
 
   const openDialog = mode => {
     setCopied(false)
@@ -73,21 +87,14 @@ export default function SharePanel({ post }) {
   }, [])
 
   useEffect(() => {
-    if (!dialogMode) return
-    closeRef.current?.focus()
-    document.body.classList.add('share-dialog-open')
+    setWechatBrowser(isWechatBrowser())
+  }, [])
 
-    const handleKeyDown = event => {
-      if (event.key === 'Escape') {
-        closeDialog()
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.classList.remove('share-dialog-open')
-    }
-  }, [closeDialog, dialogMode])
+  useEffect(() => {
+    if (!dialogMode) return
+    document.body.classList.add('share-dialog-open')
+    return () => document.body.classList.remove('share-dialog-open')
+  }, [dialogMode])
 
   const handleShare = async () => {
     if (isWechatBrowser()) {
@@ -108,10 +115,8 @@ export default function SharePanel({ post }) {
         url: shareUrl
       })
     } catch (error) {
-      // 用户主动关闭系统分享面板时，不再打扰；真正的调用失败才降级。
-      if (error?.name !== 'AbortError') {
-        openDialog('error')
-      }
+      // AbortError 既可能是用户关闭，也可能是设备没有可用分享目标。
+      openDialog(error?.name === 'AbortError' ? 'cancelled' : 'error')
     }
   }
 
@@ -135,14 +140,16 @@ export default function SharePanel({ post }) {
         <span className='share-panel__eyebrow'>SHARE · 分享</span>
         <h2 className='share-panel__title cjk'>把这篇文章带给更多人</h2>
         <p className='share-panel__note'>
-          支持系统分享；在微信内打开时，将提示使用右上角菜单分享至朋友圈。
+          {wechatBrowser
+            ? '点击后查看右上角菜单分享步骤。'
+            : '优先打开系统分享菜单；若设备不支持，可复制链接或微信扫码。'}
         </p>
       </div>
       <button
         ref={triggerRef}
         className='share-panel__button'
         type='button'
-        aria-label='分享到朋友圈'
+        aria-label={shareButtonLabel}
         onClick={() => void handleShare()}>
         <svg
           aria-hidden='true'
@@ -155,19 +162,17 @@ export default function SharePanel({ post }) {
           <circle cx='18' cy='19' r='2.5' />
           <path d='m8.3 10.9 7.4-4.6M8.3 13.2l7.4 4.5' />
         </svg>
-        <span>分享到朋友圈</span>
+        <span>{shareButtonLabel}</span>
       </button>
-      {dialogMode && (
-        <div
-          className='share-dialog__backdrop'
-          onMouseDown={event => {
-            if (event.target === event.currentTarget) closeDialog()
-          }}>
-          <div
-            className='share-dialog'
-            role='dialog'
-            aria-modal='true'
-            aria-label='分享到朋友圈'>
+      <Dialog
+        open={Boolean(dialogMode)}
+        onClose={closeDialog}
+        initialFocus={closeRef}
+        className='share-dialog__root'
+        aria-label='分享到朋友圈'>
+        <div className='share-dialog__backdrop' aria-hidden='true' />
+        <div className='share-dialog__viewport'>
+          <Dialog.Panel className='share-dialog'>
             <button
               ref={closeRef}
               type='button'
@@ -213,6 +218,11 @@ export default function SharePanel({ post }) {
             {dialogMode === 'error' && (
               <p className='share-dialog__lead'>
                 系统分享未能打开，请复制链接后分享到微信。
+              </p>
+            )}
+            {dialogMode === 'cancelled' && (
+              <p className='share-dialog__lead'>
+                系统分享已关闭，你仍可复制链接或使用二维码。
               </p>
             )}
 
@@ -284,12 +294,25 @@ export default function SharePanel({ post }) {
             <div className='share-dialog__status' aria-live='polite'>
               {copied && <p role='status'>链接已复制</p>}
               {copyFailed && (
-                <p role='alert'>复制失败，请长按浏览器地址栏复制链接。</p>
+                <>
+                  <p role='alert'>
+                    复制失败，请长按下方链接复制；微信内也可使用右上角「复制链接」。
+                  </p>
+                  <input
+                    className='share-dialog__url'
+                    aria-label='文章链接'
+                    inputMode='url'
+                    readOnly
+                    value={shareUrl}
+                    onFocus={event => event.currentTarget.select()}
+                    onClick={event => event.currentTarget.select()}
+                  />
+                </>
               )}
             </div>
-          </div>
+          </Dialog.Panel>
         </div>
-      )}
+      </Dialog>
     </section>
   )
 }
