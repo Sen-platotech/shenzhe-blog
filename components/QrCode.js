@@ -1,39 +1,55 @@
-import { loadExternalResource } from '@/lib/utils'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * 二维码生成
  */
 export default function QrCode({ value }) {
-  const qrCodeCDN =
-    process.env.NEXT_PUBLIC_QR_CODE_CDN ||
-    'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
+  const canvasRef = useRef(null)
+  const [renderFailed, setRenderFailed] = useState(false)
 
   useEffect(() => {
-    let qrcode
-    if (!value) {
-      return
-    }
-    loadExternalResource(qrCodeCDN, 'js').then(url => {
-      const QRCode = window?.QRCode
-      if (typeof QRCode !== 'undefined') {
-        qrcode = new QRCode(document.getElementById('qrcode'), {
-          text: value,
-          width: 256,
-          height: 256,
-          colorDark: '#000000',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.H
-        })
-        //   console.log('二维码', qrcode, value)
-      }
-    })
-    return () => {
-      if (qrcode) {
-        qrcode.clear() // clear the code.
-      }
-    }
-  }, [])
+    let cancelled = false
+    const canvas = canvasRef.current
+    setRenderFailed(false)
+    if (!value || !canvas) return
 
-  return <div id='qrcode'></div>
+    import('qrcode')
+      .then(qrCodeModule => {
+        const toCanvas =
+          qrCodeModule.toCanvas || qrCodeModule.default?.toCanvas
+        if (cancelled || typeof toCanvas !== 'function') return
+        return toCanvas(canvas, value, {
+          errorCorrectionLevel: 'H',
+          width: 256,
+          margin: 1,
+          color: {
+            dark: '#000000',
+            light: '#ffffff'
+          }
+        })
+      })
+      .catch(() => {
+        if (!cancelled) setRenderFailed(true)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [value])
+
+  return (
+    <>
+      <canvas
+        ref={canvasRef}
+        role='img'
+        aria-label='文章二维码'
+        hidden={renderFailed}
+      />
+      {renderFailed && (
+        <span className='qr-code__error' role='status'>
+          二维码暂不可用，请复制文章链接。
+        </span>
+      )}
+    </>
+  )
 }

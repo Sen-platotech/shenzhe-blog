@@ -15,11 +15,17 @@ const SEO = props => {
   const PATH = siteConfig('PATH')
   const LINK = siteConfig('LINK')
   const SUB_PATH = siteConfig('SUB_PATH', '')
-  let url = PATH?.length ? `${LINK}/${SUB_PATH}` : LINK
+  const siteUrl = (PATH?.length ? `${LINK}/${SUB_PATH}` : LINK).replace(
+    /\/$/,
+    ''
+  )
+  let url = siteUrl
   let image
   const router = useRouter()
   const meta = getSEOMeta(props, router, useGlobal()?.locale)
   const webFontUrl = siteConfig('FONT_URL')
+  const isErrorPage = ['/404', '/500'].includes(router.route)
+  let shouldRenderCanonical = !isErrorPage
 
   useEffect(() => {
     // 使用WebFontLoader字体加载
@@ -38,7 +44,7 @@ const SEO = props => {
         })
       }
     })
-  }, [])
+  }, [webFontUrl])
 
   // SEO关键词
   const KEYWORDS = siteConfig('KEYWORDS')
@@ -47,13 +53,23 @@ const SEO = props => {
     keywords = post?.tags?.join(',')
   }
   if (meta) {
-    url = `${url}/${meta.slug}`
-    image = meta.image || '/bg_image.jpg'
+    const currentPath = router.asPath?.split(/[?#]/)[0]
+    const isRouteTemplate = currentPath?.includes('[')
+    const canonicalSource =
+      meta.canonicalUrl ||
+      (!isRouteTemplate ? currentPath || meta.slug : undefined)
+    shouldRenderCanonical =
+      !isErrorPage && canonicalSource !== undefined && canonicalSource !== null
+    url = toAbsoluteUrl(canonicalSource ?? meta.slug ?? '', siteUrl)
+    const imageSource =
+      meta.image && meta.image !== 'undefined' ? meta.image : '/bg_image.jpg'
+    image = toAbsoluteUrl(imageSource, LINK)
   }
   const TITLE = siteConfig('TITLE')
   const title = meta?.title || TITLE
   const description = meta?.description || `${siteInfo?.description}`
-  const type = meta?.type || 'website'
+  const isArticle = meta?.type === 'Post' || meta?.type === 'article'
+  const type = isArticle ? 'article' : meta?.type || 'website'
   const lang = siteConfig('LANG').replace('-', '_') // Facebook OpenGraph 要 zh_CN 這樣的格式才抓得到語言
   const category = meta?.category || KEYWORDS // section 主要是像是 category 這樣的分類，Facebook 用這個來抓連結的分類
   const favicon = siteConfig('BLOG_FAVICON')
@@ -107,7 +123,14 @@ const SEO = props => {
         name='viewport'
         content='width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0'
       />
-      <meta name='robots' content='follow, index, max-snippet:-1, max-image-preview:large, max-video-preview:-1' />
+      <meta
+        name='robots'
+        content={
+          isErrorPage
+            ? 'noindex, nofollow'
+            : 'follow, index, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+        }
+      />
       <meta charSet='UTF-8' />
       <meta name='format-detection' content='telephone=no' />
       <meta name='mobile-web-app-capable' content='yes' />
@@ -130,6 +153,7 @@ const SEO = props => {
       )}
 
       {/* 基础SEO元数据 */}
+      {shouldRenderCanonical && <link rel='canonical' href={url} />}
       <meta name='keywords' content={keywords} />
       <meta name='description' content={description} />
       <meta name='author' content={AUTHOR} />
@@ -145,8 +169,6 @@ const SEO = props => {
       <meta property='og:description' content={description} />
       <meta property='og:url' content={url} />
       <meta property='og:image' content={image} />
-      <meta property='og:image:width' content='1200' />
-      <meta property='og:image:height' content='630' />
       <meta property='og:image:alt' content={title} />
       <meta property='og:site_name' content={siteConfig('TITLE')} />
       <meta property='og:type' content={type} />
@@ -182,7 +204,7 @@ const SEO = props => {
         <meta name='referrer' content='no-referrer-when-downgrade' />
       )}
       {/* 文章特定元数据 */}
-      {meta?.type === 'Post' && (
+      {isArticle && (
         <>
           <meta property='article:published_time' content={meta.publishDay} />
           <meta property='article:modified_time' content={meta.lastEditedDay} />
@@ -246,7 +268,7 @@ const generateStructuredData = (meta, siteInfo, url, image, author) => {
   }
 
   // 如果是文章页面，添加文章结构化数据
-  if (meta?.type === 'Post') {
+  if (meta?.type === 'Post' || meta?.type === 'article') {
     return {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -386,10 +408,22 @@ const getSEOMeta = (props, router, locale) => {
         description: post?.summary,
         type: post?.type,
         slug: post?.slug,
+        canonicalUrl: post?.canonicalUrl,
         image: post?.pageCoverThumbnail || `${siteInfo?.pageCover}`,
         category: Array.isArray(post?.category) ? post.category[0] : post?.category,
         tags: post?.tags
       }
+  }
+}
+
+/**
+ * 社交平台抓取器要求 canonical 与预览图使用绝对地址。
+ */
+const toAbsoluteUrl = (value, baseUrl) => {
+  try {
+    return new URL(value, `${baseUrl.replace(/\/$/, '')}/`).toString()
+  } catch {
+    return value
   }
 }
 
