@@ -120,6 +120,63 @@ function renderTable(text, key) {
   )
 }
 
+function renderGallery(text, key) {
+  const images = text
+    .split('\n')
+    .slice(1, -1)
+    .map(line => line.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/))
+    .filter(Boolean)
+
+  if (images.length === 0) return null
+
+  return (
+    <div key={key} className='mdx-gallery'>
+      {images.map((image, imageIndex) => (
+        <figure key={`${key}-${imageIndex}`}>
+          <LazyImage src={image[2]} alt={image[1] || '文章配图'} />
+          {image[1] && <figcaption>{image[1]}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+function renderEmbed(text, key) {
+  const lines = text.split('\n').slice(1, -1)
+  const attributes = Object.fromEntries(
+    lines
+      .map(line => line.match(/^([a-zA-Z]+):\s*(.+)$/))
+      .filter(Boolean)
+      .map(([, name, value]) => [name, value.trim()])
+  )
+
+  if (!attributes.src?.startsWith('/')) return null
+
+  const title = attributes.title || '内嵌内容'
+  const height = Number.parseInt(attributes.height, 10)
+  const frameHeight = Number.isFinite(height)
+    ? Math.min(Math.max(height, 480), 1800)
+    : 960
+
+  return (
+    <section key={key} className='mdx-embed' aria-label={title}>
+      <div className='mdx-embed__bar'>
+        <span>{title}</span>
+        <a href={attributes.src} target='_blank' rel='noreferrer'>
+          在新窗口打开
+        </a>
+      </div>
+      <iframe
+        src={attributes.src}
+        title={title}
+        height={frameHeight}
+        loading='lazy'
+        sandbox='allow-scripts allow-modals'
+      />
+    </section>
+  )
+}
+
 function createBlockRenderer() {
   const headingCounts = new Map()
 
@@ -142,6 +199,14 @@ function createBlockRenderer() {
           <code data-language={language}>{code}</code>
         </pre>
       )
+    }
+
+    if (/^:::gallery\s*\n[\s\S]+\n:::$/.test(text)) {
+      return renderGallery(text, key)
+    }
+
+    if (/^:::embed\s*\n[\s\S]+\n:::$/.test(text)) {
+      return renderEmbed(text, key)
     }
 
     const alignedRight = text.match(/^:::right\s*\n([\s\S]+)\n:::$/)

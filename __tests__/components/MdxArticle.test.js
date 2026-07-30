@@ -37,4 +37,27 @@ describe('MdxArticle formatting', () => {
 
     expect(container.querySelectorAll('blockquote')).toHaveLength(7)
   })
+
+  it('renders a captioned image gallery and a sandboxed local HTML embed', () => {
+    const source = [
+      ':::gallery',
+      '![第一本书](/images/book-one.jpeg)',
+      '![第二本书](/images/book-two.jpeg)',
+      ':::',
+      '',
+      ':::embed',
+      'src: /embeds/reading-map.html',
+      'title: 全书导图',
+      'height: 1180',
+      ':::'
+    ].join('\n')
+    const { container } = render(<MdxArticle source={source} />)
+    const frame = container.querySelector('.mdx-embed iframe')
+
+    expect(container.querySelectorAll('.mdx-gallery figure')).toHaveLength(2)
+    expect(frame).toHaveAttribute('src', '/embeds/reading-map.html')
+    expect(frame).toHaveAttribute('title', '全书导图')
+    expect(frame).toHaveAttribute('height', '1180')
+    expect(frame).toHaveAttribute('sandbox', 'allow-scripts allow-modals')
+  })
 })

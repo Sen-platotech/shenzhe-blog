@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《计算政治学概论》全书框架导图</title>
+<style>
+  :root{
+    --bg:#faf9f7; --card:#fff; --ink:#1c1917; --ink2:#57534e; --ink3:#8a8580;
+    --line:#e2ddd6;
+    --b1:#1e5f74; --b1bg:#e8f1f4;   /* 板块一 总论 */
+    --b2:#7a4419; --b2bg:#f6ece2;   /* 板块二 政府 */
+    --b3:#2d5a3d; --b3bg:#e9f1eb;   /* 板块三 分领域 */
+    --b4:#5b3a72; --b4bg:#f0eaf4;   /* 板块四 新对象 */
+    --hi:#a8341e; --hibg:#fbeeea;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:"Songti SC","Source Han Serif SC","Noto Serif CJK SC",Georgia,serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 28px 80px}
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:8px}
+  h1{font-size:30px;margin:0 0 8px;letter-spacing:.02em;font-weight:600}
+  .meta{color:var(--ink2);font-size:13.5px}
+  .meta b{color:var(--ink)}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 30px}
+  .toolbar button{font-family:inherit;font-size:13px;padding:7px 15px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink2);border-radius:4px;cursor:pointer;transition:.15s}
+  .toolbar button:hover{border-color:var(--ink3);color:var(--ink)}
+
+  h2.sec{font-size:13px;letter-spacing:.14em;color:var(--ink3);font-weight:600;
+    margin:44px 0 18px;padding-bottom:8px;border-bottom:1px solid var(--line);text-transform:uppercase}
+
+  /* 主线区 */
+  .spine{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--hi);
+    border-radius:5px;padding:22px 26px;margin-bottom:14px}
+  .spine .lead{font-size:16.5px;font-weight:600;line-height:1.85;margin:0 0 16px}
+  .spine .lead em{font-style:normal;background:var(--hibg);color:var(--hi);padding:1px 5px;border-radius:3px}
+  .tri{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+  .tri>div{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:13px 15px}
+  .tri .k{font-size:11.5px;letter-spacing:.1em;color:var(--ink3);margin-bottom:5px}
+  .tri .v{font-size:14px;line-height:1.65}
+  .tri .c{font-size:12px;color:var(--ink3);margin-top:7px}
+
+  .metas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+  .mcard{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:16px 18px}
+  .mcard .n{font-size:11px;letter-spacing:.1em;color:var(--hi);font-weight:600;margin-bottom:7px}
+  .mcard .t{font-size:14.5px;font-weight:600;margin-bottom:6px}
+  .mcard .d{font-size:12.5px;color:var(--ink2);line-height:1.6}
+
+  /* 骨架总览 */
+  .blocks{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:10px}
+  .blk{border-radius:5px;padding:16px 16px 14px;border:1px solid var(--line)}
+  .blk.b1{background:var(--b1bg);border-color:#c5dae1}
+  .blk.b2{background:var(--b2bg);border-color:#e6d2bd}
+  .blk.b3{background:var(--b3bg);border-color:#c9dfd0}
+  .blk.b4{background:var(--b4bg);border-color:#dccce5}
+  .blk .bn{font-size:11px;letter-spacing:.1em;font-weight:600;margin-bottom:4px;opacity:.75}
+  .blk .bt{font-size:15px;font-weight:600;margin-bottom:3px}
+  .blk .bq{font-size:12px;margin-bottom:11px;opacity:.8;line-height:1.55}
+  .blk.b1 .bn,.blk.b1 .bt{color:var(--b1)} .blk.b1 .bq{color:var(--b1)}
+  .blk.b2 .bn,.blk.b2 .bt{color:var(--b2)} .blk.b2 .bq{color:var(--b2)}
+  .blk.b3 .bn,.blk.b3 .bt{color:var(--b3)} .blk.b3 .bq{color:var(--b3)}
+  .blk.b4 .bn,.blk.b4 .bt{color:var(--b4)} .blk.b4 .bq{color:var(--b4)}
+  .blk ol{margin:0;padding-left:0;list-style:none}
+  .blk li{font-size:12.5px;padding:4px 0;border-top:1px solid rgba(0,0,0,.07);line-height:1.5}
+  .blk li:first-child{border-top:none}
+  .blk li b{font-weight:600}
+  .blk li span{color:var(--ink2);display:block;font-size:11.5px;margin-top:1px}
+
+  .mnemo{text-align:center;font-size:15px;letter-spacing:.06em;color:var(--ink2);
+    background:var(--card);border:1px dashed var(--line);border-radius:5px;padding:14px;margin-bottom:10px}
+  .mnemo b{color:var(--hi)}
+
+  /* 章卡 */
+  details.ch{background:var(--card);border:1px solid var(--line);border-radius:5px;margin-bottom:9px;overflow:hidden}
+  details.ch[open]{border-color:var(--ink3)}
+  details.ch>summary{cursor:pointer;padding:14px 18px;display:flex;align-items:baseline;gap:12px;
+    list-style:none;transition:.15s}
+  details.ch>summary::-webkit-details-marker{display:none}
+  details.ch>summary:hover{background:var(--bg)}
+  .chno{flex:0 0 auto;font-size:11px;font-weight:600;letter-spacing:.06em;padding:3px 8px;border-radius:3px;
+    font-family:ui-monospace,Menlo,monospace}
+  .ch.p1 .chno{background:var(--b1bg);color:var(--b1)}
+  .ch.p2 .chno{background:var(--b2bg);color:var(--b2)}
+  .ch.p3 .chno{background:var(--b3bg);color:var(--b3)}
+  .ch.p4 .chno{background:var(--b4bg);color:var(--b4)}
+  .chttl{flex:0 0 auto;font-size:15.5px;font-weight:600}
+  .chpg{flex:0 0 auto;font-size:11.5px;color:var(--ink3);font-family:ui-monospace,Menlo,monospace}
+  .chthesis{flex:1 1 auto;font-size:12.5px;color:var(--ink2);text-align:right;line-height:1.5}
+  @media(max-width:900px){.chthesis{display:none}}
+
+  .chbody{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .thesis{background:var(--hibg);border-left:3px solid var(--hi);border-radius:0 4px 4px 0;
+    padding:11px 14px;margin:14px 0 16px;font-size:13.5px;line-height:1.75}
+  .thesis b{color:var(--hi)}
+  .nodes{display:flex;flex-direction:column;gap:0}
+  .node{display:grid;grid-template-columns:190px 1fr;gap:16px;padding:11px 0;border-top:1px solid var(--line)}
+  .node:first-child{border-top:none}
+  .nname{font-size:13.5px;font-weight:600;line-height:1.55}
+  .nname .pg{display:block;font-size:11px;color:var(--ink3);font-weight:400;
+    font-family:ui-monospace,Menlo,monospace;margin-top:2px}
+  .nbody{font-size:13px;color:var(--ink2);line-height:1.75}
+  .nbody b{color:var(--ink);font-weight:600}
+  .nbody .must{background:var(--hibg);color:var(--hi);font-size:10.5px;font-weight:600;
+    padding:1px 5px;border-radius:3px;margin-right:5px;letter-spacing:.04em;white-space:nowrap}
+  @media(max-width:700px){.node{grid-template-columns:1fr;gap:4px}}
+
+  /* 索引表 */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
+    border-radius:5px;overflow:hidden;font-size:13px}
+  th{background:var(--bg);text-align:left;padding:10px 14px;font-size:11.5px;letter-spacing:.08em;
+    color:var(--ink3);font-weight:600;border-bottom:1px solid var(--line)}
+  td{padding:9px 14px;border-top:1px solid var(--line);line-height:1.6;vertical-align:top}
+  td:first-child{font-weight:600;white-space:nowrap}
+  td:nth-child(2){color:var(--ink3);white-space:nowrap;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+  td:last-child{color:var(--ink2)}
+
+  /* 套路 */
+  .patterns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .pat{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:15px 17px}
+  .pat .pt{font-size:14px;font-weight:600;margin-bottom:7px}
+  .pat .pd{font-size:12.5px;color:var(--ink2);line-height:1.65}
+  .pat .pw{font-size:11.5px;color:var(--ink3);margin-top:8px;font-style:italic}
+
+  footer{margin-top:50px;padding-top:16px;border-top:1px solid var(--line);
+    font-size:11.5px;color:var(--ink3);line-height:1.7}
+
+  @media(max-width:820px){
+    .blocks,.tri,.metas,.patterns{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:#fff} .toolbar{display:none}
+    details.ch{break-inside:avoid;border-color:#ccc}
+    details.ch>summary{padding:8px 12px}
+    .chbody{padding:2px 12px 12px}
+    .wrap{max-width:100%;padding:0}
+    h1{font-size:22px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>《计算政治学概论》全书框架导图</h1>
+  <div class="meta"><b>孟天广 主编</b> · 中国人民大学出版社 · 新编21世纪政治学系列教材 &nbsp;|&nbsp; 全书 16 章 · 正文 305 页 &nbsp;|&nbsp; 括号内为书页页码（PDF 页码 = 书页 + 20）</div>
+</header>
+
+<div class="toolbar">
+  <button onclick="document.querySelectorAll('details.ch').forEach(d=>d.open=true)">展开全部章节</button>
+  <button onclick="document.querySelectorAll('details.ch').forEach(d=>d.open=false)">收起全部</button>
+  <button onclick="window.print()">打印 / 存为 PDF</button>
+</div>
+
+<!-- ============ 全书主线 ============ -->
+<h2 class="sec">全书主线</h2>
+
+<div class="spine">
+  <p class="lead">第四次工业革命驱动<em>国家治理数字化转型</em>，政治学必须在本体论、认识论、方法论三个层面回应；回应的方式就是<em>计算政治学</em>——而技术影响国家治理的总机制，是<em>技术赋能国家 + 技术赋权社会</em>的双重机制。</p>
+  <div class="tri">
+    <div><div class="k">本体论</div><div class="v">国家治理数字化转型的<b>过程、规律、模式</b></div><div class="c">第 1、2 章</div></div>
+    <div><div class="k">认识论</div><div class="v">科技革新影响政治过程 / 结构 / 行为的<b>新要素、新机制、新效应</b></div><div class="c">第 2 章 + 第 5–16 章</div></div>
+    <div><div class="k">方法论</div><div class="v">统计学、大数据、大模型等<b>方法范式</b></div><div class="c">第 3、4 章</div></div>
+  </div>
+</div>
+
+<div class="metas">
+  <div class="mcard"><div class="n">元框架 01</div><div class="t">双重机制</div><div class="d">技术<b>赋能</b>（国家）× 技术<b>赋权</b>（社会）。解释一切数字治理现象的基本工具，全书出现频率最高。</div></div>
+  <div class="mcard"><div class="n">元框架 02</div><div class="t">三重方法范式</div><div class="d">定量研究范式（<b>理论驱动</b>）→ 大数据范式（<b>数据驱动</b>）→ 大模型范式（<b>算法驱动</b>）。</div></div>
+  <div class="mcard"><div class="n">元框架 03</div><div class="t">数字治理生态</div><div class="d">数字政府（引领主导）+ 数字经济（基础驱动）+ 数字社会（协同）三子系统 ×（<b>行动者</b> + <b>资源</b>）两要素体系。</div></div>
+</div>
+
+<!-- ============ 四板块骨架 ============ -->
+<h2 class="sec">全书骨架 · 四板块</h2>
+
+<div class="blocks">
+  <div class="blk b1">
+    <div class="bn">板块一 · 第 1–4 章</div>
+    <div class="bt">学科总论</div>
+    <div class="bq">回答"计算政治学是什么"</div>
+    <ol>
+      <li><b>1 起源与发展</b><span>两个计算传统的融合</span></li>
+      <li><b>2 理论体系</b><span>数字化转型 + 治理生态</span></li>
+      <li><b>3 技术基础</b><span>数据/算法/算力/AI</span></li>
+      <li><b>4 方法范式</b><span>从定量到计算 · 因果推断</span></li>
+    </ol>
+  </div>
+  <div class="blk b2">
+    <div class="bn">板块二 · 第 5–7 章</div>
+    <div class="bt">国家自身的数字化</div>
+    <div class="bq">治理主体自身怎么变</div>
+    <ol>
+      <li><b>5 数字政府：结构视角</b><span>三视角 + OPCE 框架</span></li>
+      <li><b>6 数字政府：组织视角</b><span>数字官僚制</span></li>
+      <li><b>7 数字纪检监察</b><span>权力监督数字化</span></li>
+    </ol>
+  </div>
+  <div class="blk b3">
+    <div class="bn">板块三 · 第 8–12 章</div>
+    <div class="bt">分领域治理</div>
+    <div class="bq">国家—社会 / 市场关系怎么变</div>
+    <ol>
+      <li><b>8 数字社会治理</b><span>五要素 + 三层闭环</span></li>
+      <li><b>9 数字经济治理</b><span>发展视角 / 监管视角</span></li>
+      <li><b>10 数字政治参与</b><span>线上线下融合</span></li>
+      <li><b>11 数字城市治理</b><span>物感 + 人感 · 政务热线</span></li>
+      <li><b>12 数字传播治理</b><span>风险治理 + 数字赋能传播</span></li>
+    </ol>
+  </div>
+  <div class="blk b4">
+    <div class="bn">板块四 · 第 13–16 章</div>
+    <div class="bt">新型治理对象</div>
+    <div class="bq">治理对象本身是技术物</div>
+    <ol>
+      <li><b>13 数据要素治理</b><span>"数据二十条"四议题</span></li>
+      <li><b>14 算法政治与治理</b><span>算法治理 ↔ 治理算法</span></li>
+      <li><b>15 人工智能治理</b><span>技术/组织/制度 + 伦理</span></li>
+      <li><b>16 全球数字治理</b><span>确权/跨境/税收</span></li>
+    </ol>
+  </div>
+</div>
+
+<div class="mnemo">记忆口诀：<b>总论 → 政府自身 → 分领域 → 新对象 → 全球</b> ＝ 由内而外、由抽象到具体、由国内到国际</div>
+
+<!-- ============ 逐章 ============ -->
+<h2 class="sec">逐章框架 · 点击展开</h2>
+
+<!-- 1 -->
+<details class="ch p1">
+  <summary><span class="chno">CH 01</span><span class="chttl">计算政治学的起源与发展</span><span class="chpg">001–020</span><span class="chthesis">两个计算传统在数智时代的相遇与融合</span></summary>
+  <div class="chbody">
+    <div class="thesis">计算政治学不是外来嫁接，而是政治学<b>自身两个传统在数智时代的相遇与融合</b>——古老的"国家计算传统"与新兴的"计算社会科学"。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、数智时代的政治学研究范式革命<span class="pg">001</span></div><div class="nbody">数字智能革命 = 一场全球<b>治理革命</b>；"科技革命"与"治理革命"相碰撞，构成理论范式创新的时代机遇；学界普遍认同变革但<b>尚未形成系统化理论范式</b>。</div></div>
+      <div class="node"><div class="nname">二、政治学的计算传统<span class="pg">002</span></div><div class="nbody"><b>早期国家</b>："数目字管理"；登人制度、《周礼》土均之法、编户齐民、度田、古罗马 census；<b>statistics</b> 词源 = "国家事务管理者"；柏拉图《理想国》、亚里士多德比较 100 多个城邦。<br><b>现代国家</b>：普设统计局；韦伯（信息传递体系是官僚制应有之义）、布兰博尔（1800 年以来三指标测信息能力）、福柯（<b>全景监控</b>）、斯科特（<b>可读性 legibility</b>）。<br><b>两传统融合</b>：海沃德"政治统计学"（1970s）→ 恩纳尔斯"计算政治"（1987）→ Lazer《计算社会科学》（2009）。</div></div>
+      <div class="node"><div class="nname">三、计算政治学的理论范式发展<span class="pg">005</span></div><div class="nbody">国家治理数字化转型的<b>三重内涵</b>：面向数据的治理 / 数据作为新要素 / 信息作为新机制；动力机制 = <b>赋能与赋权的对比</b>。</div></div>
+      <div class="node"><div class="nname">四、计算政治学的方法范式迭代<span class="pg">008</span></div><div class="nbody"><span class="must">必背</span><b>三范式</b>：定量研究范式（理论驱动）→ 大数据范式（数据驱动）→ 大模型范式（算法驱动）。</div></div>
+      <div class="node"><div class="nname">五、计算政治学视角下的中国政治研究进展<span class="pg">011</span></div><div class="nbody"><span class="must">必背</span><b>表 1-1 的 2×2</b>：理论路径（技术赋能 / 技术赋权）× 研究范畴（过程 / 结果）→ 四类议题：<b>数字国家构建</b>（数字政府、智慧城市）、<b>数字政治行为</b>（社交媒体参与、政民互动与政府回应性）、<b>数字国家运行</b>（算法政治、公共数据治理）、<b>数字政治价值观</b>（数字政治传播、数字价值观）。</div></div>
+      <div class="node"><div class="nname">六、总结与展望<span class="pg">016</span></div><div class="nbody">未来四方向：<b>学科体系构建 / 理论范式构建 / 方法范式迭代 / 科研基础设施建设</b>；三维定位见"全书主线"。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 2 -->
+<details class="ch p1">
+  <summary><span class="chno">CH 02</span><span class="chttl">计算政治学的理论体系</span><span class="chpg">021–043</span><span class="chthesis">从数字化转型落到"数字治理生态"新范式</span></summary>
+  <div class="chbody">
+    <div class="thesis">以"<b>国家治理数字化转型</b>"为本体论对象，最终落脚于<b>数字治理生态</b>——元治理层面的新理论范式。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、国家治理数字化转型<span class="pg">021</span></div><div class="nbody">数字化不是单领域变革而是<b>系统性重构</b>。<span class="must">必背</span>四范畴（图 2-1）：<b>国家组织形态数字化 / 国家社会关系数字化 / 国家生产关系数字化 / 治理对象数字化</b>。</div></div>
+      <div class="node"><div class="nname">二、数字治理的理论范式<span class="pg">025</span></div><div class="nbody"><b>理论迭代六阶段</b>：技术治理 → 数据治理 → 平台治理 → 多元治理 → 虚拟治理 → <b>治理生态</b>。<br><b>新探索四概念</b>：新要素 / 新机制 / 技术赋权 / 技术赋能。</div></div>
+      <div class="node"><div class="nname">三、数字时代国家治理的信息过程<span class="pg">033</span></div><div class="nbody">三个关键问题：<b>国家内部信息过程</b>（信息不对称、碎片化、控制问责）/ <b>国家—社会间信息过程</b>（信息汲取、开放、沟通）/ <b>国家信息能力</b>（汲取 + 处理为生产机制）。对应治理的<b>"三明治结构"</b>（孟天广、郑思尧《国家治理的信息理论》）。</div></div>
+      <div class="node"><div class="nname">四、数字治理生态<span class="pg">037</span></div><div class="nbody">数字治理生态 = 数字时代国家治理现代化的<b>新范式</b>；<b>行动者—资源视角</b>；三子系统分工：数字政府<b>引领主导</b> / 数字经济<b>基础驱动</b> / 数字社会<b>协同</b>。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">040</span></div><div class="nbody">须以<b>生态化思维</b>推进数字化改革；我国<b>党政体制 + 国家—社会关系 + 产业政策</b>构成生态形成的制度环境。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 3 -->
+<details class="ch p1">
+  <summary><span class="chno">CH 03</span><span class="chttl">计算政治学的技术基础</span><span class="chpg">044–065</span><span class="chthesis">数据 / 算法 / 算力 / AI 的三段式解剖</span></summary>
+  <div class="chbody">
+    <div class="thesis">四项技术共同构成计算政治学的技术底座；每项都按"<b>发展脉络 → 概念内涵 → 与计算政治学的关系</b>"三段式展开——本章结构最整齐，最好背。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、数据<span class="pg">044</span></div><div class="nbody">数据是计算政治学的<b>根本 / 素材</b>；<b>多维性与实时性</b>使深入分析与预测成为可能，同时带来隐私保护与数据伦理挑战。</div></div>
+      <div class="node"><div class="nname">二、算法<span class="pg">048</span></div><div class="nbody">从简单排序到机器学习；算法提供<b>分析工具</b>，提高精确性与可靠性，开辟新研究领域。</div></div>
+      <div class="node"><div class="nname">三、算力<span class="pg">053</span></div><div class="nbody">从个人计算到量子计算；算力是<b>技术支撑</b>，决定能处理多大数据集、构建多复杂模型。</div></div>
+      <div class="node"><div class="nname">四、人工智能<span class="pg">057</span></div><div class="nbody">机器学习与深度学习带来<b>革命性变化</b>：信息提取、预测准确性、决策优化、复杂政治场景模拟。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">062</span></div><div class="nbody"><span class="must">必背</span>四挑战对应四技术：<b>数据隐私 / 算法偏见 / 算力不平等 / AI 伦理</b>；须在技术创新与伦理规范间求平衡。<br>思考题：数据—算法—算力的关系？"<b>代码即法律</b>"？AI 是否引发政治学范式变迁？</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 4 -->
+<details class="ch p1">
+  <summary><span class="chno">CH 04</span><span class="chttl">计算政治学的方法范式</span><span class="chpg">066–082</span><span class="chthesis">计算方法能做因果推断——四条路径</span></summary>
+  <div class="chbody">
+    <div class="thesis">计算方法不只是工具而是<b>范式</b>；而且计算方法<b>能够</b>（而非只能做相关性）推进因果推断——这是本章的核心辩护。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、从定量到计算：计算研究范式的缘起与发展<span class="pg">066</span></div><div class="nbody">库恩范式演进逻辑。方法史：宏大理论叙事（规范）→ 比较历史分析（定性）→ 行为主义革命（定量）→ 计算社会科学（大数据）。以 <b>Lazer 等 2009</b>《计算社会科学》为分界，之前为"史前史"。</div></div>
+      <div class="node"><div class="nname">二、作为范式的计算方法<span class="pg">069</span></div><div class="nbody">引 King 等《社会科学中的研究设计》<b>四项科学研究要求</b>：以推论为目的 / 研究程序公开 / 结论不确定 / 要核是研究方法。</div></div>
+      <div class="node"><div class="nname">三、计算方法范式的创新<span class="pg">071</span></div><div class="nbody"><b>三重重构</b>：知识论基础（小数据 → 全样本高维非结构化）、方法论逻辑（线性回归 → 机器学习 / 复杂网络 / 文本挖掘）、学科生态（理论驱动 → 数据驱动；定性定量边界模糊）。</div></div>
+      <div class="node"><div class="nname">四、计算方法范式推动因果推断的方法路径<span class="pg">073</span></div><div class="nbody"><span class="must">必背</span><b>四条路径</b>：大数据计算方法 + ① 统计方法 ② 大数据分析（小数据分析）③ 实验研究 ④ 模拟方法。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">077</span></div><div class="nbody"><span class="must">必背</span><b>四类局限</b>：① 数据代表性与质量（"全量数据"实为有偏数据；未上网群体不可观测；伪信息）② 方法层面（机器学习信度效度；只测外显行为，测不到价值观与心理）③ 可行性（数据开放度低；软硬件要求高）④ 学术伦理（隐私；大规模社会实验）。<br>补充：<b>大模型范式 = 算法驱动范式</b>（数字硅基样本、非线性关系、预测能力）。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 5 -->
+<details class="ch p2">
+  <summary><span class="chno">CH 05</span><span class="chttl">数字政府构建：结构视角</span><span class="chpg">083–106</span><span class="chthesis">三视角层层递进，落到本书首创的 OPCE</span></summary>
+  <div class="chbody">
+    <div class="thesis">数字政府是政府数字化转型的<b>治理模式</b>；转型过程在国家—社会关系中经由<b>技术赋权与技术赋能双重机制</b>推进。三个理论视角层层递进，最后落到中国本土的 OPCE 评估框架。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、理解数字政府：理论迭代与模型演化<span class="pg">083</span></div><div class="nbody">数字时代治理转型及其调整 → 政府数字化转型的时代机遇 → 数字政府建设；确立"<b>数字政府 = 治理模式</b>"的定位。</div></div>
+      <div class="node"><div class="nname">二、行政学视角："数字政府即平台"<span class="pg">087</span></div><div class="nbody"><b>平台政府理论</b>（Government as a Platform）。</div></div>
+      <div class="node"><div class="nname">三、政治经济视角：数字统合主义<span class="pg">088</span></div><div class="nbody">由<b>需求侧 + 供给侧 + 供需之间的政企关系</b>解释数字政府建设驱动力；提出<b>国家数字统合主义</b>框架。</div></div>
+      <div class="node"><div class="nname">四、元治理视角：数字治理生态理论<span class="pg">092</span></div><div class="nbody">结构：行动者—资源视角。<span class="must">必背</span><b>四特征</b>：包容性 / 协同性 / 智慧性 / 可持续性。<span class="must">必背</span><b>六类行动者</b>：党（政府）、科技企业、科技社群、社会组织（专业机构）、媒体（自媒体）、社会大众（消费者）。<b>新生资源</b>：数据、算法、算力、智能化解决方案。</div></div>
+      <div class="node"><div class="nname">五、我国数字政府构建的评估框架：OPCE 评估框架<span class="pg">099</span></div><div class="nbody"><span class="must">本书首创</span><b>O</b>rganization 组织 / <b>P</b>olicy 政策 / <b>C</b>apacity 能力 / <b>E</b>ffectiveness 效果。<br><b>双重逻辑</b>：①"技术—组织—政策"维度（微观外显 → 宏观社会建构）②"技术—功能—效果"维度（回到价值原点）。前三维 = 政府<b>供给侧</b>，第四维 = 社会<b>需求侧</b>反馈。对话 TOE、DOI 模型与联合国电子政务指标体系。</div></div>
+      <div class="node"><div class="nname">六、总结与展望<span class="pg">103</span></div><div class="nbody">数字政府成为全球浪潮的<b>三原因</b>：技术不分国界 / 政策效果显现周期短 / 治理成果覆盖面广。<br><b>三项要求</b>：建设数字生态伙伴关系 / 汇聚新生治理资源体系 / 以包容性与协同性为治理结构。目标：以人民为中心，弥合<b>数字鸿沟</b>。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 6 -->
+<details class="ch p2">
+  <summary><span class="chno">CH 06</span><span class="chttl">数字政府治理：组织视角</span><span class="chpg">107–122</span><span class="chthesis">数字技术与官僚制天然契合 → 数字官僚制</span></summary>
+  <div class="chbody">
+    <div class="thesis">数字技术本质上是"对以信息与控制为基础的理性的极致追求"，与官僚制的<b>程序理性、去人格化天然契合</b>——这解释了迟缓的官僚制为何能接受数字革命。核心概念是<b>数字官僚制</b>。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、政府组织的数字化转型<span class="pg">107</span></div><div class="nbody">理论基础：<b>韦伯官僚制理论</b>；世界各国用数字技术改革政府的实践。</div></div>
+      <div class="node"><div class="nname">二、我国数字政府的支撑组织与机制<span class="pg">109</span></div><div class="nbody"><span class="must">必背</span><b>三项制度创新</b>：行政机构改革与<b>政数局</b>成立 / "<b>互联网+政务</b>"战略下的政务服务平台建设 / <b>首席数据官</b>等体制机制创新。</div></div>
+      <div class="node"><div class="nname">三、数字时代我国政府组织的效能变革<span class="pg">114</span></div><div class="nbody">两组对比：<b>单部门应用 vs 跨部门应用</b>；<b>条中应用 vs 块中应用</b>（条块视角）。</div></div>
+      <div class="node"><div class="nname">四、数字时代的官僚制形态及其反思<span class="pg">117</span></div><div class="nbody"><b>数字官僚制（digital bureaucracy）</b>：代码、算法、大数据与官僚组织日常运行相融合；<b>维持</b>韦伯核心原则（效率、专业化与程序中立、决策理性）；既关注<b>组织层面</b>也关注<b>官僚个体层面</b>（自由裁量、专业化程度、数字素养）。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">120</span></div><div class="nbody">我国已迈过内部业务信息化的基础阶段，进入<b>组织与机制创新</b>阶段；数字官僚制客观形成。<br><b>两个待探索问题</b>：数字技术在组织运行中的<b>效度与限度</b>；中国国情下政府官员如何看待并使用数字技术（谁接纳、谁抵制、为什么）。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 7 -->
+<details class="ch p2">
+  <summary><span class="chno">CH 07</span><span class="chttl">数字纪检监察</span><span class="chpg">123–139</span><span class="chthesis">数据驱动权力监督的"中国式新范式"</span></summary>
+  <div class="chbody">
+    <div class="thesis">围绕大数据的权力监督实践正在形成<b>数据驱动权力监督的"中国式新范式"</b>，但概念提炼与理论归纳都还不足——极具中国特色、且<b>研究空白最大</b>的一章。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、数字纪检监察的概念与类型<span class="pg">123</span></div><div class="nbody">学界称法不一：基于大数据的廉政监督 / 数字驱动的权力监督 / 智慧纪检监察 / 纪检监察信息化 → 本书统一为<b>数字纪检监察</b>（有狭义、广义两解）。<br><b>四种类型划分标准</b>：权力监督内在逻辑 / 技术与制度的关系 / 大数据权力监督运行模式 / 技术发展阶段与功能。</div></div>
+      <div class="node"><div class="nname">二、数字纪检监察的发展沿革和特点<span class="pg">128</span></div><div class="nbody">沿革分<b>三阶段</b>（依重要政策文件与实践划分）；特点包括<b>价值遵循：坚持以人民为中心</b>。</div></div>
+      <div class="node"><div class="nname">三、数字纪检监察的实践探索<span class="pg">131</span></div><div class="nbody">按使用主体分：面向纪检监察部门的<b>业务型</b>应用、面向基层民众的<b>事务型</b>应用。<br><b>三项效果</b>：提高纪委监委监督质效 / 响应社会治理需求 / 拓宽民众反腐败参与渠道。<b>三项反思</b>：配套监督制度机制未完善 / 数据要素价值潜能待释放 / 民众参与需持续推动。</div></div>
+      <div class="node"><div class="nname">四、数字纪检监察建设的意义<span class="pg">135</span></div><div class="nbody"><span class="must">必背</span><b>三个"服务于"</b>：服务于<b>国家治理</b> / 服务于应对<b>新型腐败、隐性腐败</b> / 服务于<b>自我革命与社会革命的有机结合</b>。<br>技术逻辑：基础在<b>数据质量</b>，关键在<b>融合贯通连接</b>，目标在以<b>算法</b>提供分析判断决策依据。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">136</span></div><div class="nbody"><b>三方向</b>：推动公民参与和有效互动（从"修饰性"提供信息到"实质性"参与，体现<b>工具理性与价值理性双重面向</b>）/ 提升公民<b>数字素养</b> / <b>应用场景深度开发</b>（执纪监督与审查调查两大核心业务；民生监督、小微权力监督为可研究领域）。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 8 -->
+<details class="ch p3">
+  <summary><span class="chno">CH 08</span><span class="chttl">数字社会治理</span><span class="chpg">140–159</span><span class="chthesis">五要素 → 三层闭环 → 浙沪穗三案例</span></summary>
+  <div class="chbody">
+    <div class="thesis">社会治理正经历从<b>层级管理走向多元协同</b>的范式转换；本章最重要的是一个"<b>要素—体系—场景</b>"的完整闭环结构。注意辨析<b>"数字社会"治理 vs "数字"社会治理</b>。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、数字社会治理的理论继承与创新<span class="pg">140</span></div><div class="nbody">治理 = 政府与公民对公共生活的共同、合作管理；政府从<b>垄断行动者 → 平行参与者</b>。<br><span class="must">必辨</span><b>"数字社会"治理</b>（治理<b>对象</b>是数字社会）vs <b>"数字"社会治理</b>（治理<b>手段</b>是数字的）。</div></div>
+      <div class="node"><div class="nname">二、数字社会治理的系统要素<span class="pg">146</span></div><div class="nbody"><span class="must">必背</span><b>五要素</b>：<b>数据 / 信息 / 协作 / 平台 / 安全</b>；数字技术由此发挥网络化、智能化、系统化作用。</div></div>
+      <div class="node"><div class="nname">三、数字社会治理的体系构成<span class="pg">149</span></div><div class="nbody"><span class="must">必背</span><b>三层闭环</b>（图 8-1）：① 社会治理<b>民情汇聚与偏好感知</b> → ② 社会治理<b>风险动态评估与预测</b> → ③ 基于知识库的<b>诊断式政府回应</b>。<br>特征：法治化、溯源性、社会性；主动性、互动性、预防性。</div></div>
+      <div class="node"><div class="nname">四、数字社会治理的典型场景<span class="pg">152</span></div><div class="nbody"><b>浙江</b>"最多跑一次"改革与技术体系 / <b>上海</b>"一网统管"改革 / <b>广州</b>以政务信息化带动治理智能化。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">156</span></div><div class="nbody"><b>社会维度四议题</b>：数字赋权与公民参与（数字鸿沟、"信息茧房"、"<b>数字公民能力</b>"）/ <b>数字社会资本</b> / 数字社会中的<b>集体行动逻辑</b> / 数字治理中的<b>社会创新</b>。<br><b>制度维度</b>：制度是规范行为、塑造激励与约束的基本框架。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 9 -->
+<details class="ch p3">
+  <summary><span class="chno">CH 09</span><span class="chttl">数字经济治理</span><span class="chpg">160–181</span><span class="chthesis">发展视角（国家三角色）/ 监管视角（平台垄断）</span></summary>
+  <div class="chbody">
+    <div class="thesis">数字经济治理有两个并行视角——<b>发展视角</b>（如何促进产业创新）与<b>监管视角</b>（如何治理平台垄断）；关键洞见是：传统"国家—市场关系"类型只能解决<b>技术不确定性</b>，无法应对数字产业的<b>目标不确定性</b>。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、数字经济的起源、发展与治理<span class="pg">160</span></div><div class="nbody">数字经济的起源与发展；数字经济治理实践。</div></div>
+      <div class="node"><div class="nname">二、数字经济治理的两种视角：发展视角与监管视角<span class="pg">164</span></div><div class="nbody"><b>发展视角</b>：把握数字产业创新过程中的机遇与挑战。<b>监管视角</b>：理解数字经济新生态带来的监管难题。</div></div>
+      <div class="node"><div class="nname">三、数字经济治理的发展视角：数字产业创新中的国家<span class="pg">170</span></div><div class="nbody"><span class="must">必背</span><b>国家三角色</b>：知识创造与技术发明阶段 → 国家作为<b>规划者</b>；产品化和商业化阶段 → 国家作为<b>需求者</b>；产业结构调适阶段 → 国家作为<b>产业投资者</b>。<br>（对话经典类型：国家作为市场的维护者 / 补充者 / 参与者。）</div></div>
+      <div class="node"><div class="nname">四、数字经济治理的监管视角：平台垄断的治理<span class="pg">174</span></div><div class="nbody">平台垄断的表现与特征；国外治理实践<b>三条路径</b>：反垄断<b>监管</b> / 反垄断<b>诉讼</b> / 反垄断<b>立法</b>；反平台垄断的治理逻辑。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">179</span></div><div class="nbody"><b>双重不确定性</b> = 技术路径 + 产业发展目标；国家需围绕治理目标<b>形塑容纳数字产业发展的未来市场</b>；平台成为维护市场秩序的支柱但有局限，故需<b>生态治理体系</b>（多主体、多资源、多关系）。<br><b>三项研究空白</b>：研究对象（数字产业本身；中国何以孕育巨型平台经济）/ 理论框架（数字经济的政治学理论不充分）/ 研究方法（缺国家政治制度—组织机构—社会经济禀赋的比较研究）。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 10 -->
+<details class="ch p3">
+  <summary><span class="chno">CH 10</span><span class="chttl">数字政治参与</span><span class="chpg">182–201</span><span class="chthesis">概念外延扩大 · 线上线下融合一体化</span></summary>
+  <div class="chbody">
+    <div class="thesis">数字政治参与是政治参与<b>概念外延持续扩大</b>趋势下的产物；它的"独立"不等于与传统政治参与研究"分道扬镳"，反而是<b>线上—线下参政空间融合一体化</b>。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、理解数字政治参与<span class="pg">182</span></div><div class="nbody">政治参与概念演进：早期定义要求"有意识地影响政府的主动性行为"→ 外延不断扩大；数字时代的政治参与；<b>数字民主的全球实践</b>。</div></div>
+      <div class="node"><div class="nname">二、技术革新与数字政治参与<span class="pg">187</span></div><div class="nbody"><span class="must">必背</span><b>三阶段</b>：① 早期互联网 → 改变公共信息获取、提升政治知识 → 促进<b>线下</b>参与；② 数字媒体兴起 → 参与<b>从线下转向线上</b>，网络社会运动；③ 大数据与 AI → <b>去中心化、人工智能化</b>。结果：超越空间界限，"线上—线下"融合一体化。</div></div>
+      <div class="node"><div class="nname">三、数字政治参与的类型<span class="pg">191</span></div><div class="nbody"><b>新形式</b>：在线表达性参与 / <b>"去政治的"政治参与</b>（技术的广域性、强连接性、即时性模糊了政治与生活场域界限）。<br><b>类型学两维度</b>：集体介入 vs 个体介入；制度化 vs 非制度化。</div></div>
+      <div class="node"><div class="nname">四、继承与发展：解释数字政治参与的理论框架<span class="pg">195</span></div><div class="nbody">延续线下参与解释框架：<b>微观（个体）因素 + 宏观结构因素</b>，并将<b>技术</b>作为塑造参与的基本元素纳入；再度带入技术赋能 / 赋权、国家—社会关系理论。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">198</span></div><div class="nbody"><b>三方向</b>：AI 对参与模式与效果的影响（算法"<b>信息茧房</b>"如何影响舆论形成、如何缓解）/ <b>全球视角与跨国比较</b>（尤其非西方社会与发展中国家）/ <b>伦理问题</b>（隐私保护、算法透明性、数据安全）。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 11 -->
+<details class="ch p3">
+  <summary><span class="chno">CH 11</span><span class="chttl">数字城市治理</span><span class="chpg">202–219</span><span class="chthesis">物感 + 人感城市 · 政务热线四层递进</span></summary>
+  <div class="chbody">
+    <div class="thesis">数字技术从<b>理念、空间、方式</b>三方面重塑城市治理；最有特色的是提出<b>"物感城市"+"人感城市"</b>新进路，以及把<b>政务热线</b>作为代表性场域深入解剖。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、现代数字城市的兴起与城市治理<span class="pg">202</span></div><div class="nbody"><b>三重重塑</b>：数字技术与城市治理<b>理念</b>转变 / <b>空间</b>拓展 / <b>方式</b>演进。</div></div>
+      <div class="node"><div class="nname">二、数字城市治理的理论演进<span class="pg">205</span></div><div class="nbody"><b>西方经典范式</b>：城市精英主义 vs 城市多元主义之争 → 城市增长机器理论、城市政体理论、城市治理理论。<br><b>中国特色城市政治学</b>理论及其主要内容。<br><span class="must">必背</span><b>新进路</b>："<b>物感城市</b>"（物联感知）+"<b>人感城市</b>"（人的感受与参与）。</div></div>
+      <div class="node"><div class="nname">三、数字城市治理的应用场景<span class="pg">210</span></div><div class="nbody">公共服务 / <b>社区治理</b> / <b>安全应急</b>。</div></div>
+      <div class="node"><div class="nname">四、以政务热线为代表的数字城市治理<span class="pg">212</span></div><div class="nbody"><span class="must">重点</span>孟天广团队核心实证场域。<b>四层递进</b>：政务热线的发展兴起 → <b>数据驱动特征</b> → 数据驱动的<b>治理工具创新</b> → <b>治理能力提升</b> → <b>治理模式创新</b>。<br>问题背景：超大城市场景复杂、服务低效、沟通不畅；政府规模相对小，获取民情民意与回应诉求有障碍；热线互动便捷、覆盖广、时效强。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">217</span></div><div class="nbody">城市风险来自自然灾害、社会安全、经济波动、公共卫生等多领域 → 须构建<b>综合数智化风险防控体系</b>，提升城市<b>韧性</b>。<br>技术层面：数据全链条整合与深度分析、智能化决策支持系统。社会层面：市民数字素养与参与能力，向开放透明民主转型。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 12 -->
+<details class="ch p3">
+  <summary><span class="chno">CH 12</span><span class="chttl">数字传播治理</span><span class="chpg">220–236</span><span class="chthesis">治理传播风险 + 用数字技术做传播治理</span></summary>
+  <div class="chbody">
+    <div class="thesis">数字传播治理有两条腿——<b>治理数字传播的风险</b>（舆论、谣言）与<b>用数字技术做传播治理</b>（宣传、动员、回应）；数智时代传播治理研究正发生<b>范式转向</b>，转向构建多主体高效互动而敏捷的信息系统框架。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、何谓数字传播治理<span class="pg">220</span></div><div class="nbody">强调<b>整体性思维</b>。问题背景：社交媒体无"<b>把关人</b>"、信息传输成本降低导致虚假信息与机器人滥用、平台崛起加剧算法过滤；<b>民粹主义、政治极化</b>成全球性问题；政府在其中的角色。</div></div>
+      <div class="node"><div class="nname">二、传播治理的理论脉络：纵向发展和横向比较<span class="pg">223</span></div><div class="nbody"><b>纵向发展（技术发展视角）</b>：早期两视角 = <b>结构功能主义</b>（政治沟通勾连治理体系子系统）vs <b>自由主义</b>（媒体作为"第四权力"）；1947《一个自由而负责的新闻界》→ 社会责任论。<br><b>横向比较（比较媒介体制视角）</b>。</div></div>
+      <div class="node"><div class="nname">三、数字传播风险治理研究<span class="pg">227</span></div><div class="nbody">两类风险治理：针对<b>极端言论</b>的网络舆论治理 / 针对<b>虚假消息</b>的网络谣言治理。</div></div>
+      <div class="node"><div class="nname">四、数字赋能政府传播研究<span class="pg">230</span></div><div class="nbody">两条路径：基于<b>算法和社交媒体</b>的宣传与动员（主流媒体的"<b>软宣传</b>"趋势）/ <b>政府新媒体与政府回应性</b>（推动政府开放、提升回应性、引导网络舆论）。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">232</span></div><div class="nbody">新技术改变主体间<b>权力关系</b>，搭建政府—公众—新闻媒体—社交媒体多元互动的政治沟通体系。<br><b>核心张力</b>：技术赋能的精准传播<b>既</b>强化互动<b>又</b>可能拓宽数字鸿沟、削减价值共识。<br><b>待验证机制</b>：数字传播风险形成 / 政府宣传模式转变 / 数字传播治理效果。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 13 -->
+<details class="ch p4">
+  <summary><span class="chno">CH 13</span><span class="chttl">数据要素治理</span><span class="chpg">237–250</span><span class="chthesis">"数据二十条"四议题：确权/流通/利用/安全</span></summary>
+  <div class="chbody">
+    <div class="thesis">完全依"<b>数据二十条</b>"的四大议题结构展开：<b>确权 → 流通交易 → 开发利用 → 安全治理</b>。全章逻辑最清晰，是最容易背的一章。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、数据要素的产权归属<span class="pg">237</span></div><div class="nbody">最关键问题是<b>如何界定数据产权</b>；经济学界（对"物"的占有使用形成的权利）vs 法学界（狭义 = 物权）差异；我国仍存争议，但为促进流通而推进<span class="must">必背</span><b>三权分置</b>：数据<b>持有权</b> / 加工<b>使用权</b> / 产品<b>经营权</b>。</div></div>
+      <div class="node"><div class="nname">二、非公数据的流通交易<span class="pg">239</span></div><div class="nbody">非公数据是<b>体量最大、增速最快</b>的数据资源；两抓手：<b>数据人格权保护</b> / <b>数据交易监管</b>。</div></div>
+      <div class="node"><div class="nname">三、公共数据的开发利用<span class="pg">242</span></div><div class="nbody"><span class="must">必辨</span><b>公共数据开放</b> vs <b>公共数据授权运营</b>，及二者的联系与区别。<br>国际实践：美国政府数据开放浪潮与<b>数据经纪商</b>、英国<b>数据信托</b>、欧盟<b>数据中介</b>、中国特色<b>公共数据授权运营</b>。</div></div>
+      <div class="node"><div class="nname">四、数据要素的安全治理<span class="pg">246</span></div><div class="nbody"><b>发展与安全并重</b>；数据安全的<b>多维界定</b> + 数据<b>安全治理生态</b>。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">248</span></div><div class="nbody">数据是数字化转型的核心"<b>燃料</b>"，甚至将改变<b>世界权力格局</b>。<br><b>四项持续关注</b>：数据确权（三权分置落地）/ 公共数据治理（"对数据的治理"是为了"用数据来治理"）/ 公共数据授权运营（对内部门间关系、对外政企关系 + 效果评估）/ 数据安全治理（发展与安全良性互动）。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 14 -->
+<details class="ch p4">
+  <summary><span class="chno">CH 14</span><span class="chttl">算法政治与治理</span><span class="chpg">251–268</span><span class="chthesis">"算法治理"↔"治理算法"一对镜像命题</span></summary>
+  <div class="chbody">
+    <div class="thesis">算法政治关切<b>一对镜像命题</b>——"<b>算法治理</b>"（算法如何介入国家治理）与"<b>治理算法</b>"（如何治理算法风险）；理论上经历了<b>从规制到治理</b>的演进。本章框架密度最高，最可能出简答 / 论述题。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、算法政治的兴起与概念<span class="pg">251</span></div><div class="nbody">智能算法掀起机器智能革命，人类进入<b>算法时代</b>；各国政府在公共决策、公共服务、城市治理、社会治理中引入算法；典型案例：<b>剑桥分析丑闻</b>、<b>算法过滤气泡</b>。</div></div>
+      <div class="node"><div class="nname">二、从规制到治理：算法政治理论的演进<span class="pg">252</span></div><div class="nbody"><b>规制视角</b>：算法监管 + 监管算法，关注算法与<b>市场</b>的关系。<br><b>治理视角</b>：扩展到算法<b>政治</b>，关注非政府主体参与治理过程与规则，分析各环节风险与应对。</div></div>
+      <div class="node"><div class="nname">三、算法治理：算法介入国家治理的逻辑与政治效应<span class="pg">255</span></div><div class="nbody"><span class="must">必背</span><b>动力四视角</b>：功能主义 / 组织契合 / 社会工程 / 政企关系。<br><span class="must">必背</span><b>机制三赋</b>：赋能政府 / 赋权社会 / <b>赋智决策</b>。<br><span class="must">必背</span><b>耦合三模式</b>：政企合作 / 政府自建 / 政社共建。<br><b>政治效应</b>：基于国家—社会关系的视角。</div></div>
+      <div class="node"><div class="nname">四、治理算法：算法风险及其治理路径<span class="pg">260</span></div><div class="nbody"><b>算法风险</b> = 算法时代社会风险演化的新样态。<br><span class="must">必背</span><b>算法伦理四原则</b>：可控 / 透明 / 安全 / 公平。<br><b>治理价值</b>："<b>权力—权利</b>"的重新分配。<b>治理路径</b>："<b>技术—社群</b>"的双重约束 → 个体对算法的自主性、算法计算的可解释性、算法使用的安全性、算法应用的公平性。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">266</span></div><div class="nbody"><b>三个研究方向</b>：算法的<b>政治属性</b>（算法何以具有政治性）/ 打开算法政治<b>"黑箱"</b>（类型化考察采纳动因与嵌入链条）/ <b>微观—中观—宏观三层政治后果</b>（微观：算法厌恶、算法欣赏、算法信任；中观：政府组织制度结构功能；宏观：治理体系与国际政治格局）。<br><b>多元治理框架</b>：政府加快算法监管体系（测试、评估、审计标准）+ 科技企业主体责任（算法伦理部门、安全责任制度、伦理审查与披露）+ 科技社群行业自律 + 社会参与 → 以人为本、公平公正、公开透明、安全可靠的<b>算法治理生态</b>。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 15 -->
+<details class="ch p4">
+  <summary><span class="chno">CH 15</span><span class="chttl">人工智能治理</span><span class="chpg">269–292</span><span class="chthesis">从技术监管到社会—技术系统整体性治理</span></summary>
+  <div class="chbody">
+    <div class="thesis">AI 治理已<b>从单纯的技术监管转向社会—技术系统的整体性治理</b>；核心是"技术—组织—制度"三要素体系，以及<b>多重张力</b>的识别。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、理解人工智能技术及其治理<span class="pg">269</span></div><div class="nbody"><span class="must">必背</span><b>发展四阶段</b>：早期奠基突破期（1940–1970）/ 认知挑战转型期（1970–1993）/ 机器学习革命期（1993–2012）/ <b>算法治理竞争期（2012 至今）</b>。<br>AI 的类型与流派。<br><span class="must">必辨</span><b>面对</b>人工智能技术的治理（治理 AI）vs <b>基于</b>人工智能应用的治理（用 AI 治理）。</div></div>
+      <div class="node"><div class="nname">二、人工智能治理的要素体系<span class="pg">276</span></div><div class="nbody"><span class="must">必背</span><b>三要素</b>：<b>技术治理</b>（技术的创新与监管 / 技术的风险与矫正）、<b>组织治理</b>（治理的组织类型 / 组织治理的重点）、<b>制度治理</b>（治理的制度体系 / 制度内容）。</div></div>
+      <div class="node"><div class="nname">三、人工智能治理的场景应用<span class="pg">281</span></div><div class="nbody">AI 与<b>政务服务</b> / AI 与<b>公共危机治理</b> / AI 与<b>城市交通治理</b>。</div></div>
+      <div class="node"><div class="nname">四、人工智能治理的伦理关切<span class="pg">284</span></div><div class="nbody">现实风险。<span class="must">必背</span><b>伦理六原则</b>：自主决定 / 安全可靠 / 透明公开 / 隐私保护 / 公平公正 / 责任担当。监管方式。</div></div>
+      <div class="node"><div class="nname">五、总结与展望<span class="pg">289</span></div><div class="nbody"><b>三重张力</b>：技术理性 vs 制度理性 / 创新逻辑 vs 规制逻辑 / 效率价值 vs 公平价值。<br><b>三类结构性困境</b>：技术快速迭代 vs 制度路径依赖 / 算法黑箱 vs 治理透明 / 数据垄断 vs 信息共享。<br><span class="must">必背</span><b>各国模式</b>：美日偏重<b>创新驱动</b> / 欧盟注重<b>规制引领</b> / 中国采取"<b>创新—规制</b>"双轨并行。<br><b>两条研究进路</b>：<b>制度嵌入</b>（制度供给的及时性适应性、制度协调的整体性系统性、制度创新的包容性前瞻性——<b>实验性治理与反身性治理</b>、制度规制的平衡性合理性）/ <b>社会建构</b>（社会嵌入性、合法性建构——<b>认知 / 规范 / 实践三重合法性</b>、价值取向）。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- 16 -->
+<details class="ch p4">
+  <summary><span class="chno">CH 16</span><span class="chttl">全球数字治理</span><span class="chpg">293–305</span><span class="chthesis">确权 / 跨境流动 / 数字税收三大核心问题</span></summary>
+  <div class="chbody">
+    <div class="thesis">全球数字治理面临<b>三大核心问题</b>：数据的<b>产权归属</b>、数据的<b>跨境流动</b>、数据作为生产要素对<b>税收</b>的影响。全书唯一的国际层面章节，也是唯一只有三节实质内容的一章。</div>
+    <div class="nodes">
+      <div class="node"><div class="nname">一、全球数据确权<span class="pg">293</span></div><div class="nbody">确权（confirmation of rights）概念体系：国家 vs 公民两主体分别构成<b>公权力（power）</b> 与 <b>私权利（right）</b> 两维度。<br><span class="must">必背</span><b>欧美分野</b>：<b>欧盟注重人格权保护</b>（法律保护个人隐私）vs <b>美国侧重财产权保护</b>（联邦法律规范私人机构处理用户数据，强调数据的财产属性）。</div></div>
+      <div class="node"><div class="nname">二、全球数据跨境流动治理<span class="pg">297</span></div><div class="nbody">跨境流动是全球资金、信息、技术等要素交换共享的基础（世界经济论坛：2020 年全球月流量 <b>230 艾字节</b>，预计 2026 年增长 3 倍以上至 <b>780 艾字节</b>）；价值挑战 + 各国规制实践差异。</div></div>
+      <div class="node"><div class="nname">三、全球数字税收治理<span class="pg">301</span></div><div class="nbody">塔斯考特 1990s 提出"<b>数字经济</b>"概念；OECD <b>"双支柱"方案</b>下的国际税收规则演变；经济数字化背景下的全球税收改革实践；数字化转型背景下的税收改革逻辑。</div></div>
+      <div class="node"><div class="nname">四、总结与展望<span class="pg">305</span></div><div class="nbody">三大核心问题的国别差异比较；数字税国际争议对全球经济治理的影响及<b>中国对策</b>。</div></div>
+    </div>
+  </div>
+</details>
+
+<!-- ============ 高频概念 ============ -->
+<h2 class="sec">跨章高频概念索引 · 背诵自检</h2>
+<table>
+  <thead><tr><th>概念</th><th>出处</th><th>一句话</th></tr></thead>
+  <tbody>
+    <tr><td>技术赋能 / 技术赋权</td><td>1·2·5·10·14</td><td>赋能国家 + 赋权社会，全书最核心的双重机制</td></tr>
+    <tr><td>国家治理数字化转型</td><td>1·2</td><td>计算政治学的本体论对象</td></tr>
+    <tr><td>数字治理生态</td><td>2·5</td><td>元治理层面的新范式；三子系统 ×（行动者 + 资源）</td></tr>
+    <tr><td>三重方法范式</td><td>1·4</td><td>定量（理论驱动）/ 大数据（数据驱动）/ 大模型（算法驱动）</td></tr>
+    <tr><td>国家信息能力</td><td>1·2</td><td>信息汲取 + 信息处理为生产机制；"三明治结构"</td></tr>
+    <tr><td>可读性 legibility</td><td>1</td><td>斯科特：国家以标准化方式简化理解社会</td></tr>
+    <tr><td>全景监控</td><td>1</td><td>福柯：国家汲取信息以塑造社会现实</td></tr>
+    <tr><td>OPCE 框架</td><td>5</td><td>组织 / 政策 / 能力 / 效果，本书首创评估框架</td></tr>
+    <tr><td>数字统合主义</td><td>5</td><td>政治经济视角理解数字政府</td></tr>
+    <tr><td>数字官僚制</td><td>6</td><td>代码、算法、大数据与官僚组织日常运行融合</td></tr>
+    <tr><td>数字纪检监察</td><td>7</td><td>数据驱动权力监督的中国式新范式</td></tr>
+    <tr><td>"数字社会"治理 vs "数字"社会治理</td><td>8</td><td>治理对象是数字社会 vs 治理手段是数字的</td></tr>
+    <tr><td>数据二十条四议题</td><td>13</td><td>确权 / 流通交易 / 开发利用 / 安全治理</td></tr>
+    <tr><td>三权分置</td><td>13</td><td>数据持有权 / 加工使用权 / 产品经营权</td></tr>
+    <tr><td>算法治理 vs 治理算法</td><td>14</td><td>算法介入国家治理 vs 治理算法风险，一对镜像命题</td></tr>
+    <tr><td>算法伦理四原则</td><td>14</td><td>可控 / 透明 / 安全 / 公平</td></tr>
+    <tr><td>物感城市 + 人感城市</td><td>11</td><td>数字城市治理的新进路</td></tr>
+    <tr><td>AI 治理三要素</td><td>15</td><td>技术 / 组织 / 制度</td></tr>
+    <tr><td>AI 治理三国模式</td><td>15</td><td>美日创新驱动 / 欧盟规制引领 / 中国双轨并行</td></tr>
+    <tr><td>欧美数据确权分野</td><td>16</td><td>欧盟人格权 / 美国财产权</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 论证套路 ============ -->
+<h2 class="sec">全书反复出现的三种论证套路</h2>
+<div class="patterns">
+  <div class="pat"><div class="pt">"双机制"套路</div><div class="pd">任何数字治理现象都可拆为<b>赋能国家</b>与<b>赋权社会</b>两面。</div><div class="pw">第 1、5、10、14 章</div></div>
+  <div class="pat"><div class="pt">"双视角 / 镜像"套路</div><div class="pd">发展 vs 监管（9）、算法治理 vs 治理算法（14）、治理 AI vs 用 AI 治理（15）、"数字社会"治理 vs "数字"社会治理（8）。</div><div class="pw">见到"两个视角"就往这个模子上套</div></div>
+  <div class="pat"><div class="pt">"要素—体系—场景"套路</div><div class="pd">先列构成要素，再搭体系结构，最后举地方 / 领域案例。</div><div class="pw">第 8、13、15 章最典型</div></div>
+</div>
+
+<h2 class="sec">备考要点</h2>
+<div class="patterns">
+  <div class="pat"><div class="pt">统一五段式</div><div class="pd">每章都是"<b>概念界定 → 理论脉络 → 机制分析 → 实践 / 场景 → 总结与展望</b>"。任何一章的论述题都可按此展开，不会失分于结构。</div></div>
+  <div class="pat"><div class="pt">本书三处原创贡献</div><div class="pd"><b>数字治理生态理论</b>（2·5）、<b>OPCE 评估框架</b>（5，书中明标"首创"）、<b>国家治理的信息理论 / 信息政治学</b>（2）。被问"这本教材有什么理论创新"就答这三个。</div></div>
+  <div class="pat"><div class="pt">研究空白最集中三章</div><div class="pd">适合作博士研究计划切口：第 <b>7</b> 章（概念与理论归纳缺失）、第 <b>9</b> 章（数字经济的政治学理论不充分、缺跨国比较）、第 <b>14</b> 章（算法政治的类型化与三层政治后果）。</div></div>
+</div>
+
+<footer>
+框架依据：<code>output/pdf/06_计算政治学概论/chapters/</code> 章节版 Markdown 及原书目录（PDF 第 17–20 页）。<br>
+页码为<b>书页页码</b>；PDF 页码 = 书页 + 20。需要精确引文或表格数值时，请回看 <code>计算政治学概论_可检索.pdf</code> 对应扫描页。<br>
+生成日期：2026-07-30
+</footer>
+
+</div>
+</body>
+</html>
