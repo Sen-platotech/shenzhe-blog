@@ -131,6 +131,14 @@
   @media(max-width:820px){
     .blocks,.tri,.metas,.patterns{grid-template-columns:1fr}
   }
+  @media(max-width:700px){
+    table{table-layout:fixed;font-size:12px}
+    th,td{padding:8px 7px;overflow-wrap:anywhere;word-break:break-word}
+    td:first-child,td:nth-child(2){white-space:normal}
+    td:first-child{width:31%}
+    td:nth-child(2){width:18%;font-size:11px}
+    td:last-child{width:51%}
+  }
   @media print{
     body{background:#fff} .toolbar{display:none}
     details.ch{break-inside:avoid;border-color:#ccc}
