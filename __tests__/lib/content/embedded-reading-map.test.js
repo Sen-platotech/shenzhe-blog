@@ -5,6 +5,10 @@ const embedPath = path.join(
   process.cwd(),
   'public/embeds/computational-politics-overview-20260730.html'
 )
+const articleStylesPath = path.join(
+  process.cwd(),
+  'styles/shujuan/article.css'
+)
 
 describe('computational politics overview embed', () => {
   it('wraps the index table on narrow screens', () => {
@@ -16,5 +20,11 @@ describe('computational politics overview embed', () => {
       /td:first-child\s*,\s*td:nth-child\(2\)\s*\{[^}]*white-space:\s*normal/
     )
     expect(source).toContain('overflow-wrap:anywhere')
+  })
+
+  it('allows the article column to shrink around the mobile embed', () => {
+    const source = fs.readFileSync(articleStylesPath, 'utf8')
+
+    expect(source).toMatch(/\.prose\{[^}]*min-width:\s*0/)
   })
 })
