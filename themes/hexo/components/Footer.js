@@ -17,12 +17,19 @@ const Footer = ({ title }) => {
         <i className='mx-1 animate-pulse fas fa-heart' />
         <a
           href={siteConfig('LINK')}
-          className='underline font-bold  dark:text-gray-300 '>
+          className='underline font-bold  dark:text-gray-300 '
+        >
           {siteConfig('AUTHOR')}
         </a>
         .<br />
         <BeiAnSite />
         <BeiAnGongAn />
+        <a
+          href='https://stats.shenzhe.org/privacy'
+          className='pl-2 underline dark:text-gray-300'
+        >
+          访问统计与隐私
+        </a>
         <span className='hidden busuanzi_container_site_pv'>
           <i className='fas fa-eye' />
           <span className='px-1 busuanzi_value_site_pv'> </span>

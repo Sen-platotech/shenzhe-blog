@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -16,6 +17,7 @@
 
 # production
 /build
+stats-dashboard/dist/
 
 # misc
 .DS_Store
@@ -33,6 +35,7 @@ yarn-error.log*
 .env.production.local
 .env.production
 .env
+.dev.vars
 
 # vercel
 .vercel
@@ -54,7 +57,7 @@ yarn-error.log*
 /sitemap.xml
 
 # yarn
-package-lock.json
+/package-lock.json
 # yarn.lock
 
 .notion-api-lock

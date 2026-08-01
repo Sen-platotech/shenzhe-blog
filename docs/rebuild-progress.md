@@ -2,6 +2,15 @@
 
 日期：2026-06-07 10:09 CST
 
+## 部署与运维基线（2026-08-01 更新）
+
+- **GitHub 是当前博客的唯一发布与运维入口**：代码仓库为 `Sen-platotech/shenzhe-blog`，默认分支为 `main`。
+- 后续部署、统计接入、环境配置与故障排查均从 GitHub 仓库及其发布链路出发。
+- **不将 Vercel 视为当前管理平面，不再查询或修改 Vercel 项目。**
+- 2026-08-01 的公开 HTTP 探针仍观察到 Cloudflare 后的响应头中存在历史托管链路标记；这仅记为待清理/待确认的路由遗留，不构成对 Vercel 的运维授权。
+- 流量分析的当前状态、数据边界与接入建议见 `docs/analytics-plan.md`。
+- 2026-08-01 已上线 `stats.shenzhe.org` 私有统计后台；博客端埋点与 Worker/D1 源码均已纳入 GitHub 仓库，Cloudflare Secrets 不进入版本控制。
+
 ## 当前分支
 
 `rebuild/mdx-core`
@@ -200,7 +209,7 @@ node -c scripts/generate-content-artifacts.js
   - `lib/db/notion/*`、`lib/site/*`、`lib/utils/*.ts` 中的 TypeScript `any`/unsafe assignment 规则。
   - 多个旧组件中的 React Hook dependency warnings。
 - `yarn install --frozen-lockfile` 曾失败，因为现有 `yarn.lock` 与依赖解析不一致；普通 `yarn install` 已成功并更新 `yarn.lock`。需要在提交前审查 lockfile diff。
-- `.env.production` 本地文件仍可能存在，但已经忽略且不再被 git 跟踪。任何曾经暴露过的 Notion token 仍需在 Notion/Vercel 控制台轮换，仓库侧清理不能替代轮换。
+- `.env.production` 本地文件仍可能存在，但已经忽略且不再被 git 跟踪。任何曾经暴露过的 Notion token 仍需在 Notion 凭据管理端轮换，并在 GitHub 发布链路中更新相应配置；仓库侧清理不能替代轮换。
 - `essay` 和 `research-share` 当前公开页面没有正文块，迁移出的 MDX 正文为空；需要作者确认是否为预期或后续补写。
 - `components/MdxArticle.js` 是迁移期 renderer，已覆盖当前迁移文章的基础 Markdown/MDX 表达，但还不是完整 MDX 编译/组件管线，暂不支持自定义 MDX 组件、脚注和复杂嵌套语法。
 - `/tag` 当前为空，因为迁移文章暂未带标签；需要后续补充 tags 或设计更明确的空状态。

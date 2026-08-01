@@ -1,0 +1,5 @@
+ADMIN_PASSWORD=replace-with-a-long-random-password
+SESSION_SECRET=replace-with-at-least-32-random-bytes
+OWNER_SECRET=replace-with-at-least-32-random-bytes
+IP_HASH_SECRET=replace-with-at-least-32-random-bytes
+IP_ENCRYPTION_SECRET=replace-with-at-least-32-random-bytes
