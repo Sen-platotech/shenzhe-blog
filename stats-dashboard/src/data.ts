@@ -1,5 +1,5 @@
 import { decryptValue } from './crypto'
-import type { DashboardRow } from './types'
+import type { DashboardPeriod, DashboardRow } from './types'
 
 type RecentVisit = DashboardRow & {
   ip_ciphertext: string
@@ -9,91 +9,133 @@ type RecentVisit = DashboardRow & {
   is_owner: number
 }
 
-function whereClause(excludeOwner: boolean): string {
-  return `julianday(occurred_at) >= julianday('now', ?)${excludeOwner ? ' AND is_owner = 0' : ''}`
+type TrendRow = { date: string; pageviews: number; visits?: number }
+
+const HISTORY_AVAILABLE_FROM = '2026-04-07'
+const FINE_GRAINED_FROM = '2026-08-01T09:37:45.166Z'
+
+function periodStart(period: DashboardPeriod): string {
+  if (period === 'all') return '1970-01-01T00:00:00.000Z'
+  return new Date(Date.now() - period * 86_400_000).toISOString()
 }
 
-function modifier(days: number): string {
-  return `-${days} days`
+function detailWhere(excludeOwner: boolean): string {
+  return `occurred_at >= ?${excludeOwner ? ' AND is_owner = 0' : ''}`
+}
+
+function rollupWhere(excludeOwner: boolean): string {
+  return `date >= ?${excludeOwner ? ' AND is_owner = 0' : ''}`
+}
+
+function numeric(row: DashboardRow | undefined, key: string): number {
+  return Number(row?.[key] || 0)
+}
+
+export function mergeTrendRows(...groups: TrendRow[][]): TrendRow[] {
+  const merged = new Map<string, TrendRow>()
+  for (const group of groups) {
+    for (const row of group) {
+      const current = merged.get(row.date) || {
+        date: row.date,
+        pageviews: 0,
+        visits: 0
+      }
+      current.pageviews += Number(row.pageviews || 0)
+      current.visits = Number(current.visits || 0) + Number(row.visits || 0)
+      merged.set(row.date, current)
+    }
+  }
+  return [...merged.values()].sort((a, b) => a.date.localeCompare(b.date))
 }
 
 export async function getDashboardData(
   db: D1Database,
-  days: number,
+  period: DashboardPeriod,
   excludeOwner: boolean,
   encryptionSecret: string
 ): Promise<object> {
-  const where = whereClause(excludeOwner)
-  const period = modifier(days)
+  const start = periodStart(period)
+  const startDate = start.slice(0, 10)
+  const detailFilter = detailWhere(excludeOwner)
+  const rollupFilter = rollupWhere(excludeOwner)
   const results = await db.batch<DashboardRow>([
-    db
-      .prepare(
-        `SELECT COUNT(*) AS pageviews,
-            COUNT(DISTINCT session_id) AS visits,
-            COUNT(DISTINCT visitor_id) AS visitors,
-            SUM(CASE WHEN path LIKE '/article/%' THEN 1 ELSE 0 END) AS articleViews
-           FROM visits WHERE ${where}`
-      )
-      .bind(period),
-    db
-      .prepare(
-        `SELECT strftime('%Y-%m-%d', occurred_at) AS date, COUNT(*) AS pageviews
-           FROM visits WHERE ${where}
-           GROUP BY date ORDER BY date ASC`
-      )
-      .bind(period),
-    db
-      .prepare(
-        `SELECT path, MAX(title) AS title, COUNT(*) AS pageviews,
-            COUNT(DISTINCT visitor_id) AS visitors
-           FROM visits WHERE ${where} AND path LIKE '/article/%'
-           GROUP BY path ORDER BY pageviews DESC LIMIT 12`
-      )
-      .bind(period),
-    db
-      .prepare(
-        `SELECT country, region, region_code, city, COUNT(*) AS pageviews,
-            COUNT(DISTINCT visitor_id) AS visitors
-           FROM visits WHERE ${where}
-           GROUP BY country, region, region_code, city
-           ORDER BY pageviews DESC LIMIT 16`
-      )
-      .bind(period),
-    db
-      .prepare(
-        `SELECT device_type || ' · ' || browser AS label, COUNT(*) AS pageviews
-           FROM visits WHERE ${where}
-           GROUP BY device_type, browser ORDER BY pageviews DESC LIMIT 8`
-      )
-      .bind(period),
-    db
-      .prepare(
-        `SELECT CASE WHEN referrer_host = '' THEN '直接/应用内' ELSE referrer_host END AS label,
-            COUNT(*) AS pageviews
-           FROM visits WHERE ${where}
-           GROUP BY referrer_host ORDER BY pageviews DESC LIMIT 8`
-      )
-      .bind(period),
-    db
-      .prepare(
-        `SELECT occurred_at, visitor_id, path, title, referrer_host,
-            ip_ciphertext, ip_iv, country, region, region_code, city,
-            device_type, browser, operating_system, asn, as_organization,
-            is_owner, owner_label
-           FROM visits WHERE ${where}
-           ORDER BY occurred_at DESC LIMIT 100`
-      )
-      .bind(period)
+    db.prepare(
+      `SELECT COALESCE(SUM(pageviews), 0) AS pageviews,
+          COALESCE(SUM(visits), 0) AS visits
+       FROM historical_daily WHERE date >= ?`
+    ).bind(startDate),
+    db.prepare(
+      `SELECT COALESCE(SUM(pageviews), 0) AS pageviews,
+          COALESCE(SUM(visits), 0) AS visits,
+          COALESCE(SUM(visitors), 0) AS visitors,
+          COALESCE(SUM(article_views), 0) AS articleViews
+       FROM daily_rollups WHERE ${rollupFilter}`
+    ).bind(startDate),
+    db.prepare(
+      `SELECT COUNT(*) AS pageviews,
+          COUNT(DISTINCT session_id) AS visits,
+          COUNT(DISTINCT visitor_id) AS visitors,
+          SUM(CASE WHEN path LIKE '/article/%' THEN 1 ELSE 0 END) AS articleViews
+       FROM visits WHERE ${detailFilter}`
+    ).bind(start),
+    db.prepare(
+      `SELECT date, pageviews, visits FROM historical_daily
+       WHERE date >= ? ORDER BY date ASC`
+    ).bind(startDate),
+    db.prepare(
+      `SELECT date, SUM(pageviews) AS pageviews, SUM(visits) AS visits
+       FROM daily_rollups WHERE ${rollupFilter}
+       GROUP BY date ORDER BY date ASC`
+    ).bind(startDate),
+    db.prepare(
+      `SELECT strftime('%Y-%m-%d', occurred_at) AS date,
+          COUNT(*) AS pageviews, COUNT(DISTINCT session_id) AS visits
+       FROM visits WHERE ${detailFilter}
+       GROUP BY date ORDER BY date ASC`
+    ).bind(start),
+    db.prepare(
+      `SELECT path, MAX(title) AS title, COUNT(*) AS pageviews,
+          COUNT(DISTINCT visitor_id) AS visitors
+       FROM visits WHERE ${detailFilter} AND path LIKE '/article/%'
+       GROUP BY path ORDER BY pageviews DESC LIMIT 12`
+    ).bind(start),
+    db.prepare(
+      `SELECT country, region, region_code, city, COUNT(*) AS pageviews,
+          COUNT(DISTINCT visitor_id) AS visitors
+       FROM visits WHERE ${detailFilter}
+       GROUP BY country, region, region_code, city
+       ORDER BY pageviews DESC LIMIT 16`
+    ).bind(start),
+    db.prepare(
+      `SELECT device_type || ' · ' || browser AS label, COUNT(*) AS pageviews
+       FROM visits WHERE ${detailFilter}
+       GROUP BY device_type, browser ORDER BY pageviews DESC LIMIT 8`
+    ).bind(start),
+    db.prepare(
+      `SELECT CASE WHEN referrer_host = '' THEN '直接/应用内' ELSE referrer_host END AS label,
+          COUNT(*) AS pageviews
+       FROM visits WHERE ${detailFilter}
+       GROUP BY referrer_host ORDER BY pageviews DESC LIMIT 8`
+    ).bind(start),
+    db.prepare(
+      `SELECT occurred_at, visitor_id, path, title, referrer_host,
+          ip_ciphertext, ip_iv, country, region, region_code, city,
+          device_type, browser, operating_system, asn, as_organization,
+          is_owner, owner_label
+       FROM visits WHERE ${detailFilter}
+       ORDER BY occurred_at DESC LIMIT 100`
+    ).bind(start)
   ])
-  const totals = results[0]!
-  const trend = results[1]!
-  const articles = results[2]!
-  const locations = results[3]!
-  const devices = results[4]!
-  const referrers = results[5]!
-  const recent = results[6]!
 
-  const recentRows = (recent.results || []) as RecentVisit[]
+  const [historicalTotals, rollupTotals, detailTotals] = results
+    .slice(0, 3)
+    .map(result => (result?.results?.[0] || {}) as DashboardRow)
+  const trend = mergeTrendRows(
+    (results[3]?.results || []) as TrendRow[],
+    (results[4]?.results || []) as TrendRow[],
+    (results[5]?.results || []) as TrendRow[]
+  )
+  const recentRows = (results[10]?.results || []) as RecentVisit[]
   const recentWithIp = await Promise.all(
     recentRows.map(async row => ({
       ...row,
@@ -107,25 +149,43 @@ export async function getDashboardData(
     }))
   )
 
-  const totalRow = (totals.results?.[0] || {}) as DashboardRow
+  const historicalPageviews = numeric(historicalTotals, 'pageviews')
+  const historicalVisits = numeric(historicalTotals, 'visits')
   return {
     generatedAt: new Date().toISOString(),
-    days,
+    period,
     excludeOwner,
-    totals: {
-      pageviews: Number(totalRow.pageviews || 0),
-      visits: Number(totalRow.visits || 0),
-      visitors: Number(totalRow.visitors || 0),
-      articleViews: Number(totalRow.articleViews || 0)
+    coverage: {
+      historicalAvailableFrom: HISTORY_AVAILABLE_FROM,
+      fineGrainedFrom: FINE_GRAINED_FROM,
+      historicalPageviews,
+      historicalVisits,
+      historicalIsSampled: true,
+      historicalOwnerFilterAvailable: false
     },
-    trend: trend.results || [],
-    articles: (articles.results || []).map((row: DashboardRow) => ({
+    totals: {
+      pageviews:
+        historicalPageviews +
+        numeric(rollupTotals, 'pageviews') +
+        numeric(detailTotals, 'pageviews'),
+      visits:
+        historicalVisits +
+        numeric(rollupTotals, 'visits') +
+        numeric(detailTotals, 'visits'),
+      visitors:
+        numeric(rollupTotals, 'visitors') + numeric(detailTotals, 'visitors'),
+      articleViews:
+        numeric(rollupTotals, 'articleViews') +
+        numeric(detailTotals, 'articleViews')
+    },
+    trend,
+    articles: (results[6]?.results || []).map((row: DashboardRow) => ({
       ...row,
       label: String(row.title || row.path || '')
     })),
-    locations: locations.results || [],
-    devices: devices.results || [],
-    referrers: referrers.results || [],
+    locations: results[7]?.results || [],
+    devices: results[8]?.results || [],
+    referrers: results[9]?.results || [],
     recent: recentWithIp
   }
 }

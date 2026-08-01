@@ -10,7 +10,7 @@ import { getDashboardData } from './data'
 import type { OwnerIdentity, SessionIdentity } from './types'
 import {
   normalizeLabel,
-  parseDays,
+  parsePeriod,
   parseUserAgent,
   parseVisitEvent
 } from './validation'
@@ -304,12 +304,12 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
   if (url.pathname === '/api/owner-device' && request.method === 'POST')
     return handleOwnerDevice(request, env)
   if (url.pathname === '/api/dashboard' && request.method === 'GET') {
-    const days = parseDays(url.searchParams.get('days'))
+    const period = parsePeriod(url.searchParams.get('days'))
     const excludeOwner = url.searchParams.get('excludeOwner') !== '0'
     return json(
       await getDashboardData(
         env.DB,
-        days,
+        period,
         excludeOwner,
         env.IP_ENCRYPTION_SECRET
       )
@@ -353,22 +353,40 @@ export default {
       90,
       Math.max(7, Number.parseInt(env.RETENTION_DAYS, 10) || 30)
     )
+    const cutoff = `-${retentionDays} days`
     ctx.waitUntil(
-      Promise.all([
+      env.DB.batch([
         env.DB.prepare(
-          "DELETE FROM visits WHERE julianday(occurred_at) < julianday('now', ?)"
-        )
-          .bind(`-${retentionDays} days`)
-          .run(),
+          `INSERT INTO daily_rollups (
+             date, is_owner, pageviews, visits, visitors, article_views, rolled_up_at
+           )
+           SELECT strftime('%Y-%m-%d', occurred_at), is_owner, COUNT(*),
+             COUNT(DISTINCT session_id), COUNT(DISTINCT visitor_id),
+             SUM(CASE WHEN path LIKE '/article/%' THEN 1 ELSE 0 END),
+             strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+           FROM visits
+           WHERE date(occurred_at) < date('now', ?)
+           GROUP BY strftime('%Y-%m-%d', occurred_at), is_owner
+           ON CONFLICT(date, is_owner) DO UPDATE SET
+             pageviews = excluded.pageviews,
+             visits = excluded.visits,
+             visitors = excluded.visitors,
+             article_views = excluded.article_views,
+             rolled_up_at = excluded.rolled_up_at`
+        ).bind(cutoff),
+        env.DB.prepare(
+          "DELETE FROM visits WHERE date(occurred_at) < date('now', ?)"
+        ).bind(cutoff),
         env.DB.prepare(
           "DELETE FROM login_attempts WHERE julianday(occurred_at) < julianday('now', '-1 day')"
-        ).run()
-      ]).then(([visits, attempts]) => {
+        )
+      ]).then((results) => {
         console.log(
           JSON.stringify({
             message: 'retention-prune',
-            visitsDeleted: visits.meta.changes || 0,
-            loginAttemptsDeleted: attempts.meta.changes || 0
+            rollupRowsChanged: results[0]?.meta.changes || 0,
+            visitsDeleted: results[1]?.meta.changes || 0,
+            loginAttemptsDeleted: results[2]?.meta.changes || 0
           })
         )
       })

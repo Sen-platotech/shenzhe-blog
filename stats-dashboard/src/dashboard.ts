@@ -26,7 +26,7 @@ export const DASHBOARD_HTML = String.raw`<!doctype html>
     <header class="masthead">
       <div><div class="eyebrow">stats.shenzhe.org</div><h1>博客访问观察室</h1><div id="updated" class="subtle"></div></div>
       <div class="toolbar">
-        <select id="days" class="control"><option value="1">24 小时</option><option value="7">7 天</option><option value="30" selected>30 天</option></select>
+        <select id="days" class="control"><option value="all" selected>全部历史</option><option value="1">24 小时</option><option value="7">7 天</option><option value="30">30 天</option></select>
         <label class="control"><input id="exclude-owner" type="checkbox" checked> 排除我的访问</label>
         <button id="refresh">刷新</button><button id="logout" class="danger">退出</button>
       </div>
@@ -35,9 +35,11 @@ export const DASHBOARD_HTML = String.raw`<!doctype html>
     <section class="cards">
       <article class="card"><div class="metric-label">页面浏览</div><div id="pageviews" class="metric">—</div></article>
       <article class="card"><div class="metric-label">访问会话</div><div id="visits" class="metric">—</div></article>
-      <article class="card"><div class="metric-label">独立访客</div><div id="visitors" class="metric">—</div></article>
-      <article class="card"><div class="metric-label">文章阅读</div><div id="article-views" class="metric">—</div></article>
+      <article class="card"><div class="metric-label">精细访客（8 月 1 日起）</div><div id="visitors" class="metric">—</div></article>
+      <article class="card"><div class="metric-label">精细文章阅读（8 月 1 日起）</div><div id="article-views" class="metric">—</div></article>
     </section>
+
+    <div id="coverage" class="notice"></div>
 
     <section class="grid">
       <article class="panel"><div class="panel-head"><h2>访问趋势</h2><span class="subtle">pageviews / day</span></div><div id="trend" class="chart"></div></article>
@@ -54,7 +56,7 @@ export const DASHBOARD_HTML = String.raw`<!doctype html>
         <div class="notice">浏览器不会向网站暴露电脑的本地主机名。这里用你设置的设备标签识别自己的访问；标记后会写入仅限 <code>.shenzhe.org</code> 的安全 Cookie，并将同一 IP 最近 30 天记录标为站长访问。</div>
       </article>
     </section>
-    <footer class="footer">完整 IP 默认加密保存 30 天；地理位置来自 IP 推断，省/州和城市均可能存在误差。</footer>
+    <footer class="footer">完整 IP 默认加密保存 30 天；到期前自动转为长期日汇总。地理位置来自 IP 推断，省/州和城市均可能存在误差。</footer>
   </main>
 
   <script>
@@ -86,7 +88,9 @@ export const DASHBOARD_HTML = String.raw`<!doctype html>
       try{
         const data=await api('/api/dashboard?days='+days+'&excludeOwner='+exclude);
         showApp();$('pageviews').textContent=data.totals.pageviews;$('visits').textContent=data.totals.visits;$('visitors').textContent=data.totals.visitors;$('article-views').textContent=data.totals.articleViews;
-        $('updated').textContent='更新于 '+new Date(data.generatedAt).toLocaleString();trend(data.trend);bars('articles',data.articles,'label');bars('devices',data.devices,'label');bars('referrers',data.referrers,'label');
+        $('updated').textContent='更新于 '+new Date(data.generatedAt).toLocaleString();
+        const c=data.coverage;$('coverage').textContent='历史汇总：'+c.historicalAvailableFrom+' 至 2026-07-31（Cloudflare 自适应抽样，共 '+c.historicalPageviews+' 次浏览、'+c.historicalVisits+' 次访问，无法排除本人）；精细记录：2026-08-01 起（含 IP、文章和地区）。精细明细保留 30 天，日汇总长期保留并自动更新。';
+        trend(data.trend);bars('articles',data.articles,'label');bars('devices',data.devices,'label');bars('referrers',data.referrers,'label');
         $('locations').innerHTML=data.locations.length?data.locations.map(row=>'<div class="location"><span>'+escapeHtml(locationLabel(row))+'</span><b>'+row.pageviews+'</b></div>').join(''):'<div class="subtle">暂无数据</div>';
         $('recent').innerHTML=data.recent.length?data.recent.map(row=>'<tr><td>'+escapeHtml(new Date(row.occurred_at).toLocaleString())+'</td><td class="ip">'+escapeHtml(row.ip)+'</td><td class="'+(row.is_owner?'owner':'')+'">'+escapeHtml(row.owner_label||row.visitor_label)+'</td><td>'+escapeHtml(locationLabel(row))+'</td><td class="path"><b>'+escapeHtml(row.title||'')+'</b><br>'+escapeHtml(row.path)+'</td><td>'+escapeHtml(row.referrer_host||'直接/应用内')+'</td><td>'+escapeHtml(row.device_type+' · '+row.browser+' · '+row.operating_system)+'</td><td>'+escapeHtml(row.as_organization||('AS'+(row.asn||'')))+'</td></tr>').join(''):'<tr><td colspan="8" class="subtle">暂无数据</td></tr>';
       }catch(error){if(error.status===401)showLogin();else alert(error.message)}

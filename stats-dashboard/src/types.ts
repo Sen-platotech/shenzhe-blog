@@ -29,3 +29,5 @@ export type EncryptedValue = {
 }
 
 export type DashboardRow = Record<string, string | number | null>
+
+export type DashboardPeriod = 1 | 7 | 30 | 'all'

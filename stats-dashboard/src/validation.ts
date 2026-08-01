@@ -1,4 +1,4 @@
-import type { NormalizedClient, VisitEvent } from './types'
+import type { DashboardPeriod, NormalizedClient, VisitEvent } from './types'
 
 const MAX_PATH_LENGTH = 512
 const MAX_TITLE_LENGTH = 240
@@ -80,9 +80,10 @@ export function parseUserAgent(userAgent: string): NormalizedClient {
   return { deviceType, browser, operatingSystem }
 }
 
-export function parseDays(value: string | null): number {
-  const days = Number.parseInt(value || '30', 10)
-  return [1, 7, 30].includes(days) ? days : 30
+export function parsePeriod(value: string | null): DashboardPeriod {
+  if (value === 'all') return 'all'
+  const days = Number.parseInt(value || 'all', 10)
+  return [1, 7, 30].includes(days) ? (days as 1 | 7 | 30) : 'all'
 }
 
 export function normalizeLabel(value: unknown): string | null {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   normalizeLabel,
-  parseDays,
+  parsePeriod,
   parseUserAgent,
   parseVisitEvent
 } from './validation'
@@ -32,8 +32,9 @@ describe('collector validation', () => {
 
   it('detects bots and supported periods', () => {
     expect(parseUserAgent('Googlebot/2.1').deviceType).toBe('bot')
-    expect(parseDays('7')).toBe(7)
-    expect(parseDays('365')).toBe(30)
+    expect(parsePeriod('7')).toBe(7)
+    expect(parsePeriod('all')).toBe('all')
+    expect(parsePeriod('365')).toBe('all')
     expect(normalizeLabel(' 我的 MacBook ')).toBe('我的 MacBook')
   })
 })
