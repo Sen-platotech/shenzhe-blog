@@ -54,10 +54,10 @@ async function copyText(value) {
 }
 
 /**
- * 文章分享入口。系统分享、微信引导和降级逻辑都收敛在此模块内。
+ * 文章分享入口。点击后直接展示二维码，避免唤起设备系统分享面板。
  */
 export default function SharePanel({ post }) {
-  const [dialogMode, setDialogMode] = useState(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [wechatBrowser, setWechatBrowser] = useState(false)
   const [copied, setCopied] = useState(false)
   const [copyFailed, setCopyFailed] = useState(false)
@@ -67,20 +67,16 @@ export default function SharePanel({ post }) {
   const shareHost = shareHostOf(shareUrl)
   const siteTitle = siteConfig('TITLE', '沈哲的博客')
   const previewImage = post?.pageCoverThumbnail || post?.pageCover
-  const showQr =
-    dialogMode === 'fallback' ||
-    dialogMode === 'error' ||
-    dialogMode === 'cancelled'
   const shareButtonLabel = wechatBrowser ? '分享到朋友圈' : '分享文章'
 
-  const openDialog = mode => {
+  const openDialog = () => {
     setCopied(false)
     setCopyFailed(false)
-    setDialogMode(mode)
+    setDialogOpen(true)
   }
 
   const closeDialog = useCallback(() => {
-    setDialogMode(null)
+    setDialogOpen(false)
     setCopied(false)
     setCopyFailed(false)
     triggerRef.current?.focus()
@@ -91,33 +87,13 @@ export default function SharePanel({ post }) {
   }, [])
 
   useEffect(() => {
-    if (!dialogMode) return
+    if (!dialogOpen) return
     document.body.classList.add('share-dialog-open')
     return () => document.body.classList.remove('share-dialog-open')
-  }, [dialogMode])
+  }, [dialogOpen])
 
-  const handleShare = async () => {
-    if (isWechatBrowser()) {
-      openDialog('wechat')
-      return
-    }
-    if (
-      typeof navigator === 'undefined' ||
-      typeof navigator.share !== 'function'
-    ) {
-      openDialog('fallback')
-      return
-    }
-    try {
-      await navigator.share({
-        title: post.title,
-        text: post.summary || '',
-        url: shareUrl
-      })
-    } catch (error) {
-      // AbortError 既可能是用户关闭，也可能是设备没有可用分享目标。
-      openDialog(error?.name === 'AbortError' ? 'cancelled' : 'error')
-    }
+  const handleShare = () => {
+    openDialog()
   }
 
   const handleCopy = async () => {
@@ -141,8 +117,8 @@ export default function SharePanel({ post }) {
         <h2 className='share-panel__title cjk'>把这篇文章带给更多人</h2>
         <p className='share-panel__note'>
           {wechatBrowser
-            ? '点击后查看右上角菜单分享步骤。'
-            : '优先打开系统分享菜单；若设备不支持，可复制链接或微信扫码。'}
+            ? '请使用另一台设备扫码，或点右上角菜单分享到朋友圈。'
+            : '点击后直接显示二维码，用微信扫一扫打开文章，再分享到朋友圈。'}
         </p>
       </div>
       <button
@@ -165,7 +141,7 @@ export default function SharePanel({ post }) {
         <span>{shareButtonLabel}</span>
       </button>
       <Dialog
-        open={Boolean(dialogMode)}
+        open={dialogOpen}
         onClose={closeDialog}
         initialFocus={closeRef}
         className='share-dialog__root'
@@ -189,7 +165,7 @@ export default function SharePanel({ post }) {
               </svg>
             </button>
 
-            {dialogMode === 'wechat' && (
+            {dialogOpen && wechatBrowser && (
               <div className='share-dialog__wechat-cue' aria-hidden='true'>
                 <span className='share-dialog__arrow'>↗</span>
                 <span className='share-dialog__dots'>•••</span>
@@ -197,34 +173,15 @@ export default function SharePanel({ post }) {
             )}
 
             <span className='share-dialog__eyebrow'>
-              {dialogMode === 'wechat' ? '微信内分享' : '分享文章'}
+              {wechatBrowser ? '微信内分享' : '扫码分享'}
             </span>
-            <h2 className='share-dialog__title cjk'>
-              {dialogMode === 'wechat'
-                ? '只差最后一步'
-                : '把文章发送到微信'}
-            </h2>
+            <h2 className='share-dialog__title cjk'>扫码分享这篇文章</h2>
 
-            {dialogMode === 'wechat' && (
-              <p className='share-dialog__lead'>
-                点击右上角 ···，选择「分享到朋友圈」
-              </p>
-            )}
-            {dialogMode === 'fallback' && (
-              <p className='share-dialog__lead'>
-                当前浏览器无法直接打开分享菜单，请复制链接后分享到微信。
-              </p>
-            )}
-            {dialogMode === 'error' && (
-              <p className='share-dialog__lead'>
-                系统分享未能打开，请复制链接后分享到微信。
-              </p>
-            )}
-            {dialogMode === 'cancelled' && (
-              <p className='share-dialog__lead'>
-                系统分享已关闭，你仍可复制链接或使用二维码。
-              </p>
-            )}
+            <p className='share-dialog__lead'>
+              {wechatBrowser
+                ? '当前在微信中，请使用另一台设备扫描二维码；也可以点击右上角 ··· 分享到朋友圈。'
+                : '用微信扫一扫打开文章，再选择分享到朋友圈。'}
+            </p>
 
             <div className='share-preview'>
               <div
@@ -244,7 +201,7 @@ export default function SharePanel({ post }) {
               </div>
             </div>
 
-            {showQr && (
+            {dialogOpen && (
               <div className='share-qr'>
                 <div className='share-qr__code'>
                   <QrCode value={shareUrl} />

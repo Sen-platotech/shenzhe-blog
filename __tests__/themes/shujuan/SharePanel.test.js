@@ -58,7 +58,7 @@ describe('Shujuan SharePanel', () => {
     }
   })
 
-  it('passes the canonical article data to the native share sheet', async () => {
+  it('opens the QR panel directly without invoking native share', async () => {
     const share = jest.fn().mockResolvedValue(undefined)
     Object.defineProperty(window.navigator, 'share', {
       configurable: true,
@@ -70,16 +70,16 @@ describe('Shujuan SharePanel', () => {
       screen.getByRole('button', { name: '分享文章' })
     )
 
-    await waitFor(() => {
-      expect(share).toHaveBeenCalledWith({
-        title: post.title,
-        text: post.summary,
-        url: post.canonicalUrl
-      })
-    })
+    expect(
+      await screen.findByRole('dialog', { name: '分享到朋友圈' })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('share-qr')).toHaveTextContent(
+      post.canonicalUrl
+    )
+    expect(share).not.toHaveBeenCalled()
   })
 
-  it('guides WeChat visitors to the Moments menu instead of native share', async () => {
+  it('opens the QR panel directly for WeChat visitors', async () => {
     const share = jest.fn().mockResolvedValue(undefined)
     Object.defineProperty(window.navigator, 'share', {
       configurable: true,
@@ -99,12 +99,17 @@ describe('Shujuan SharePanel', () => {
       await screen.findByRole('dialog', { name: '分享到朋友圈' })
     ).toBeInTheDocument()
     expect(
-      screen.getByText('点击右上角 ···，选择「分享到朋友圈」')
+      screen.getByText(
+        '当前在微信中，请使用另一台设备扫描二维码；也可以点击右上角 ··· 分享到朋友圈。'
+      )
     ).toBeInTheDocument()
+    expect(screen.getByTestId('share-qr')).toHaveTextContent(
+      post.canonicalUrl
+    )
     expect(share).not.toHaveBeenCalled()
   })
 
-  it('offers a canonical-link fallback when native share is unavailable', async () => {
+  it('keeps copy available alongside the direct QR panel', async () => {
     const writeText = jest.fn().mockResolvedValue(undefined)
     Object.defineProperty(window.navigator, 'clipboard', {
       configurable: true,
@@ -128,7 +133,7 @@ describe('Shujuan SharePanel', () => {
     expect(await screen.findByText('链接已复制')).toBeInTheDocument()
   })
 
-  it('encodes the canonical article URL in the fallback QR code', async () => {
+  it('encodes the canonical article URL in the direct QR code', async () => {
     render(<SharePanel post={post} />)
     fireEvent.click(
       screen.getByRole('button', { name: '分享文章' })
@@ -137,45 +142,6 @@ describe('Shujuan SharePanel', () => {
     expect(await screen.findByTestId('share-qr')).toHaveTextContent(
       post.canonicalUrl
     )
-  })
-
-  it('falls back to copy and QR when the native share request fails', async () => {
-    Object.defineProperty(window.navigator, 'share', {
-      configurable: true,
-      value: jest.fn().mockRejectedValue(new Error('share unavailable'))
-    })
-
-    render(<SharePanel post={post} />)
-    fireEvent.click(
-      screen.getByRole('button', { name: '分享文章' })
-    )
-
-    expect(
-      await screen.findByRole('dialog', { name: '分享到朋友圈' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('系统分享未能打开，请复制链接后分享到微信。')
-    ).toBeInTheDocument()
-  })
-
-  it('keeps copy and QR available when the native share sheet closes with AbortError', async () => {
-    const abortError = new Error('share sheet closed')
-    abortError.name = 'AbortError'
-    Object.defineProperty(window.navigator, 'share', {
-      configurable: true,
-      value: jest.fn().mockRejectedValue(abortError)
-    })
-
-    render(<SharePanel post={post} />)
-    fireEvent.click(screen.getByRole('button', { name: '分享文章' }))
-
-    expect(
-      await screen.findByRole('dialog', { name: '分享到朋友圈' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('系统分享已关闭，你仍可复制链接或使用二维码。')
-    ).toBeInTheDocument()
-    expect(screen.getByTestId('share-qr')).toHaveTextContent(post.canonicalUrl)
   })
 
   it('tries the compatible copy fallback when Clipboard API access is denied', async () => {
