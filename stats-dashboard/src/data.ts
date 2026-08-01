@@ -61,9 +61,12 @@ export async function getDashboardData(
   const results = await db.batch<DashboardRow>([
     db.prepare(
       `SELECT COALESCE(SUM(pageviews), 0) AS pageviews,
-          COALESCE(SUM(visits), 0) AS visits
+          COALESCE(SUM(visits), 0) AS visits,
+          CASE WHEN ? = 'all' THEN
+            COALESCE((SELECT SUM(pageviews) FROM historical_articles), 0)
+          ELSE 0 END AS articleViews
        FROM historical_daily WHERE date >= ?`
-    ).bind(startDate),
+    ).bind(period, startDate),
     db.prepare(
       `SELECT COALESCE(SUM(pageviews), 0) AS pageviews,
           COALESCE(SUM(visits), 0) AS visits,
@@ -94,11 +97,24 @@ export async function getDashboardData(
        GROUP BY date ORDER BY date ASC`
     ).bind(start),
     db.prepare(
-      `SELECT path, MAX(title) AS title, COUNT(*) AS pageviews,
-          COUNT(DISTINCT visitor_id) AS visitors
-       FROM visits WHERE ${detailFilter} AND path LIKE '/article/%'
-       GROUP BY path ORDER BY pageviews DESC LIMIT 12`
-    ).bind(start),
+      `SELECT path, MAX(title) AS title, SUM(pageviews) AS pageviews,
+          SUM(visitors) AS visitors
+       FROM (
+         SELECT path, title, pageviews, 0 AS visitors
+         FROM historical_articles WHERE ? = 'all'
+         UNION ALL
+         SELECT path, MAX(title) AS title, SUM(pageviews) AS pageviews,
+           SUM(visitors) AS visitors
+         FROM article_rollups WHERE ${rollupFilter}
+         GROUP BY path
+         UNION ALL
+         SELECT path, MAX(title) AS title, COUNT(*) AS pageviews,
+           COUNT(DISTINCT visitor_id) AS visitors
+         FROM visits WHERE ${detailFilter} AND path LIKE '/article/%'
+         GROUP BY path
+       )
+       GROUP BY path ORDER BY pageviews DESC, title ASC LIMIT 12`
+    ).bind(period, startDate, start),
     db.prepare(
       `SELECT country, region, region_code, city, COUNT(*) AS pageviews,
           COUNT(DISTINCT visitor_id) AS visitors
@@ -175,6 +191,7 @@ export async function getDashboardData(
       visitors:
         numeric(rollupTotals, 'visitors') + numeric(detailTotals, 'visitors'),
       articleViews:
+        numeric(historicalTotals, 'articleViews') +
         numeric(rollupTotals, 'articleViews') +
         numeric(detailTotals, 'articleViews')
     },

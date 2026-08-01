@@ -36,7 +36,7 @@ export const DASHBOARD_HTML = String.raw`<!doctype html>
       <article class="card"><div class="metric-label">页面浏览</div><div id="pageviews" class="metric">—</div></article>
       <article class="card"><div class="metric-label">访问会话</div><div id="visits" class="metric">—</div></article>
       <article class="card"><div class="metric-label">精细访客（8 月 1 日起）</div><div id="visitors" class="metric">—</div></article>
-      <article class="card"><div class="metric-label">精细文章阅读（8 月 1 日起）</div><div id="article-views" class="metric">—</div></article>
+      <article class="card"><div class="metric-label">可识别文章阅读</div><div id="article-views" class="metric">—</div></article>
     </section>
 
     <div id="coverage" class="notice"></div>
@@ -89,7 +89,7 @@ export const DASHBOARD_HTML = String.raw`<!doctype html>
         const data=await api('/api/dashboard?days='+days+'&excludeOwner='+exclude);
         showApp();$('pageviews').textContent=data.totals.pageviews;$('visits').textContent=data.totals.visits;$('visitors').textContent=data.totals.visitors;$('article-views').textContent=data.totals.articleViews;
         $('updated').textContent='更新于 '+new Date(data.generatedAt).toLocaleString();
-        const c=data.coverage;$('coverage').textContent='历史汇总：'+c.historicalAvailableFrom+' 至 2026-07-31（Cloudflare 自适应抽样，共 '+c.historicalPageviews+' 次浏览、'+c.historicalVisits+' 次访问，无法排除本人）；精细记录：2026-08-01 起（含 IP、文章和地区）。精细明细保留 30 天，日汇总长期保留并自动更新。';
+        const c=data.coverage;$('coverage').textContent='历史汇总：'+c.historicalAvailableFrom+' 至 2026-07-31（Cloudflare 自适应抽样，共 '+c.historicalPageviews+' 次浏览、'+c.historicalVisits+' 次访问，无法排除本人）；已恢复 7 篇文章的标题和约 80 次文章阅读。精细记录：2026-08-01 起（含 IP、文章和地区）。精细明细保留 30 天，日汇总与文章标题长期保留并自动更新。';
         trend(data.trend);bars('articles',data.articles,'label');bars('devices',data.devices,'label');bars('referrers',data.referrers,'label');
         $('locations').innerHTML=data.locations.length?data.locations.map(row=>'<div class="location"><span>'+escapeHtml(locationLabel(row))+'</span><b>'+row.pageviews+'</b></div>').join(''):'<div class="subtle">暂无数据</div>';
         $('recent').innerHTML=data.recent.length?data.recent.map(row=>'<tr><td>'+escapeHtml(new Date(row.occurred_at).toLocaleString())+'</td><td class="ip">'+escapeHtml(row.ip)+'</td><td class="'+(row.is_owner?'owner':'')+'">'+escapeHtml(row.owner_label||row.visitor_label)+'</td><td>'+escapeHtml(locationLabel(row))+'</td><td class="path"><b>'+escapeHtml(row.title||'')+'</b><br>'+escapeHtml(row.path)+'</td><td>'+escapeHtml(row.referrer_host||'直接/应用内')+'</td><td>'+escapeHtml(row.device_type+' · '+row.browser+' · '+row.operating_system)+'</td><td>'+escapeHtml(row.as_organization||('AS'+(row.asn||'')))+'</td></tr>').join(''):'<tr><td colspan="8" class="subtle">暂无数据</td></tr>';

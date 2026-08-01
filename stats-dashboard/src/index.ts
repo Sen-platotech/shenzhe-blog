@@ -357,6 +357,23 @@ export default {
     ctx.waitUntil(
       env.DB.batch([
         env.DB.prepare(
+          `INSERT INTO article_rollups (
+             date, is_owner, path, title, pageviews, visitors, rolled_up_at
+           )
+           SELECT strftime('%Y-%m-%d', occurred_at), is_owner, path,
+             MAX(title), COUNT(*), COUNT(DISTINCT visitor_id),
+             strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+           FROM visits
+           WHERE date(occurred_at) < date('now', ?)
+             AND path LIKE '/article/%'
+           GROUP BY strftime('%Y-%m-%d', occurred_at), is_owner, path
+           ON CONFLICT(date, is_owner, path) DO UPDATE SET
+             title = excluded.title,
+             pageviews = excluded.pageviews,
+             visitors = excluded.visitors,
+             rolled_up_at = excluded.rolled_up_at`
+        ).bind(cutoff),
+        env.DB.prepare(
           `INSERT INTO daily_rollups (
              date, is_owner, pageviews, visits, visitors, article_views, rolled_up_at
            )
@@ -384,9 +401,10 @@ export default {
         console.log(
           JSON.stringify({
             message: 'retention-prune',
-            rollupRowsChanged: results[0]?.meta.changes || 0,
-            visitsDeleted: results[1]?.meta.changes || 0,
-            loginAttemptsDeleted: results[2]?.meta.changes || 0
+            articleRollupRowsChanged: results[0]?.meta.changes || 0,
+            rollupRowsChanged: results[1]?.meta.changes || 0,
+            visitsDeleted: results[2]?.meta.changes || 0,
+            loginAttemptsDeleted: results[3]?.meta.changes || 0
           })
         )
       })
