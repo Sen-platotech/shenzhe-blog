@@ -1,13 +1,56 @@
+import katex from 'katex'
 import LazyImage from '@/components/LazyImage'
 import { uniqueHeadingId } from '@/lib/content/markdown'
 
+const KATEX_SETTINGS = {
+  throwOnError: false,
+  strict: false,
+  output: 'htmlAndMathml'
+}
+
+function MathExpression({ math, display = false }) {
+  let html
+
+  try {
+    html = katex.renderToString(math, {
+      ...KATEX_SETTINGS,
+      displayMode: display
+    })
+  } catch {
+    return (
+      <code className='mdx-math-error' title='公式暂时无法渲染'>
+        {display ? `$$${math}$$` : `$${math}$`}
+      </code>
+    )
+  }
+
+  const Tag = display ? 'div' : 'span'
+  return (
+    <Tag
+      className={`mdx-math${display ? ' mdx-math--display' : ' mdx-math--inline'}`}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  )
+}
+
 function inline(text, keyPrefix) {
-  const pattern = /(!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|`[^`]+`)/g
+  const pattern =
+    /(\$\$[\s\S]*?\$\$|\$(?:\\.|[^$\\\n])+\$|!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|`[^`]+`)/g
   const parts = String(text || '').split(pattern)
 
   return parts.map((part, index) => {
     const key = `${keyPrefix}-${index}`
     if (!part) return null
+
+    const displayMath = part.match(/^\$\$([\s\S]*)\$\$$/)
+    if (displayMath) {
+      return <MathExpression key={key} math={displayMath[1].trim()} display />
+    }
+
+    const inlineMath = part.match(/^\$([\s\S]+)\$$/)
+    if (inlineMath) {
+      return <MathExpression key={key} math={inlineMath[1]} />
+    }
 
     const image = part.match(/^!\[([^\]]*)\]\(([^)]+)\)$/)
     if (image) {
@@ -28,7 +71,8 @@ function inline(text, keyPrefix) {
           key={key}
           href={link[2]}
           target={link[2].startsWith('http') ? '_blank' : undefined}
-          rel={link[2].startsWith('http') ? 'noreferrer' : undefined}>
+          rel={link[2].startsWith('http') ? 'noreferrer' : undefined}
+        >
           {link[1]}
         </a>
       )
@@ -141,6 +185,18 @@ function renderGallery(text, key) {
   )
 }
 
+function renderStandaloneImage(text, key) {
+  const image = text.match(/^!\[([^\]]*)\]\(([^)]+)\)$/)
+  if (!image) return null
+
+  return (
+    <figure key={key} className='mdx-image'>
+      <LazyImage src={image[2]} alt={image[1] || '文章配图'} />
+      {image[1] && <figcaption>{image[1]}</figcaption>}
+    </figure>
+  )
+}
+
 function renderEmbed(text, key) {
   const lines = text.split('\n').slice(1, -1)
   const attributes = Object.fromEntries(
@@ -209,6 +265,14 @@ function createBlockRenderer() {
       return renderEmbed(text, key)
     }
 
+    const displayMath = text.match(/^\$\$\s*\n?([\s\S]*?)\n?\s*\$\$$/)
+    if (displayMath) {
+      return <MathExpression key={key} math={displayMath[1].trim()} display />
+    }
+
+    const standaloneImage = renderStandaloneImage(text, key)
+    if (standaloneImage) return standaloneImage
+
     const alignedRight = text.match(/^:::right\s*\n([\s\S]+)\n:::$/)
     if (alignedRight) {
       return (
@@ -225,7 +289,8 @@ function createBlockRenderer() {
         <Heading
           key={key}
           level={heading[1].length}
-          id={uniqueHeadingId(value, headingCounts)}>
+          id={uniqueHeadingId(value, headingCounts)}
+        >
           {inline(value, key)}
         </Heading>
       )
@@ -240,16 +305,14 @@ function createBlockRenderer() {
       return renderTable(text, key)
     }
 
-    if (text.startsWith('> ')) {
+    if (/^>\s?/.test(text)) {
       return (
         <blockquote key={key}>
-          {text
-            .split('\n')
-            .map((line, lineIndex) => (
-              <p key={`${key}-${lineIndex}`}>
-                {inline(line.replace(/^>\s?/, ''), `${key}-${lineIndex}`)}
-              </p>
-            ))}
+          {text.split('\n').map((line, lineIndex) => (
+            <p key={`${key}-${lineIndex}`}>
+              {inline(line.replace(/^>\s?/, ''), `${key}-${lineIndex}`)}
+            </p>
+          ))}
         </blockquote>
       )
     }
@@ -281,8 +344,7 @@ export default function MdxArticle({ source, indent = false }) {
   }
 
   return (
-    <article
-      className={`mdx-article${indent ? ' mdx-article--indented' : ''}`}>
+    <article className={`mdx-article${indent ? ' mdx-article--indented' : ''}`}>
       {blocks.map(renderBlock)}
     </article>
   )
