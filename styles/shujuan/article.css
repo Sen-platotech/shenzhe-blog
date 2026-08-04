@@ -67,6 +67,10 @@
 .prose .mdx-article--indented>.mdx-align-right{
   text-align:right;text-indent:0;font-family:var(--serif-cjk);color:var(--muted);
 }
+.prose h1{
+  font-family:var(--serif-cjk);font-weight:600;font-size:1.86rem;line-height:1.45;
+  color:var(--ink);letter-spacing:.03em;margin:2.8em 0 .95em;scroll-margin-top:110px;
+}
 .prose .dropcap::first-letter{
   float:left;font-family:var(--serif-cjk);font-size:3.4em;line-height:.82;
   font-weight:600;color:var(--accent);margin:.06em .14em 0 0;
@@ -80,6 +84,13 @@
   letter-spacing:.1em;font-weight:600}
 .prose h3{font-family:var(--serif-cjk);font-weight:600;font-size:1.26rem;line-height:1.55;
   color:var(--ink);margin:2em 0 .7em;scroll-margin-top:110px}
+.prose .mdx-article h3.mdx-heading--body{
+  font-family:"Times New Roman",var(--serif-cjk),var(--serif),serif;
+  font-size:1em;line-height:2;margin:1.65em 0 .25em;letter-spacing:0;
+}
+.prose .mdx-table-title{
+  margin:2.2em 0 .7em!important;text-indent:0;font-weight:600;color:var(--ink);
+}
 .prose blockquote{
   margin:1.8em 0;padding:6px 0 6px 28px;border-left:2px solid var(--accent);
   font-family:var(--serif-cjk);font-style:normal;color:var(--ink);
@@ -118,8 +129,10 @@
 .prose figure img{width:100%;border-radius:4px;box-shadow:var(--shadow)}
 .prose figcaption{margin-top:12px;text-align:center;font-family:var(--label);font-size:.85rem;
   color:var(--muted);letter-spacing:.04em}
-.prose .mdx-image{max-width:620px;margin-left:auto;margin-right:auto;text-indent:0}
-.prose .mdx-image img{max-height:760px;object-fit:contain;background:var(--surface-2)}
+.prose .mdx-image{width:min(100%,440px);max-width:none;margin-left:auto;margin-right:auto;text-indent:0}
+.prose .mdx-image img{
+  width:100%;height:auto;max-height:760px;object-fit:contain;background:var(--surface-2)
+}
 
 /* KaTeX blocks preserve the source TeX while keeping long formulas readable on mobile. */
 .prose .mdx-math{color:var(--ink);text-indent:0}
@@ -141,15 +154,24 @@
   border-radius:5px;background:var(--surface);box-shadow:var(--shadow);text-indent:0;
   -webkit-overflow-scrolling:touch;
 }
-.prose .mdx-table-wrap table{min-width:680px;width:100%;border-collapse:collapse;font-size:.86rem;line-height:1.75}
+.prose .mdx-table-wrap table{
+  min-width:680px;width:100%;table-layout:fixed;border-collapse:collapse;font-size:.86rem;line-height:1.75;
+}
 .prose .mdx-table-wrap th,.prose .mdx-table-wrap td{
   padding:13px 15px;border-bottom:1px solid var(--line-soft);border-right:1px solid var(--line-soft);
-  text-align:left;vertical-align:top;color:var(--ink-2);
+  text-align:left;vertical-align:top;color:var(--ink-2);white-space:normal;overflow-wrap:anywhere;
 }
+.prose .mdx-table--cols-3 th:nth-child(1),.prose .mdx-table--cols-3 td:nth-child(1){width:12%}
+.prose .mdx-table--cols-3 th:nth-child(2),.prose .mdx-table--cols-3 td:nth-child(2){width:21%}
+.prose .mdx-table--cols-3 th:nth-child(3),.prose .mdx-table--cols-3 td:nth-child(3){width:67%}
+.prose .mdx-table--cols-4 th:nth-child(1),.prose .mdx-table--cols-4 td:nth-child(1){width:15%}
+.prose .mdx-table--cols-4 th:nth-child(2),.prose .mdx-table--cols-4 td:nth-child(2){width:29%}
+.prose .mdx-table--cols-4 th:nth-child(3),.prose .mdx-table--cols-4 td:nth-child(3){width:31%}
+.prose .mdx-table--cols-4 th:nth-child(4),.prose .mdx-table--cols-4 td:nth-child(4){width:25%}
 .prose .mdx-table-wrap th:last-child,.prose .mdx-table-wrap td:last-child{border-right:0}
 .prose .mdx-table-wrap tbody tr:last-child td{border-bottom:0}
 .prose .mdx-table-wrap th{
-  color:var(--ink);background:var(--surface-2);font-weight:600;white-space:nowrap;
+  color:var(--ink);background:var(--surface-2);font-weight:600;white-space:normal;
 }
 .prose .mdx-table-wrap td strong{color:var(--ink)}
 .prose hr{margin:3em 0;border:0;border-top:1px solid var(--line)}
@@ -186,6 +208,7 @@
 }
 
 @media(max-width:700px){
+  .prose .mdx-image{width:min(100%,440px)}
   .prose .mdx-math--display{text-align:left;margin-left:-4px;margin-right:-4px}
   .prose .mdx-table-wrap table{min-width:620px;font-size:.82rem}
   .prose .mdx-table-wrap th,.prose .mdx-table-wrap td{padding:11px 12px}

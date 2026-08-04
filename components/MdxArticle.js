@@ -59,7 +59,7 @@ function inline(text, keyPrefix) {
           key={key}
           alt={image[1] || 'Article image'}
           src={image[2]}
-          className='my-4 w-full rounded-lg object-cover'
+          className='mdx-inline-image'
         />
       )
     }
@@ -90,11 +90,15 @@ function inline(text, keyPrefix) {
   })
 }
 
-function Heading({ level, children, id }) {
+function Heading({ level, children, id, className = '' }) {
   const Tag = `h${level}`
 
   return (
-    <Tag id={id} data-id={id} className='notion-h scroll-mt-24'>
+    <Tag
+      id={id}
+      data-id={id}
+      className={`notion-h scroll-mt-24${className ? ` ${className}` : ''}`}
+    >
       {children}
     </Tag>
   )
@@ -138,7 +142,7 @@ function renderTable(text, key) {
 
   return (
     <div key={key} className='mdx-table-wrap'>
-      <table>
+      <table className={`mdx-table mdx-table--cols-${headers.length}`}>
         <thead>
           <tr>
             {headers.map((cell, cellIndex) => (
@@ -195,6 +199,10 @@ function renderStandaloneImage(text, key) {
       {image[1] && <figcaption>{image[1]}</figcaption>}
     </figure>
   )
+}
+
+function hasStandaloneImageLine(line) {
+  return /^!\[[^\]]*\]\([^)]+\)$/.test(line.trim())
 }
 
 function renderEmbed(text, key) {
@@ -270,8 +278,46 @@ function createBlockRenderer() {
       return <MathExpression key={key} math={displayMath[1].trim()} display />
     }
 
+    const lines = text.split('\n')
+    const hasImageLine = lines.some(hasStandaloneImageLine)
+    const mixedImageBlock =
+      hasImageLine && lines.some(line => !hasStandaloneImageLine(line))
+    if (mixedImageBlock) {
+      const parts = []
+      let paragraphLines = []
+
+      const flushParagraph = () => {
+        if (paragraphLines.length === 0) return
+        parts.push(
+          renderBlock(paragraphLines.join('\n'), `${key}-text-${parts.length}`)
+        )
+        paragraphLines = []
+      }
+
+      lines.forEach((line, lineIndex) => {
+        if (hasStandaloneImageLine(line)) {
+          flushParagraph()
+          parts.push(
+            renderStandaloneImage(line.trim(), `${key}-image-${lineIndex}`)
+          )
+        } else {
+          paragraphLines.push(line)
+        }
+      })
+      flushParagraph()
+      return parts
+    }
+
     const standaloneImage = renderStandaloneImage(text, key)
     if (standaloneImage) return standaloneImage
+
+    if (text === '计算方法的七项方法论功能') {
+      return (
+        <p key={key} className='mdx-table-title'>
+          {text}
+        </p>
+      )
+    }
 
     const alignedRight = text.match(/^:::right\s*\n([\s\S]+)\n:::$/)
     if (alignedRight) {
@@ -282,21 +328,22 @@ function createBlockRenderer() {
       )
     }
 
-    const heading = text.match(/^(#{2,4})\s+(.+)$/)
+    const heading = text.match(/^(#{1,4})\s+(.+)$/)
     if (heading) {
       const value = heading[2]
+      const bodyHeading = /^\d+\.\s/.test(value)
       return (
         <Heading
           key={key}
           level={heading[1].length}
           id={uniqueHeadingId(value, headingCounts)}
+          className={bodyHeading ? 'mdx-heading--body' : ''}
         >
           {inline(value, key)}
         </Heading>
       )
     }
 
-    const lines = text.split('\n')
     if (
       lines.length >= 3 &&
       lines[0].includes('|') &&
