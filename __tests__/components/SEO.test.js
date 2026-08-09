@@ -125,6 +125,30 @@ describe('SEO article share metadata', () => {
     )
   })
 
+  it('publishes stable metadata for the academic about page', () => {
+    useRouter.mockReturnValue({
+      route: '/about',
+      query: {},
+      asPath: '/about'
+    })
+
+    render(<SEO siteInfo={siteInfo} NOTION_CONFIG={{}} />)
+
+    expect(document.title).toBe('关于沈哲 | 沈哲的博客')
+    expect(document.querySelector('meta[name="description"]')).toHaveAttribute(
+      'content',
+      expect.stringContaining('计算政治学、数字治理与人工智能治理')
+    )
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://shenzhe.org/about'
+    )
+    expect(document.querySelector('meta[property="og:type"]')).toHaveAttribute(
+      'content',
+      'website'
+    )
+  })
+
   it.each([
     ['/404', '/missing-article'],
     ['/500', '/500']

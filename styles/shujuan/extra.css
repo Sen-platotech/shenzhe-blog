@@ -37,6 +37,7 @@
 .about-hero{padding:160px 0 80px;text-align:center;background:var(--bg-2);border-bottom:1px solid var(--line-soft)}
 .about-hero .avatar{width:120px;height:120px;font-size:2.8rem;margin:0 auto 28px}
 .about-hero h1{font-family:var(--serif-cjk);font-size:clamp(2rem,4vw,2.8rem);font-weight:600;letter-spacing:.1em;color:var(--ink)}
+.about-hero .about-role{margin-top:16px;font-family:var(--serif-cjk);font-size:clamp(.98rem,2.2vw,1.15rem);line-height:1.8;letter-spacing:.08em;color:var(--ink-2)}
 .about-hero .motto{margin-top:18px;font-family:var(--serif-cjk);font-size:1.15rem;letter-spacing:.16em;color:var(--accent)}
 .ids{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
 .idcard{padding:34px 28px;background:var(--surface);border:1px solid var(--line-soft);border-radius:4px;
@@ -53,6 +54,8 @@
 .now-row:last-child{border-bottom:1px solid var(--line-soft)}
 .now-row .k{font-family:var(--label);font-size:.84rem;letter-spacing:.16em;color:var(--accent)}
 .now-row .v{font-family:var(--serif-cjk);color:var(--ink);font-size:1.05rem;line-height:1.7}
+.now-row .v a{color:var(--accent);border-bottom:1px solid var(--line-soft);transition:border-color .25s}
+.now-row .v a:hover{border-color:var(--accent)}
 .now-row .v small{display:block;color:var(--muted);font-size:.86rem;margin-top:3px;font-family:var(--label);letter-spacing:.04em}
 .contact{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 @media(max-width:760px){.ids{grid-template-columns:1fr}.now-row{grid-template-columns:1fr;gap:6px}}
