@@ -312,6 +312,7 @@ const getSEOMeta = (props, router, locale) => {
   const keyword = router?.query?.s
 
   const TITLE = siteConfig('TITLE')
+  const AUTHOR = siteConfig('AUTHOR', '沈哲')
   switch (router.route) {
     case '/':
       return {
@@ -331,9 +332,8 @@ const getSEOMeta = (props, router, locale) => {
       }
     case '/about':
       return {
-        title: `关于沈哲 | ${siteInfo?.title}`,
-        description:
-          '沈哲，吉林大学政治学理论硕士研究生，关注计算政治学、数字治理与人工智能治理，研究中国治理中的信息、组织与技术关系。',
+        title: `关于${AUTHOR} | ${siteInfo?.title}`,
+        description: `${AUTHOR}，吉林大学政治学理论硕士研究生，关注计算政治学、数字治理与人工智能治理，研究中国治理中的信息、组织与技术关系。`,
         image: `${siteInfo?.pageCover}`,
         slug: 'about',
         type: 'website'

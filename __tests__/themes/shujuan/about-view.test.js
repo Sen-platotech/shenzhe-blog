@@ -42,9 +42,9 @@ describe('Shujuan AboutView', () => {
 
   it('keeps previously excluded private profile fields off the page', () => {
     const { container } = render(<AboutView />)
-    const text = container.textContent
+    const markup = container.innerHTML
 
-    expect(text).not.toMatch(/GPA|中共党员|政治面貌/)
-    expect(text).not.toMatch(/(?:\+?86[-\s]?)?1[3-9]\d{9}/)
+    expect(markup).not.toMatch(/GPA|中共党员|政治面貌/)
+    expect(markup).not.toMatch(/(?:\+?86[-\s]?)?1[3-9]\d{9}/)
   })
 })

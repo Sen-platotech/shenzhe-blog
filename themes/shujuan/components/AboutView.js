@@ -1,9 +1,10 @@
 import SmartLink from '@/components/SmartLink'
 import { siteConfig } from '@/lib/config'
+import { decryptEmail } from '@/lib/plugins/mailEncrypt'
 import CONFIG from '../config'
 
-const CONTACT_EMAIL = 'szjluedu2024@163.com'
-const GITHUB_URL = 'https://github.com/Sen-platotech'
+const DEFAULT_CONTACT_EMAIL = 'szjluedu2024@163.com'
+const DEFAULT_GITHUB_URL = 'https://github.com/Sen-platotech'
 const ETHICS_COUNCIL_URL = 'https://github.com/Sen-platotech/ethics-council'
 
 /** 关于页 —— 结构与 About.html 一致（专属样式在 extra.css）。
@@ -15,6 +16,11 @@ export default function AboutView() {
     CONFIG
   )
   const author = siteConfig('AUTHOR', '沈哲', CONFIG)
+  const configuredEmail = siteConfig('CONTACT_EMAIL', '', CONFIG)
+  const contactEmail = configuredEmail
+    ? decryptEmail(configuredEmail)
+    : DEFAULT_CONTACT_EMAIL
+  const githubUrl = siteConfig('CONTACT_GITHUB', DEFAULT_GITHUB_URL, CONFIG)
   return (
     <>
       <header className='about-hero'>
@@ -206,10 +212,10 @@ export default function AboutView() {
             欢迎就研究、写作与合作来信
           </p>
           <div className='contact'>
-            <a className='btn btn--solid' href={`mailto:${CONTACT_EMAIL}`}>
+            <a className='btn btn--solid' href={`mailto:${contactEmail}`}>
               写封邮件
             </a>
-            <SmartLink className='btn btn--ghost' href={GITHUB_URL}>
+            <SmartLink className='btn btn--ghost' href={githubUrl}>
               GitHub
             </SmartLink>
             <SmartLink className='btn btn--ghost' href='/archive'>
