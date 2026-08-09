@@ -29,8 +29,6 @@ describe('Shujuan AboutView', () => {
     ).toBeInTheDocument()
     expect(screen.getByText(/政治学理论硕士生/)).toBeInTheDocument()
     expect(screen.getByText(/吉林大学/)).toBeInTheDocument()
-    expect(screen.getByText(/地方政策表达差异/)).toBeInTheDocument()
-    expect(screen.getByText(/Ethics Council/)).toBeInTheDocument()
 
     expect(
       screen.getByRole('link', { name: '写封邮件' }).getAttribute('href')
@@ -39,6 +37,14 @@ describe('Shujuan AboutView', () => {
       'href',
       'https://github.com/Sen-platotech'
     )
+  })
+
+  it('omits the representative work section', () => {
+    render(<AboutView />)
+
+    expect(screen.queryByText('代表性工作')).not.toBeInTheDocument()
+    expect(screen.queryByText(/地方政策表达差异/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Ethics Council/)).not.toBeInTheDocument()
   })
 
   it('keeps previously excluded private profile fields off the page', () => {

@@ -5,7 +5,6 @@ import CONFIG from '../config'
 
 const DEFAULT_CONTACT_EMAIL = 'szjluedu2024@163.com'
 const DEFAULT_GITHUB_URL = 'https://github.com/Sen-platotech'
-const ETHICS_COUNCIL_URL = 'https://github.com/Sen-platotech/ethics-council'
 
 /** 关于页 —— 结构与 About.html 一致（专属样式在 extra.css）。
  * 作为主题导出的 LayoutAbout 使用：pages/about.js 走 DynamicLayout layoutName='LayoutAbout'。 */
@@ -152,50 +151,6 @@ export default function AboutView() {
                 <small>
                   Ethics of Artificial Intelligence · European Identity
                 </small>
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className='sec-sm band-2'>
-        <div className='wrap'>
-          <div className='divider reveal' style={{ marginBottom: '42px' }}>
-            <span className='cjk'>代表性工作</span>
-          </div>
-          <div className='now-list'>
-            <div className='now-row reveal'>
-              <span className='k'>政策文本</span>
-              <span className='v cjk'>
-                围绕政策信息在政府层级间的传递与地方政策表达差异，完成大规模政府工作报告文本的语义分类、指标构建与面板分析。
-                <small>中文预训练语言模型 · 语义分类 · 面板分析</small>
-              </span>
-            </div>
-            <div className='now-row reveal'>
-              <span className='k'>制度机制</span>
-              <span className='v cjk'>
-                以「形式化吸纳」解释数字政府中的技术赋能悖论，并从算法作为制度的视角讨论其知识谱系与解释边界。
-              </span>
-            </div>
-            <div className='now-row reveal'>
-              <span className='k'>AI 系统</span>
-              <span className='v cjk'>
-                独立设计并开源{' '}
-                <SmartLink href={ETHICS_COUNCIL_URL}>Ethics Council</SmartLink>
-                ，以多智能体协作模拟科研伦理预审；同时参与政治学领域的大模型评测与训练数据设计。
-                <small>多智能体系统 · 大模型评测 · 可审计研究工作流</small>
-              </span>
-            </div>
-            <div className='now-row reveal'>
-              <span className='k'>研究实践</span>
-              <span className='v cjk'>
-                参与合成生物学伦理框架与政策体系研究，并积累乡村田野、入户调查、半结构式访谈与口述史经验。
-              </span>
-            </div>
-            <div className='now-row reveal'>
-              <span className='k'>学术交流</span>
-              <span className='v cjk'>
-                曾在计算政治学、公共管理与城市治理相关学术会议报告研究；一项研究获论文评选一等奖，并获第三届计算政治学讲习班优秀学员。
               </span>
             </div>
           </div>
