@@ -15,6 +15,7 @@ jest.mock('@/components/SmartLink', () => {
 jest.mock('@/lib/config', () => ({
   siteConfig: jest.fn((key, fallback) => {
     if (key === 'AUTHOR') return '沈哲'
+    if (key === 'CONTACT_GITHUB') return ''
     return fallback
   })
 }))

@@ -20,7 +20,12 @@ export default function AboutView() {
   const contactEmail = configuredEmail
     ? decryptEmail(configuredEmail)
     : DEFAULT_CONTACT_EMAIL
-  const githubUrl = siteConfig('CONTACT_GITHUB', DEFAULT_GITHUB_URL, CONFIG)
+  const configuredGithubUrl = siteConfig(
+    'CONTACT_GITHUB',
+    DEFAULT_GITHUB_URL,
+    CONFIG
+  )
+  const githubUrl = configuredGithubUrl || DEFAULT_GITHUB_URL
   return (
     <>
       <header className='about-hero'>
