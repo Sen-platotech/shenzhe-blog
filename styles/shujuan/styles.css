@@ -232,8 +232,8 @@ body::after{
 .hero__rule{width:54px;height:1px;background:rgba(243,234,214,.4);margin:38px auto 0}
 
 .hero__cards{
-  margin-top:54px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:20px;max-width:760px;margin-left:auto;margin-right:auto;
+  margin-top:54px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:20px;max-width:1000px;margin-left:auto;margin-right:auto;
 }
 .hcard{
   position:relative;display:flex;flex-direction:column;gap:8px;

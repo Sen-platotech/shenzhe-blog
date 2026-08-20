@@ -45,9 +45,9 @@ export default function Footer() {
             </div>
             <div className='foot__col'>
               <h4>栏目</h4>
-              <SmartLink href='/category/研究分享'>研究分享</SmartLink>
+              <SmartLink href='/category/AI研究分享'>AI研究分享</SmartLink>
+              <SmartLink href='/category/社会研究分享'>社会研究分享</SmartLink>
               <SmartLink href='/category/心情随笔'>心情随笔</SmartLink>
-              <SmartLink href='/category/治学手记'>治学手记</SmartLink>
             </div>
             <div className='foot__col'>
               <h4>联系</h4>

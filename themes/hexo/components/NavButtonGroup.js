@@ -4,7 +4,8 @@ import SmartLink from '@/components/SmartLink'
  * 首页导航按钮的自定义显示顺序（仅限分类按钮）
  */
 const CATEGORY_DISPLAY_ORDER = [
-  '研究分享',
+  'AI研究分享',
+  '社会研究分享',
   '心情随笔'
 ]
 

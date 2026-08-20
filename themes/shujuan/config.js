@@ -11,9 +11,9 @@ const CONFIG = {
   SHUJUAN_FOOTER_COPYRIGHT: '© 2021–2026 沈哲 · shenzhe.org',
   // 首页栏目卡 / 分类页封面：按分类名映射到 /public 下的图片，缺省回退 bg_image
   SHUJUAN_CATEGORY_COVERS: {
-    研究分享: '/images/posts/fox-spirit-cult-cover.jpg',
+    AI研究分享: '/images/posts/ai-computational-politics-cover.jpg',
+    社会研究分享: '/images/posts/fox-spirit-cult-cover.jpg',
     心情随笔: '/bg_image.jpg',
-    治学手记: '/images/posts/paper-factory-cover.jpg'
   }
 }
 export default CONFIG

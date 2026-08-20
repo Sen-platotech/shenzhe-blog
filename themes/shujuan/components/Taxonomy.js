@@ -11,7 +11,7 @@ export function CategoryIndexView({ categoryOptions = [] }) {
         <h1 className='pagehead__title cjk' style={{ marginTop: '18px' }}>
           分类
         </h1>
-        <p className='pagehead__sub'>研究分享 · 心情随笔 · 治学手记</p>
+        <p className='pagehead__sub'>AI研究分享 · 社会研究分享 · 心情随笔</p>
       </header>
       <section className='sec-sm band'>
         <div className='wrap'>

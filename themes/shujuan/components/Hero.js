@@ -24,14 +24,20 @@ export default function Hero() {
             <span className='hcard__desc'>政治学人 · 程序员 · INFP，关于我的一切</span>
             <span className='hcard__arrow'>走近 →</span>
           </SmartLink>
-          <SmartLink className='hcard' href='/category/研究分享'>
+          <SmartLink className='hcard' href='/category/AI研究分享'>
             <span className='hcard__idx'>02</span>
-            <span className='hcard__name cjk'>研究分享</span>
-            <span className='hcard__desc'>政治、社会史与民间信仰的长读笔记</span>
+            <span className='hcard__name cjk'>AI研究分享</span>
+            <span className='hcard__desc'>人工智能、Agent 与计算政治学的研究笔记</span>
             <span className='hcard__arrow'>阅读 →</span>
           </SmartLink>
-          <SmartLink className='hcard' href='/category/心情随笔'>
+          <SmartLink className='hcard' href='/category/社会研究分享'>
             <span className='hcard__idx'>03</span>
+            <span className='hcard__name cjk'>社会研究分享</span>
+            <span className='hcard__desc'>政治、社会史与民间信仰的长读笔记</span>
+            <span className='hcard__arrow'>翻阅 →</span>
+          </SmartLink>
+          <SmartLink className='hcard' href='/category/心情随笔'>
+            <span className='hcard__idx'>04</span>
             <span className='hcard__name cjk'>心情随笔</span>
             <span className='hcard__desc'>闭门读书之余，写给自己的只言片语</span>
             <span className='hcard__arrow'>翻阅 →</span>
