@@ -129,9 +129,10 @@
 .prose figure img{width:100%;border-radius:4px;box-shadow:var(--shadow)}
 .prose figcaption{margin-top:12px;text-align:center;font-family:var(--label);font-size:.85rem;
   color:var(--muted);letter-spacing:.04em}
-.prose .mdx-image{width:min(100%,440px);max-width:none;margin-left:auto;margin-right:auto;text-indent:0}
+.prose .mdx-image{width:min(100%,720px);max-width:none;margin-left:auto;margin-right:auto;text-indent:0}
 .prose .mdx-image img{
-  width:100%;height:auto;max-height:760px;object-fit:contain;background:var(--surface-2)
+  display:block;width:auto;max-width:100%;height:auto;margin:0 auto;object-fit:contain;
+  background:var(--surface-2)
 }
 
 /* KaTeX blocks preserve the source TeX while keeping long formulas readable on mobile. */
@@ -183,8 +184,9 @@
 }
 .prose .mdx-gallery figure{margin:0;text-align:center}
 .prose .mdx-gallery img{
-  width:100%;height:360px;object-fit:contain;border-radius:4px;
-  background:var(--surface);box-shadow:var(--shadow);
+  display:block;width:auto;max-width:100%;height:auto;max-height:760px;
+  margin:0 auto;object-fit:contain;border-radius:4px;background:var(--surface);
+  box-shadow:var(--shadow);
 }
 .prose .mdx-gallery figcaption{text-indent:0}
 
@@ -208,12 +210,12 @@
 }
 
 @media(max-width:700px){
-  .prose .mdx-image{width:min(100%,440px)}
+  .prose .mdx-image{width:100%}
   .prose .mdx-math--display{text-align:left;margin-left:-4px;margin-right:-4px}
   .prose .mdx-table-wrap table{min-width:620px;font-size:.82rem}
   .prose .mdx-table-wrap th,.prose .mdx-table-wrap td{padding:11px 12px}
   .prose .mdx-gallery{grid-template-columns:1fr;gap:18px}
-  .prose .mdx-gallery img{height:320px}
+  .prose .mdx-gallery img{max-height:none}
   .prose .mdx-embed{width:calc(100vw - 24px)}
   .prose .mdx-embed__bar{align-items:flex-start;flex-direction:column;gap:3px}
 }

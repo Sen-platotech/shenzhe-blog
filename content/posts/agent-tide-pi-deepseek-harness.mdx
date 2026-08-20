@@ -33,7 +33,7 @@ seo:
 Pi和Codex以及Claude Code相比，有什么特征？
 Databricks今日公布了一组数据，通过自主的基准评估工具，Databricks在实际执行的编码任务上对数百万行代码库进行编辑，我们能看到不同基座大模型处理任务的花费与效果占比：
 
-![Databricks 编码任务成本与通过率基准](/images/posts/pi-deepseek-harness-20260819/01-databricks-benchmark.png)
+![](/images/posts/pi-deepseek-harness-20260819/01-databricks-benchmark.png)
 
 这个图横坐标指的是每任务花费，纵坐标是任务通过率。简单来说，越往左上角就是Tokens越便宜且性能越好。坐标上的点位指的是基座大模型和配套的Agent。毕竟大模型需要跑在Agent上才能调用工具，完成任务。红色的这条线可以说是斩杀线，而Glm5.2加上Pi以卓越的性能和性价比把几个闭源模型远远甩在身后。（当时更新数据的时候GLM还没更新5.3，DeepSeek也没发布正式版V4）一个值得注意的事实是，在红色的线中，有四个都是Pi。甚至最好的性能也是Opus4.8+Pi，而不是Claude自家的Agent工具。
 
@@ -44,15 +44,15 @@ Databricks今日公布了一组数据，通过自主的基准评估工具，Data
 > 3. The token price of a model is a poor indicator of actual costs incurred on end-to-end tasks. Larger models can be far more token efficient and have lower overall costs.模型的代币价格并不能很好地反映端到端任务实际成本。更大的模型可以更有效地让代币，且整体成本更低。
 > 4. The harness a model is called from dramatically impacts cost and quality. In many cases, simple harnesses like Pi performed best on our workloads.模型所用的线束极大地影响成本和质量。在很多情况下，像Pi这样的简单线束在我们的工作负载上表现最佳。
 
-![Pi 与其他 Agent 的性能对照](/images/posts/pi-deepseek-harness-20260819/02-agent-comparison.png)
+![](/images/posts/pi-deepseek-harness-20260819/02-agent-comparison.png)
 
 不管是从何种角度来说，Pi无论是在性价比上，还是在绝对的性能上，都展现了领先闭源Agent的优势。它是如何做到的？有研究员从技术的角度拆解了Pi的源码，指出了其在Contex mangement和promot上的节制。在一个技术越来越丰富的复杂社会，异质性如此复杂的代码编程，Pi是如何满足这么多不同的需求的？更关键的是，为什么它选择了和Codex以及Claude Code完全相反的一条路？
 
-![Pi 源码结构分析](/images/posts/pi-deepseek-harness-20260819/03-pi-source-overview.png)
+![](/images/posts/pi-deepseek-harness-20260819/03-pi-source-overview.png)
 
 让我们从代码一点一点的拆开看。当你在Pi中创建了一个对话之后，首先这个对话下会生成一个规定了Pi应该如何回复你的主管理文件——Agents.md，这一点上与Codex几乎没有任何区别，关键的是，它的系统提示词只有不到1k。正文一共 1747 个字符，224 个词，折算下来大约 440 个 token。加上四个工具的 JSON Schema，全部加起来还不到 1k。
 
-![Pi 系统提示词长度](/images/posts/pi-deepseek-harness-20260819/04-pi-system-prompt.png)
+![](/images/posts/pi-deepseek-harness-20260819/04-pi-system-prompt.png)
 
 如下所示，这是 `packages/coding-agent/src/core/system-prompt.ts` 里一个模板字符串的实际长度。
 
@@ -77,7 +77,7 @@ Databricks今日公布了一组数据，通过自主的基准评估工具，Data
 
 作为对照，我们看一下另外两家。第三方实测的数据是：Claude Code 每一次请求的固定开销大约 27000 个 token，其中系统提示词约 12k，27 个内建工具的定义约 9k，子智能体和各种辅助提示约 2k；Codex 大约 15000；Pi 大约 2600。注意这里说的是**固定开销**，不管你问什么，哪怕只是让它 `ls` 一下当前目录，这笔钱都要先付一遍，而且每一轮对话都要重新付。
 
-![每次请求的固定 token 开销](/images/posts/pi-deepseek-harness-20260819/05-fixed-request-overhead.png)
+![](/images/posts/pi-deepseek-harness-20260819/05-fixed-request-overhead.png)
 
 作者 Mario Zechner（就是当年写 libGDX 的那个人） 是这么解释的：
 
@@ -101,11 +101,11 @@ Pi 的 README 里有一节叫 Philosophy，通篇是在解释自己**不做**什
 
 这一串"不做"读下来，你会发现它们指向同一个东西：**可观测性**。Mario说，"我要能看见模型到底看见了什么"。现有的 harness 让上下文工程变得极其困难甚至不可能，因为它们"会背着你往上下文里塞东西"。说起来也好笑，刚好前段时间Tibo在网上和网友吵起来，网友说5.6sol是上下文根本不是1M，而只有272k。Tibo反驳说，我们模型是支持的！只是因为你们没有开启1M的上下文。
 
-![关于上下文长度的讨论截图](/images/posts/pi-deepseek-harness-20260819/06-context-screenshot.jpg)
+![](/images/posts/pi-deepseek-harness-20260819/06-context-screenshot.jpg)
 
 那功能怎么办？外挂。Pi 提供三层扩展：Skill（一个带 frontmatter 的 SKILL.md，启动时只把名字和描述放进提示词，匹配到任务了模型自己用 `read` 把全文读进来——这就是所谓渐进式披露）、Extension（TypeScript 写的运行时扩展）、Package（打包成 npm 或 git 仓库分发）。它甚至支持直接挂载 Claude Code 和 Codex 的 skills 目录。主循环本身也短得可怜。`agent-loop.ts` 一共 796 行。简单来说就是两个套在一起的 `while`。
 
-![Pi 的 agent loop](/images/posts/pi-deepseek-harness-20260819/07-pi-agent-loop.png)
+![](/images/posts/pi-deepseek-harness-20260819/07-pi-agent-loop.png)
 
 内层那个环转一圈，做六件事：把你刚才插的话塞进去、发一次模型请求、看有没有工具调用、执行工具、把结果写回消息数组、然后给下一轮换挡（可以换上下文、换模型、换思考档位）。没有调度器，没有状态机，没有编排层。
 
@@ -113,7 +113,7 @@ Pi 的 README 里有一节叫 Philosophy，通篇是在解释自己**不做**什
 
 至于上下文压缩，根本不发生在对话中。压缩发生在对话外。跑完一轮检查 token 压力，超了就压一次，然后 `agent.continue()` 重新进环。当上下文超过"窗口减去 16384"时触发，保留最近约 20000 token 的对话，剩下的交给模型写成一份结构化的检查点。目标、约束与偏好、进度（已完成/进行中/受阻）、关键决策、下一步、关键上下文。工具输出层面则是硬截断：`read` 和 `bash` 默认只回 2000 行或 50KB，超出的部分写进临时文件，把路径给模型，要看自己去看。
 
-![Pi、Claude Code 与 Codex 的对照](/images/posts/pi-deepseek-harness-20260819/08-harness-comparison.png)
+![](/images/posts/pi-deepseek-harness-20260819/08-harness-comparison.png)
 
 ## DeepSeek Harness：另一种意义上的"极简"
 
@@ -129,7 +129,7 @@ Pi 的 README 里有一节叫 Philosophy，通篇是在解释自己**不做**什
 
 你扩展它的方式是在旁边挂一个插件，而所有注册行为都是可回滚的副作用。插件卸载，它注册的东西自动消失。模型适配器是插件，工具注册表是插件，会话日志是插件，**连 agent loop 本身都是插件**，都可以整个换掉。一次运行的 dsh 是一棵在启动时按顺序叠出来的插件树：先叠 `dsh-base` 这个所有 profile 共用的底座，再叠模式 bundle（web 或 headless），再叠 profile 自己的 `cordis.patch.yml`，再叠家目录的，最后叠命令行 `--patch` 传进来的临时覆盖层。后叠的层按 id 覆盖先叠的层，最后一次写入生效。如果想知道自己这台机器到底启动了什么，跑一句 `dsh --profile web --dump-config`，它打印出来的每一行你都可以覆盖。
 
-![DeepSeek Harness 的插件结构](/images/posts/pi-deepseek-harness-20260819/09-deepseek-plugin-architecture.png)
+![](/images/posts/pi-deepseek-harness-20260819/09-deepseek-plugin-architecture.png)
 
 运行时也是同一个思路。一次 turn 的生命周期被拆成一串事件，每一个箭头都是一个可挂载的扩展点：`turn/start` → 认领输入 → 组装提示词段落和工具 schema → `agent/pre-step`（这一步可以改写、甚至整体拒绝模型即将看到的内容）→ `step/start` → `agent/request` → `llm/stream` → `assistant/message` → `tool/call` → `tools/pre-execute` → `tools/execute` → `tools/post-execute` → `tool/result` → `step/end` → 还欠请求就回到 `step/start` → `agent/turn-stopping` → `turn/end`。
 
@@ -153,7 +153,7 @@ Anthropic 自己有一篇讲上下文工程的文章，里面有个说法我很�
 
 第三道才是 **compaction**，也就是大家熟悉的压缩：token 压力触发，让模型把历史写成一份结构化检查点，然后重开窗口。
 
-![上下文处理的三道闸](/images/posts/pi-deepseek-harness-20260819/10-context-gates.png)
+![](/images/posts/pi-deepseek-harness-20260819/10-context-gates.png)
 
 除此之外，DeepSeek Harness 的 268 个包 README 里，有 **215 个**带着同一节标题——`Model Experience`，下设三个固定字段：
 
@@ -178,7 +178,7 @@ Anthropic 自己有一篇讲上下文工程的文章，里面有个说法我很�
 
 是的，AI会是一个非常庞大的产业，会迅速的波及到各行各业。一方面，你不可能像Pi一样，绝大幅度的砍掉MCP、goalmode等等，因为确实有人有相关领域需要这样的需求；另一方面，你也不可能像现在的AI巨头，OpenAI和Anthropic一样，为了兼容更多的用户在上下文中塞一堆99%的时候都用不到的垃圾来挤占上下文。DeepSeek Harness的想法很简单，我只要确保用户使用我的Harness搭配我的模型的时候能够发挥出最强大的性能就可以了，至于用户需要什么领域的功能，或者想要一个定制化的Agent，没关系，开源社区会帮我弥补这一点。
 
-![DeepSeek Harness 的结构示意](/images/posts/pi-deepseek-harness-20260819/11-deepseek-harness-structure.png)
+![](/images/posts/pi-deepseek-harness-20260819/11-deepseek-harness-structure.png)
 
 还记得在写DeepSeek时提到的那个词吗？——**克制**。我当时引柏拉图讲"节制"，说节制不是一个人拥有多少欲望，而是欲望、情感和理性之间的权力关系是否正确。现在把这两个 harness 放进去，会发现它们分别对应了这个概念的两个面：
 
@@ -200,7 +200,7 @@ DeepSeek Harness 的克制，是**秩序对**。它并没有减少欲望。52 �
 
 2026 年，轮到了**任务编排**——plan mode、goal mode、todo 清单、子智能体分工。Pi 已经把这三样全砍了，理由是它们让模型更糊涂；而 Databricks 的数据说，砍了之后成本减半、质量不变。
 
-![Agent 脚手架的退潮](/images/posts/pi-deepseek-harness-20260819/12-scaffolding-tide.png)
+![](/images/posts/pi-deepseek-harness-20260819/12-scaffolding-tide.png)
 
 注意到了吗？那些优秀的提示词，或者好评如潮的Skill，以及某个代码大神手搓出来的Agent代理，会迅速的被大语言模型内化。这里的内化，指的就是大语言模型中的后训练。在大语言模型（LLM）的研发流程中，“后训练”和“中训练”代表了模型进化的不同阶段。后训练是目前大模型开发中**已经非常成熟**的一个阶段，它发生在“预训练（Pre-training）”之后。后训练的核心是**对齐（Alignment）**，让模型听懂人类指令、拒绝恶意问题、输出安全合规，并变成一个好用的 AI 助手。主要训练手段包括有监督微调（SFT）、人类反馈强化学习（RLHF）以及近期大热的强化学习验证（RLVR）等；而中训练是近两年业界刚刚兴起的一个**新阶段**，顾名思义，它介于“预训练”和“后训练”之间。在基座模型完成初步预训练后、正式进行指令微调之前，使用**高度专业、高质量、特定领域或特定技能的数据**（如复杂的代码、数学推理、长上下文数据、认知数据等）对模型进行大规模的继续训练。比如 Llama 4 Scout 就明确引入了 mid-training 阶段，利用专门的数据集将模型的输入上下文长度扩展到了 10M（千万级）（虽然我认为10M没有任何意义，至少对目前来说）
 
@@ -218,9 +218,10 @@ DeepSeek Harness 的克制，是**秩序对**。它并没有减少欲望。52 �
 
 是的，Claude Design替代不了Figma，但是替代淘宝100元一张的平面设计师还是轻轻松松的；Claude Science替代不了院士团队，但是替代某院校普通本科生还是没有任何问题。你永远也无法确定AI什么时候会替代你，哦对了，CLaude和OpenAI最近还进军了金融和法务领域，可能要不了多久就会有相关成品的功能出现。然而这一切甚至发生在AGI还未出现的时刻。
 
-![AI 产品与数据护城河](/images/posts/pi-deepseek-harness-20260819/13-data-moat.png)
-
-![AI 产品与数据护城河（局部）](/images/posts/pi-deepseek-harness-20260819/14-data-moat-detail.png)
+:::gallery
+![](/images/posts/pi-deepseek-harness-20260819/13-data-moat.png)
+![](/images/posts/pi-deepseek-harness-20260819/14-data-moat-detail.png)
+:::
 
 ## 结语
 
