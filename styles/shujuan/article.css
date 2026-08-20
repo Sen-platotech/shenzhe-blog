@@ -134,6 +134,15 @@
   display:block;width:auto;max-width:100%;height:auto;margin:0 auto;object-fit:contain;
   background:var(--surface-2)
 }
+.prose .mdx-image img,
+.prose .mdx-gallery img,
+.prose .mdx-inline-image{cursor:zoom-in}
+.prose .mdx-image img.medium-zoom-image--opened,
+.prose .mdx-gallery img.medium-zoom-image--opened,
+.prose .mdx-inline-image.medium-zoom-image--opened{cursor:zoom-out}
+.mdx-zoom-active .medium-zoom-overlay{
+  background:rgba(8,10,14,.82)!important;
+}
 
 /* KaTeX blocks preserve the source TeX while keeping long formulas readable on mobile. */
 .prose .mdx-math{color:var(--ink);text-indent:0}

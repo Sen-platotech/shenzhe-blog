@@ -1,6 +1,8 @@
 import katex from 'katex'
+import mediumZoom from '@fisch0920/medium-zoom'
 import LazyImage from '@/components/LazyImage'
 import { uniqueHeadingId } from '@/lib/content/markdown'
+import { useEffect, useRef } from 'react'
 
 const KATEX_SETTINGS = {
   throwOnError: false,
@@ -381,6 +383,41 @@ export default function MdxArticle({ source, indent = false }) {
     .replace(/^---[\s\S]*?---\n?/, '')
     .split(/\n{2,}/)
   const renderBlock = createBlockRenderer()
+  const articleRef = useRef(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !articleRef.current) return undefined
+
+    const zoom = mediumZoom({
+      background: 'rgba(8, 10, 14, 0.82)',
+      margin: 24,
+      scrollOffset: 0
+    })
+    const images = articleRef.current.querySelectorAll('img')
+
+    images.forEach(image => {
+      const source = image.getAttribute('data-src') || image.getAttribute('src')
+      if (source) image.setAttribute('data-zoom-src', source)
+    })
+
+    const activateOverlay = () => {
+      document.body.classList.add('mdx-zoom-active')
+    }
+    const deactivateOverlay = () => {
+      document.body.classList.remove('mdx-zoom-active')
+    }
+
+    zoom.on('open', activateOverlay)
+    zoom.on('close', deactivateOverlay)
+    zoom.attach(images)
+
+    return () => {
+      zoom.off('open', activateOverlay)
+      zoom.off('close', deactivateOverlay)
+      zoom.detach()
+      document.body.classList.remove('mdx-zoom-active')
+    }
+  }, [source])
 
   if (!source?.trim()) {
     return (
@@ -391,7 +428,10 @@ export default function MdxArticle({ source, indent = false }) {
   }
 
   return (
-    <article className={`mdx-article${indent ? ' mdx-article--indented' : ''}`}>
+    <article
+      ref={articleRef}
+      className={`mdx-article${indent ? ' mdx-article--indented' : ''}`}
+    >
       {blocks.map(renderBlock)}
     </article>
   )
