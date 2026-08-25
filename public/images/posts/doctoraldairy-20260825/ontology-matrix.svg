@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">关于如何认识世界的二乘二分析矩阵</title>
+  <desc id="desc">以是否存在原则上不可知的事物和能否直接把握事物本身为两个轴，将世界模型暂时放在左上角，将现阶段大语言模型暂时放在右下角。</desc>
+
+  <rect width="1600" height="1000" fill="#f4efe6" />
+  <rect x="36" y="36" width="1528" height="928" rx="10" fill="none" stroke="#c6b9a6" stroke-width="2" />
+
+  <text x="92" y="92" fill="#172735" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="38" font-weight="700">关于如何认识世界的 2×2 分析矩阵</text>
+  <text x="94" y="138" fill="#6b6258" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="22">两个问题的交叉，不是四种固定模型的分类</text>
+
+  <text x="840" y="190" text-anchor="middle" fill="#6b6258" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="22">横轴：能否直接把握事物本身？</text>
+  <text x="590" y="226" text-anchor="middle" fill="#172735" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="26" font-weight="700">可以直接把握</text>
+  <text x="1090" y="226" text-anchor="middle" fill="#172735" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="26" font-weight="700">只能通过表象和关系逼近</text>
+
+  <text x="92" y="548" text-anchor="middle" transform="rotate(-90 92 548)" fill="#6b6258" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="22">纵轴：世界中是否存在原则上不可知的事物？</text>
+  <text x="300" y="370" text-anchor="end" fill="#172735" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="26" font-weight="700">不存在</text>
+  <text x="300" y="660" text-anchor="end" fill="#172735" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="26" font-weight="700">存在</text>
+
+  <g stroke="#172735" stroke-width="2">
+    <rect x="340" y="250" width="500" height="290" fill="#ead7b6" />
+    <rect x="840" y="250" width="500" height="290" fill="#e7edf0" />
+    <rect x="340" y="540" width="500" height="290" fill="#eee3d8" />
+    <rect x="840" y="540" width="500" height="290" fill="#d8e4ec" />
+  </g>
+
+  <g fill="#172735" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+    <text x="385" y="330" font-size="32" font-weight="700">世界模型</text>
+    <text x="385" y="375" font-size="22" fill="#51483e">本文的理想化设想</text>
+    <text x="385" y="435" font-size="24">尽可能消除不可知</text>
+    <text x="385" y="475" font-size="24">并直接感知事物本身</text>
+
+    <text x="885" y="330" font-size="30" font-weight="700">尚未命名</text>
+    <text x="885" y="400" font-size="24">没有原则上的不可知</text>
+    <text x="885" y="440" font-size="24">但仍需通过关系逼近</text>
+
+    <text x="385" y="620" font-size="30" font-weight="700">尚未命名</text>
+    <text x="385" y="690" font-size="24">存在原则上的不可知</text>
+    <text x="385" y="730" font-size="24">但可以直接感知事物</text>
+
+    <text x="885" y="620" font-size="30" font-weight="700">现阶段的大语言模型</text>
+    <text x="885" y="690" font-size="24">面对可能的不可知之物</text>
+    <text x="885" y="730" font-size="24">通过语言与表象关系逼近</text>
+  </g>
+
+  <text x="800" y="900" text-anchor="middle" fill="#6b6258" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="20">注：左上与右下是本文当前讨论中的工作性放置，不是严格的学科分类。</text>
+</svg>
