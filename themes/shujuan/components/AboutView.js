@@ -147,7 +147,7 @@ export default function AboutView() {
             <div className='now-row reveal'>
               <span className='k'>2025</span>
               <span className='v cjk'>
-                德国图宾根大学 · VIP 国际交流计划
+                德国图宾根大学 · 国际交流计划
                 <small>
                   Ethics of Artificial Intelligence · European Identity
                 </small>
