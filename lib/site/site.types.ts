@@ -36,6 +36,7 @@ export interface BasePage {
   status: PageStatus
   summary?: string
   category?: string
+  series?: string
   tags?: string[]
   tagItems?: TagItem[]
   date?: PageDate
@@ -53,6 +54,7 @@ export interface NavPage {
   slug: string
   summary?: string
   category?: string
+  series?: string
   tags?: string[]
   pageCoverThumbnail?: string
   pageIcon?: string

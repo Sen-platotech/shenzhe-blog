@@ -22,9 +22,18 @@ export default function ArticleView(props) {
 
       <header className='art-hero'>
         <div className='art-hero__inner'>
-          {post.category && (
+          {(post.category || post.series) && (
             <div className='art-hero__cat'>
-              <span className='kicker center'>{post.category}</span>
+              {post.category && (
+                <span className='kicker center'>{post.category}</span>
+              )}
+              {post.series && (
+                <SmartLink
+                  className='kicker center'
+                  href={`/tag/${encodeURIComponent(post.series)}`}>
+                  系列 · {post.series}
+                </SmartLink>
+              )}
             </div>
           )}
           <h1 className='art-hero__title cjk'>{post.title}</h1>

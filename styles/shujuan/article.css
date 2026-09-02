@@ -15,7 +15,7 @@
   background:var(--bg-2);position:relative;overflow:hidden;
 }
 .art-hero__inner{max-width:780px;margin:0 auto;padding:0 32px;position:relative;z-index:2}
-.art-hero__cat{margin-bottom:24px}
+.art-hero__cat{margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
 .art-hero__title{
   font-family:var(--serif-cjk);font-weight:600;
   font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.42;letter-spacing:.02em;
