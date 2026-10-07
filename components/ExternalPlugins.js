@@ -1,5 +1,4 @@
 import { siteConfig } from '@/lib/config'
-import { convertInnerUrl } from '@/lib/db/notion/convertInnerUrl'
 import { isBrowser, loadExternalResource } from '@/lib/utils'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -19,104 +18,104 @@ import IconFont from './IconFont'
  * @returns
  */
 const ExternalPlugin = props => {
-  // 读取自Notion的配置
-  const { NOTION_CONFIG } = props
+  // 读取站点配置
+  const { siteSettings } = props
   const { lang } = useGlobal()
-  const DISABLE_PLUGIN = siteConfig('DISABLE_PLUGIN', null, NOTION_CONFIG)
-  const THEME_SWITCH = siteConfig('THEME_SWITCH', null, NOTION_CONFIG)
-  const DEBUG = siteConfig('DEBUG', null, NOTION_CONFIG)
+  const DISABLE_PLUGIN = siteConfig('DISABLE_PLUGIN', null, siteSettings)
+  const THEME_SWITCH = siteConfig('THEME_SWITCH', null, siteSettings)
+  const DEBUG = siteConfig('DEBUG', null, siteSettings)
   const ANALYTICS_ACKEE_TRACKER = siteConfig(
     'ANALYTICS_ACKEE_TRACKER',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const ANALYTICS_VERCEL = siteConfig('ANALYTICS_VERCEL', null, NOTION_CONFIG)
+  const ANALYTICS_VERCEL = siteConfig('ANALYTICS_VERCEL', null, siteSettings)
   const ANALYTICS_BUSUANZI_ENABLE = siteConfig(
     'ANALYTICS_BUSUANZI_ENABLE',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const ADSENSE_GOOGLE_ID = siteConfig('ADSENSE_GOOGLE_ID', null, NOTION_CONFIG)
-  const FACEBOOK_APP_ID = siteConfig('FACEBOOK_APP_ID', null, NOTION_CONFIG)
-  const FACEBOOK_PAGE_ID = siteConfig('FACEBOOK_PAGE_ID', null, NOTION_CONFIG)
-  const FIREWORKS = siteConfig('FIREWORKS', null, NOTION_CONFIG)
-  const SAKURA = siteConfig('SAKURA', null, NOTION_CONFIG)
-  const STARRY_SKY = siteConfig('STARRY_SKY', null, NOTION_CONFIG)
-  const MUSIC_PLAYER = siteConfig('MUSIC_PLAYER', null, NOTION_CONFIG)
-  const NEST = siteConfig('NEST', null, NOTION_CONFIG)
-  const FLUTTERINGRIBBON = siteConfig('FLUTTERINGRIBBON', null, NOTION_CONFIG)
+  const ADSENSE_GOOGLE_ID = siteConfig('ADSENSE_GOOGLE_ID', null, siteSettings)
+  const FACEBOOK_APP_ID = siteConfig('FACEBOOK_APP_ID', null, siteSettings)
+  const FACEBOOK_PAGE_ID = siteConfig('FACEBOOK_PAGE_ID', null, siteSettings)
+  const FIREWORKS = siteConfig('FIREWORKS', null, siteSettings)
+  const SAKURA = siteConfig('SAKURA', null, siteSettings)
+  const STARRY_SKY = siteConfig('STARRY_SKY', null, siteSettings)
+  const MUSIC_PLAYER = siteConfig('MUSIC_PLAYER', null, siteSettings)
+  const NEST = siteConfig('NEST', null, siteSettings)
+  const FLUTTERINGRIBBON = siteConfig('FLUTTERINGRIBBON', null, siteSettings)
   const COMMENT_TWIKOO_COUNT_ENABLE = siteConfig(
     'COMMENT_TWIKOO_COUNT_ENABLE',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const RIBBON = siteConfig('RIBBON', null, NOTION_CONFIG)
+  const RIBBON = siteConfig('RIBBON', null, siteSettings)
   const CUSTOM_RIGHT_CLICK_CONTEXT_MENU = siteConfig(
     'CUSTOM_RIGHT_CLICK_CONTEXT_MENU',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const CAN_COPY = siteConfig('CAN_COPY', null, NOTION_CONFIG)
-  const WEB_WHIZ_ENABLED = siteConfig('WEB_WHIZ_ENABLED', null, NOTION_CONFIG)
+  const CAN_COPY = siteConfig('CAN_COPY', null, siteSettings)
+  const WEB_WHIZ_ENABLED = siteConfig('WEB_WHIZ_ENABLED', null, siteSettings)
   const AD_WWADS_BLOCK_DETECT = siteConfig(
     'AD_WWADS_BLOCK_DETECT',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const CHATBASE_ID = siteConfig('CHATBASE_ID', null, NOTION_CONFIG)
+  const CHATBASE_ID = siteConfig('CHATBASE_ID', null, siteSettings)
   const COMMENT_DAO_VOICE_ID = siteConfig(
     'COMMENT_DAO_VOICE_ID',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const AD_WWADS_ID = siteConfig('AD_WWADS_ID', null, NOTION_CONFIG)
+  const AD_WWADS_ID = siteConfig('AD_WWADS_ID', null, siteSettings)
   const COMMENT_ARTALK_SERVER = siteConfig(
     'COMMENT_ARTALK_SERVER',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const COMMENT_ARTALK_JS = siteConfig('COMMENT_ARTALK_JS', null, NOTION_CONFIG)
-  const COMMENT_TIDIO_ID = siteConfig('COMMENT_TIDIO_ID', null, NOTION_CONFIG)
+  const COMMENT_ARTALK_JS = siteConfig('COMMENT_ARTALK_JS', null, siteSettings)
+  const COMMENT_TIDIO_ID = siteConfig('COMMENT_TIDIO_ID', null, siteSettings)
   const COMMENT_GITTER_ROOM = siteConfig(
     'COMMENT_GITTER_ROOM',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
   const ANALYTICS_BAIDU_ID = siteConfig(
     'ANALYTICS_BAIDU_ID',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const ANALYTICS_CNZZ_ID = siteConfig('ANALYTICS_CNZZ_ID', null, NOTION_CONFIG)
+  const ANALYTICS_CNZZ_ID = siteConfig('ANALYTICS_CNZZ_ID', null, siteSettings)
   const ANALYTICS_GOOGLE_ID = siteConfig(
     'ANALYTICS_GOOGLE_ID',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const MATOMO_HOST_URL = siteConfig('MATOMO_HOST_URL', null, NOTION_CONFIG)
-  const MATOMO_SITE_ID = siteConfig('MATOMO_SITE_ID', null, NOTION_CONFIG)
-  const ANALYTICS_51LA_ID = siteConfig('ANALYTICS_51LA_ID', null, NOTION_CONFIG)
-  const ANALYTICS_51LA_CK = siteConfig('ANALYTICS_51LA_CK', null, NOTION_CONFIG)
+  const MATOMO_HOST_URL = siteConfig('MATOMO_HOST_URL', null, siteSettings)
+  const MATOMO_SITE_ID = siteConfig('MATOMO_SITE_ID', null, siteSettings)
+  const ANALYTICS_51LA_ID = siteConfig('ANALYTICS_51LA_ID', null, siteSettings)
+  const ANALYTICS_51LA_CK = siteConfig('ANALYTICS_51LA_CK', null, siteSettings)
   const DIFY_CHATBOT_ENABLED = siteConfig(
     'DIFY_CHATBOT_ENABLED',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
-  const TIANLI_KEY = siteConfig('TianliGPT_KEY', null, NOTION_CONFIG)
-  const GLOBAL_JS = siteConfig('GLOBAL_JS', '', NOTION_CONFIG)
-  const CLARITY_ID = siteConfig('CLARITY_ID', null, NOTION_CONFIG)
-  const IMG_SHADOW = siteConfig('IMG_SHADOW', null, NOTION_CONFIG)
-  const ANIMATE_CSS_URL = siteConfig('ANIMATE_CSS_URL', null, NOTION_CONFIG)
-  const MOUSE_FOLLOW = siteConfig('MOUSE_FOLLOW', null, NOTION_CONFIG)
+  const TIANLI_KEY = siteConfig('TianliGPT_KEY', null, siteSettings)
+  const GLOBAL_JS = siteConfig('GLOBAL_JS', '', siteSettings)
+  const CLARITY_ID = siteConfig('CLARITY_ID', null, siteSettings)
+  const IMG_SHADOW = siteConfig('IMG_SHADOW', null, siteSettings)
+  const ANIMATE_CSS_URL = siteConfig('ANIMATE_CSS_URL', null, siteSettings)
+  const MOUSE_FOLLOW = siteConfig('MOUSE_FOLLOW', null, siteSettings)
   const CUSTOM_EXTERNAL_CSS = siteConfig(
     'CUSTOM_EXTERNAL_CSS',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
   const CUSTOM_EXTERNAL_JS = siteConfig(
     'CUSTOM_EXTERNAL_JS',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
   // 默认关闭NProgress
   const ENABLE_NPROGRSS = siteConfig('ENABLE_NPROGRSS', false)
@@ -124,13 +123,13 @@ const ExternalPlugin = props => {
   const HILLTOP_ADS_META_ID = siteConfig(
     'HILLTOP_ADS_META_ID',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
 
   const ENABLE_ICON_FONT = siteConfig('ENABLE_ICON_FONT', false)
 
-  const UMAMI_HOST = siteConfig('UMAMI_HOST', null, NOTION_CONFIG)
-  const UMAMI_ID = siteConfig('UMAMI_ID', null, NOTION_CONFIG)
+  const UMAMI_HOST = siteConfig('UMAMI_HOST', null, siteSettings)
+  const UMAMI_ID = siteConfig('UMAMI_ID', null, siteSettings)
 
   // 自定义样式css和js引入
   if (isBrowser) {
@@ -172,10 +171,6 @@ const ExternalPlugin = props => {
       }, 3000)
     }
 
-    setTimeout(() => {
-      // 映射url
-      convertInnerUrl({ allPages: props?.allNavPages, lang: lang })
-    }, 500)
   }, [router])
 
   useEffect(() => {

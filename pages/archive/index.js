@@ -25,7 +25,7 @@ const ArchiveIndex = props => {
     }
   }, [])
 
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return <DynamicLayout theme={theme} layoutName='LayoutArchive' {...props} />
 }
 
@@ -33,14 +33,7 @@ export function getStaticProps({ locale }) {
   const props = getContentArchiveProps()
 
   return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-          'NEXT_REVALIDATE_SECOND',
-          BLOG.NEXT_REVALIDATE_SECOND,
-          props.NOTION_CONFIG
-        )
+    props
   }
 }
 

@@ -1,4 +1,3 @@
-import { compressImage } from '@/lib/db/notion/mapImage'
 import { isBrowser } from '../lib/utils'
 
 /**
@@ -19,7 +18,7 @@ export function PWA(post, siteInfo) {
     description: post?.summary || siteInfo.description,
     icons: [
       {
-        src: compressImage(post?.pageCoverThumbnail, 192),
+        src: post?.pageCoverThumbnail || siteInfo?.icon || '/avatar.png',
         type: 'image/png',
         sizes: '192x192'
       }

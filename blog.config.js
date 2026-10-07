@@ -1,24 +1,11 @@
-// 注: process.env.XX是Vercel的环境变量，配置方式见：https://docs.tangly1024.com/article/how-to-config-notion-next#c4768010ae7d44609b744e79e2f9959a
+// 站点内容来自 content/，配置可由环境变量覆盖。
 
 const BLOG = {
-  API_BASE_URL: 'https://www.notion.so/api/v3',
-  NOTION_PAGE_ID:
-    process.env.NOTION_PAGE_ID ||
-    process.env.NOTION_DATABASE_ID ||
-    process.env.NEXT_PUBLIC_NOTION_DATABASE_ID ||
-    process.env.NEXT_PUBLIC_NOTION_PAGE_ID ||
-    '',
-  NOTION_TOKEN_V2:
-    process.env.NOTION_TOKEN_V2 ||
-    process.env.NOTION_TOKEN ||
-    process.env.NOTION_SECRET ||
-    '',
-  THEME: process.env.NEXT_PUBLIC_THEME || 'shujuan',
+  THEME: 'shujuan',
   LANG: process.env.NEXT_PUBLIC_LANG || 'zh-CN', // e.g 'zh-CN','en-US'  see /lib/lang.js for more.
   SINCE: process.env.NEXT_PUBLIC_SINCE || 2021, // e.g if leave this empty, current year will be used.
 
   PSEUDO_STATIC: process.env.NEXT_PUBLIC_PSEUDO_STATIC || false, // 伪静态路径，开启后所有文章URL都以 .html 结尾。
-  NEXT_REVALIDATE_SECOND: process.env.NEXT_PUBLIC_REVALIDATE_SECOND || 60, // 更新缓存间隔 单位(秒)；即每个页面有60秒的纯静态期、此期间无论多少次访问都不会抓取notion数据；调大该值有助于节省Vercel资源、同时提升访问速率，但也会使文章更新有延迟。
   APPEARANCE: process.env.NEXT_PUBLIC_APPEARANCE || 'light', // ['light', 'dark', 'auto'], // light 日间模式 ， dark夜间模式， auto根据时间和主题自动夜间模式
   APPEARANCE_DARK_TIME: process.env.NEXT_PUBLIC_APPEARANCE_DARK_TIME || [18, 6], // 夜间模式起至时间，false时关闭根据时间自动切换夜间模式
 
@@ -28,7 +15,7 @@ const BLOG = {
   DESCRIPTION:
     process.env.NEXT_PUBLIC_DESCRIPTION || '闭门即是深山，读书随处净土',
   LINK: process.env.NEXT_PUBLIC_LINK || 'https://shenzhe.org', // 网站地址
-  KEYWORDS: process.env.NEXT_PUBLIC_KEYWORD || 'Notion, 博客', // 网站关键词 英文逗号隔开
+  KEYWORDS: process.env.NEXT_PUBLIC_KEYWORD || '博客, 研究, 写作', // 网站关键词 英文逗号隔开
   BLOG_FAVICON: process.env.NEXT_PUBLIC_FAVICON || '/favicon.ico', // blog favicon 配置, 默认使用 /public/favicon.ico，支持在线图片，如 https://img.imesong.com/favicon.png
   HOME_BANNER_IMAGE:
     process.env.NEXT_PUBLIC_HOME_BANNER_IMAGE || '/bg_image.jpg',
@@ -58,7 +45,6 @@ const BLOG = {
 
   // 高级用法
   ...require('./conf/layout-map.config'), // 路由与布局映射自定义，例如自定义特定路由的页面布局
-  ...require('./conf/notion.config'), // 读取notion数据库相关的扩展配置，例如自定义表头
   ...require('./conf/dev.config'), // 开发、调试时需要关注的配置
 
   // 自定义外部脚本，外部样式
@@ -80,8 +66,6 @@ const BLOG = {
     process.env.NEXT_PUBLIC_GREETING_WORDS ||
     'Hi，我是一个政治学人, Hi，我是一个程序员,Hi，我是一个INFP人,欢迎来到这里',
 
-  // uuid重定向至 slug
-  UUID_REDIRECT: process.env.UUID_REDIRECT || false,
 
   // 静态导出模式。客户端组件可用它避免调用 pages/api 路由。
   EXPORT: process.env.NEXT_PUBLIC_EXPORT || process.env.EXPORT || false

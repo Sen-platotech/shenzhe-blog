@@ -99,7 +99,7 @@ function Heading({ level, children, id, className = '' }) {
     <Tag
       id={id}
       data-id={id}
-      className={`notion-h scroll-mt-24${className ? ` ${className}` : ''}`}
+      className={`mdx-h scroll-mt-24${className ? ` ${className}` : ''}`}
     >
       {children}
     </Tag>

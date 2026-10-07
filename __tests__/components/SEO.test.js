@@ -69,7 +69,7 @@ describe('SEO article share metadata', () => {
           lastEditedDay: '2026-07-27',
           tags: ['人工智能', '计算政治学']
         }}
-        NOTION_CONFIG={{}}
+        siteSettings={{}}
       />
     )
 
@@ -115,7 +115,7 @@ describe('SEO article share metadata', () => {
         siteInfo={siteInfo}
         category='研究分享'
         page={2}
-        NOTION_CONFIG={{}}
+        siteSettings={{}}
       />
     )
 
@@ -132,7 +132,7 @@ describe('SEO article share metadata', () => {
       asPath: '/about'
     })
 
-    render(<SEO siteInfo={siteInfo} NOTION_CONFIG={{}} />)
+    render(<SEO siteInfo={siteInfo} siteSettings={{}} />)
 
     expect(document.title).toBe('关于沈哲 | 沈哲的博客')
     expect(document.querySelector('meta[name="description"]')).toHaveAttribute(
@@ -161,7 +161,7 @@ describe('SEO article share metadata', () => {
         asPath
       })
 
-      render(<SEO siteInfo={siteInfo} NOTION_CONFIG={{}} />)
+      render(<SEO siteInfo={siteInfo} siteSettings={{}} />)
 
       expect(
         document.querySelector('link[rel="canonical"]')
@@ -180,7 +180,7 @@ describe('SEO article share metadata', () => {
       asPath: '/search/[keyword]/page/[page]'
     })
 
-    render(<SEO NOTION_CONFIG={{}} />)
+    render(<SEO siteSettings={{}} />)
 
     expect(
       document.querySelector('link[rel="canonical"]')

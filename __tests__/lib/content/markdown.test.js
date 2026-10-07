@@ -28,7 +28,7 @@ describe('content markdown helpers', () => {
     expect(uniqueHeadingId('重复标题', counts)).toBe('mdxheading重复标题3')
   })
 
-  it('builds a toc for h2-h4 headings only', () => {
+  it('builds a toc for the h1-h4 levels supported by the article renderer', () => {
     expect(
       getMdxToc(`# Hidden H1
 
@@ -38,6 +38,7 @@ describe('content markdown helpers', () => {
 ##### Hidden H5
 ## 二级标题`)
     ).toEqual([
+      { id: 'mdxheadinghiddenh1', text: 'Hidden H1', indentLevel: -1 },
       { id: 'mdxheading二级标题', text: '二级标题', indentLevel: 0 },
       { id: 'mdxheading三级标题', text: '三级标题', indentLevel: 1 },
       { id: 'mdxheading四级标题', text: '四级标题', indentLevel: 2 },

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import LazyImage from '@/components/LazyImage'
 
 // Mock IntersectionObserver
@@ -87,19 +87,18 @@ describe('LazyImage Component', () => {
     expect(mockIntersectionObserver).not.toHaveBeenCalled()
   })
 
-  it('handles load event', async () => {
+  it('calls onLoad when the visible full-size image finishes preloading', () => {
     const handleLoad = jest.fn()
+    const preload = document.createElement('img')
+    const imageConstructor = jest.spyOn(window, 'Image').mockImplementation(() => preload)
     render(<LazyImage {...defaultProps} onLoad={handleLoad} />)
-    
     const image = screen.getByAltText('Test image')
-    
-    // Simulate image load
-    Object.defineProperty(image, 'complete', { value: true })
-    image.dispatchEvent(new Event('load'))
-    
-    await waitFor(() => {
-      expect(handleLoad).toHaveBeenCalled()
-    })
+    const observe = mockIntersectionObserver.mock.calls[0][0]
+    act(() => observe([{ isIntersecting: true, target: image }]))
+    act(() => preload.onload())
+    expect(handleLoad).toHaveBeenCalledTimes(1)
+    expect(image.getAttribute('src')).toContain('/test-image.jpg')
+    imageConstructor.mockRestore()
   })
 
   it('handles error gracefully', () => {
@@ -121,11 +120,9 @@ describe('LazyImage Component', () => {
     expect(image).toHaveAttribute('decoding', 'async')
   })
 
-  it('handles missing src gracefully', () => {
-    render(<LazyImage alt="Test image" />)
-    
-    const image = screen.getByAltText('Test image')
-    expect(image).toBeInTheDocument()
+  it('does not render a broken image when no source was provided', () => {
+    render(<LazyImage alt='Test image' />)
+    expect(screen.queryByAltText('Test image')).not.toBeInTheDocument()
   })
 
   it('applies custom styles', () => {

@@ -1,4 +1,3 @@
-ARG NOTION_PAGE_ID
 ARG NEXT_PUBLIC_THEME
 
 FROM node:22-alpine AS base
@@ -13,7 +12,6 @@ RUN yarn install --frozen-lockfile
 
 # 2. Rebuild the source code only when needed
 FROM base AS builder
-ARG NOTION_PAGE_ID
 ENV NEXT_BUILD_STANDALONE=true
 
 WORKDIR /app

@@ -1,3 +1,4 @@
+const { getPosts } = require('@/lib/content')
 const {
   serveRss,
   serveSearchIndex,
@@ -38,7 +39,7 @@ describe('content responses', () => {
 
     expect(headers['Content-Type']).toContain('application/xml')
     expect(body).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
-    expect(body).toContain('https://shenzhe.org/article/welcome')
+    for (const post of getPosts()) expect(body).toContain(post.slug)
     expect(body).not.toContain('.vercel.app')
     expect(body).not.toContain('http://shenzhe.org/https://')
   })
@@ -48,7 +49,7 @@ describe('content responses', () => {
     const index = JSON.parse(body)
 
     expect(headers['Content-Type']).toContain('application/json')
-    expect(index).toHaveLength(4)
+    expect(index).toHaveLength(getPosts().length)
     expect(index).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

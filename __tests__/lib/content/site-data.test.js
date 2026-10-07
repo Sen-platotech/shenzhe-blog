@@ -13,98 +13,61 @@ const {
 } = require('@/lib/content/site-data')
 
 describe('content site data adapter', () => {
-  it('adapts MDX posts for the existing hexo theme index', () => {
+  const { getPosts } = require('@/lib/content')
+  const posts = getPosts()
+
+  it('preserves the published catalog and omits body data from navigation', () => {
     const props = getContentIndexProps()
-
-    expect(props.posts).toHaveLength(4)
-    expect(props.postCount).toBe(4)
-    expect(props.siteInfo).toEqual(
-      expect.objectContaining({
-        title: expect.any(String),
-        link: 'https://shenzhe.org'
-      })
-    )
-    expect(props.posts[0]).toEqual(
-      expect.objectContaining({
-        href: '/article/welcome',
-        pageCover: '/bg_image.jpg',
-        pageCoverThumbnail: '/bg_image.jpg',
-        source: 'mdx',
-        status: 'Published',
-        type: 'Post',
-        toc: expect.any(Array)
-      })
-    )
-    expect(props.categories).toEqual(props.categoryOptions)
-    expect(props.showCategory).toBe(true)
+    expect(props.postCount).toBe(posts.length)
+    expect(props.allPages.map(post => post.slug)).toEqual(posts.map(post => post.slug))
+    expect(props.allNavPages).toBeUndefined()
+    expect(props.archivePosts).toBeUndefined()
+    expect(JSON.stringify(props)).not.toContain('blockMap')
+    for (const post of props.allPages) {
+      expect(post.body).toBeUndefined()
+      expect(post.legacy).toBeUndefined()
+      expect(post.readingMinutes).toBeGreaterThan(0)
+    }
   })
 
-  it('provides static paths for migrated /article/... posts', () => {
-    expect(getContentPostPaths()).toEqual(
-      expect.arrayContaining([
-        { params: { prefix: 'article', slug: 'welcome' } },
-        { params: { prefix: 'article', slug: 'research-share' } }
-      ])
-    )
-  })
-
-  it('provides catch-all static paths for multi-level MDX slugs', () => {
+  it('preserves all current article paths without an upstream adapter', () => {
+    const paths = getContentPostPaths().map(({ params }) => `${params.prefix}/${params.slug}`)
+    expect(paths).toEqual(posts.filter(post => post.slug.split('/').length === 2).map(post => post.slug))
     expect(getContentCatchAllPostPaths()).toEqual([])
-  })
-
-  it('provides single-segment static paths for migrated MDX slugs', () => {
     expect(getContentSinglePostPaths()).toEqual([])
   })
 
-  it('adapts a migrated MDX article for the existing slug layout', () => {
-    const props = getContentPostProps('article/33b00906-2c37-817f-b80e-d177122a6681')
-
-    expect(props.post).toEqual(
-      expect.objectContaining({
-        title: '进步的牢笼',
-        href: '/article/33b00906-2c37-817f-b80e-d177122a6681',
-        source: 'mdx',
-        toc: expect.arrayContaining([
-          expect.objectContaining({
-            id: 'mdxheading社会达尔文主义',
-            text: '社会达尔文主义'
-          })
-        ])
-      })
-    )
-    expect(props.mdxContent).toContain('社会达尔文主义')
-    expect(props.prev).toBeTruthy()
-    expect(props.next).toBeTruthy()
+  it('keeps each article body exactly and removes bodies from related/navigation posts', () => {
+    for (const post of posts) {
+      const props = getContentPostProps(post.slug)
+      expect(props.post.body).toBe(post.body)
+      expect(props.post.href).toBe(`/${post.slug}`)
+      expect(props.mdxContent).toBeUndefined()
+      for (const related of [props.prev, props.next, ...props.recommendPosts].filter(Boolean)) {
+        expect(related.body).toBeUndefined()
+      }
+    }
+    expect(getContentPostProps('article/missing-content')).toBeNull()
   })
 
-  it('builds archive and category props without Notion data', () => {
+  it('keeps archive/category/tag collections consistent with public articles', () => {
     const archive = getContentArchiveProps()
-    const categoryPaths = getContentCategoryPaths()
-    const essay = getContentCategoryProps('心情随笔')
-
-    expect(Object.keys(archive.archivePosts)).toContain('2026-04')
-    expect(categoryPaths).toEqual(
-      expect.arrayContaining([{ params: { category: '心情随笔' } }])
-    )
-    expect(essay.postCount).toBe(3)
-    expect(essay.posts.map(post => post.title)).toEqual(
-      expect.arrayContaining([
-        '进步的牢笼',
-        '心情随笔',
-        '【杂谈】人工智能与计算政治学'
-      ])
-    )
+    const archived = Object.values(archive.archivePosts).flat()
+    expect(archived.map(post => post.slug).sort()).toEqual(posts.map(post => post.slug).sort())
+    for (const { params } of getContentCategoryPaths()) {
+      const result = getContentCategoryProps(params.category)
+      expect(result.postCount).toBe(posts.filter(post => post.category === params.category).length)
+      expect(result.posts.every(post => post.category === params.category)).toBe(true)
+    }
+    expect(getContentTagIndexProps().tagOptions.length).toBeGreaterThan(0)
   })
 
-  it('builds tag and search props from MDX content', () => {
-    const tagIndex = getContentTagIndexProps()
+  it('keeps full-text search while avoiding body duplication elsewhere', () => {
     const searchIndex = getContentSearchIndexProps()
-    const search = getContentSearchProps('社会达尔文主义')
-
-    expect(tagIndex.tagOptions).toEqual([])
-    expect(searchIndex.posts).toHaveLength(searchIndex.allPages.length)
-    expect(search.postCount).toBe(1)
-    expect(search.posts[0].title).toBe('进步的牢笼')
+    expect(searchIndex.posts.map(post => post.body)).toEqual(posts.map(post => post.body))
+    expect(searchIndex.allPages.every(post => post.body === undefined)).toBe(true)
+    const result = getContentSearchProps('社会达尔文主义')
+    expect(result.posts.some(post => post.title === '进步的牢笼')).toBe(true)
   })
 })
 

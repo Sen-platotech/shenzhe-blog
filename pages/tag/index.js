@@ -11,21 +11,14 @@ import { useRouter } from 'next/router'
  */
 const TagIndex = props => {
   const router = useRouter()
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return <DynamicLayout theme={theme} layoutName='LayoutTagIndex' {...props} />
 }
 
 export function getStaticProps(req) {
   const props = getContentTagIndexProps()
   return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-          'NEXT_REVALIDATE_SECOND',
-          BLOG.NEXT_REVALIDATE_SECOND,
-          props.NOTION_CONFIG
-        )
+    props
   }
 }
 

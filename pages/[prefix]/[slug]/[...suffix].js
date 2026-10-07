@@ -1,92 +1,13 @@
-import BLOG from '@/blog.config'
-import { siteConfig } from '@/lib/config'
-import {
-  getContentCatchAllPostPaths,
-  getContentPostProps
-} from '@/lib/content/site-data'
-import { fetchGlobalAllData, resolvePostProps } from '@/lib/db/SiteDataApi'
-import {
-  ENABLE_NOTION_FALLBACK,
-  ENABLE_NOTION_STATIC_PATHS
-} from '@/lib/routes/legacy'
-import { checkSlugHasMorThanTwoSlash } from '@/lib/utils/post'
-import Slug from '..'
+import ArticlePage from '..'
+import { getContentCatchAllPostPaths, getContentPostProps } from '@/lib/content/site-data'
 
-/**
- * 根据notion的slug访问页面
- * 解析三级以上目录 /article/2023/10/29/test
- * @param {*} props
- * @returns
- */
-const PrefixSlug = props => {
-  return <Slug {...props} />
-}
+export default ArticlePage
 
-/**
- * 编译渲染页面路径
- * @returns
- */
 export async function getStaticPaths() {
-  const mdxPaths = getContentCatchAllPostPaths()
-
-  if (!BLOG.isProd || !ENABLE_NOTION_STATIC_PATHS) {
-    return {
-      paths: mdxPaths,
-      fallback: ENABLE_NOTION_FALLBACK
-    }
-  }
-
-  const from = 'slug-paths'
-  const { allPages } = await fetchGlobalAllData({ from })
-  const paths = allPages
-    ?.filter(row => checkSlugHasMorThanTwoSlash(row))
-    .map(row => ({
-      params: {
-        prefix: row.slug.split('/')[0],
-        slug: row.slug.split('/')[1],
-        suffix: row.slug.split('/').slice(2)
-      }
-    }))
-  return {
-    paths: [...mdxPaths, ...(paths || [])],
-    fallback: ENABLE_NOTION_FALLBACK
-  }
+  return { paths: getContentCatchAllPostPaths(), fallback: false }
 }
 
-/**
- * 抓取页面数据
- * @param {*} param0
- * @returns
- */
-export async function getStaticProps({
-  params: { prefix, slug, suffix },
-  locale
-}) {
-  const mdxProps = getContentPostProps([prefix, slug, ...(suffix || [])].join('/'))
-
-  if (!mdxProps && !ENABLE_NOTION_FALLBACK) {
-    return {
-      notFound: true
-    }
-  }
-
-  const props = mdxProps || await resolvePostProps({
-    prefix,
-    slug,
-    suffix,
-    locale,
-  })
-
-  return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-        'NEXT_REVALIDATE_SECOND',
-        BLOG.NEXT_REVALIDATE_SECOND,
-        props.NOTION_CONFIG
-      )
-  }
+export async function getStaticProps({ params: { prefix, slug, suffix } }) {
+  const props = getContentPostProps([prefix, slug, ...suffix].join('/'))
+  return props ? { props } : { notFound: true }
 }
-
-export default PrefixSlug

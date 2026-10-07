@@ -11,7 +11,7 @@ import { useEffect } from 'react'
  * @returns
  */
 const SEO = props => {
-  const { children, siteInfo, post, NOTION_CONFIG } = props
+  const { children, siteInfo, post, siteSettings } = props
   const PATH = siteConfig('PATH')
   const LINK = siteConfig('LINK')
   const SUB_PATH = siteConfig('SUB_PATH', '')
@@ -73,45 +73,45 @@ const SEO = props => {
   const lang = siteConfig('LANG').replace('-', '_') // Facebook OpenGraph 要 zh_CN 這樣的格式才抓得到語言
   const category = meta?.category || KEYWORDS // section 主要是像是 category 這樣的分類，Facebook 用這個來抓連結的分類
   const favicon = siteConfig('BLOG_FAVICON')
-  const BACKGROUND_DARK = siteConfig('BACKGROUND_DARK', '', NOTION_CONFIG)
+  const BACKGROUND_DARK = siteConfig('BACKGROUND_DARK', '', siteSettings)
 
   const SEO_BAIDU_SITE_VERIFICATION = siteConfig(
     'SEO_BAIDU_SITE_VERIFICATION',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
 
   const SEO_GOOGLE_SITE_VERIFICATION = siteConfig(
     'SEO_GOOGLE_SITE_VERIFICATION',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
 
-  const BLOG_FAVICON = siteConfig('BLOG_FAVICON', null, NOTION_CONFIG)
+  const BLOG_FAVICON = siteConfig('BLOG_FAVICON', null, siteSettings)
 
   const COMMENT_WEBMENTION_ENABLE = siteConfig(
     'COMMENT_WEBMENTION_ENABLE',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
 
   const COMMENT_WEBMENTION_HOSTNAME = siteConfig(
     'COMMENT_WEBMENTION_HOSTNAME',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
   const COMMENT_WEBMENTION_AUTH = siteConfig(
     'COMMENT_WEBMENTION_AUTH',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
   const ANALYTICS_BUSUANZI_ENABLE = siteConfig(
     'ANALYTICS_BUSUANZI_ENABLE',
     null,
-    NOTION_CONFIG
+    siteSettings
   )
 
-  const FACEBOOK_PAGE = siteConfig('FACEBOOK_PAGE', null, NOTION_CONFIG)
+  const FACEBOOK_PAGE = siteConfig('FACEBOOK_PAGE', null, siteSettings)
 
   const AUTHOR = siteConfig('AUTHOR')
   return (
@@ -157,7 +157,7 @@ const SEO = props => {
       <meta name='keywords' content={keywords} />
       <meta name='description' content={description} />
       <meta name='author' content={AUTHOR} />
-      <meta name='generator' content='NotionNext' />
+      <meta name='generator' content='Shenzhe Blog' />
 
       {/* 语言和地区 */}
       <meta httpEquiv='content-language' content={siteConfig('LANG')} />
@@ -175,8 +175,8 @@ const SEO = props => {
 
       {/* Twitter Card 元数据 */}
       <meta name='twitter:card' content='summary_large_image' />
-      <meta name='twitter:site' content={siteConfig('TWITTER_SITE', '@NotionNext')} />
-      <meta name='twitter:creator' content={siteConfig('TWITTER_CREATOR', '@NotionNext')} />
+      <meta name='twitter:site' content={siteConfig('TWITTER_SITE', '')} />
+      <meta name='twitter:creator' content={siteConfig('TWITTER_CREATOR', '')} />
       <meta name='twitter:title' content={title} />
       <meta name='twitter:description' content={description} />
       <meta name='twitter:image' content={image} />

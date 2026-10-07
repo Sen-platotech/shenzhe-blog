@@ -97,7 +97,7 @@ export const initGoogleAdsense = ADSENSE_GOOGLE_ID => {
 
       // 启动 MutationObserver
       observer.observe(
-        document.querySelector('#article-wrapper #notion-article') ||
+        document.querySelector('#article-wrapper .mdx-article') ||
           document.body,
         observerConfig
       )
@@ -182,12 +182,12 @@ const AdEmbed = () => {
   const ADSENSE_GOOGLE_SLOT_AUTO = siteConfig('ADSENSE_GOOGLE_SLOT_AUTO')
   useEffect(() => {
     setTimeout(() => {
-      // 找到所有 class 为 notion-text 且内容为 '<ins/>' 的 div 元素
-      const notionTextElements = document.querySelectorAll(
-        '#article-wrapper #notion-article div.notion-text'
+      // 找到所有 文章段落 且内容为 '<ins/>' 的 div 元素
+      const articleTextElements = document.querySelectorAll(
+        '#article-wrapper .mdx-article p'
       )
       // 遍历找到的元素
-      notionTextElements?.forEach(element => {
+      articleTextElements?.forEach(element => {
         // 检查元素的内容是否为 '<ins/>'
         if (element.textContent.trim() === '<ins/>') {
           // 创建新的 <ins> 元素

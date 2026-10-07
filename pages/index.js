@@ -9,7 +9,7 @@ import { DynamicLayout } from '@/themes/theme'
  * @returns
  */
 const Index = props => {
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return <DynamicLayout theme={theme} layoutName='LayoutIndex' {...props} />
 }
 
@@ -21,14 +21,7 @@ export function getStaticProps(req) {
   const props = getContentIndexProps()
 
   return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-          'NEXT_REVALIDATE_SECOND',
-          BLOG.NEXT_REVALIDATE_SECOND,
-          props.NOTION_CONFIG
-        )
+    props
   }
 }
 

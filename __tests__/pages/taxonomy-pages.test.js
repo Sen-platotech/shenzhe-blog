@@ -37,7 +37,7 @@ describe('taxonomy pages', () => {
 
   it('returns 404 for an unknown category', () => {
     getContentCategoryProps.mockReturnValue({
-      NOTION_CONFIG: {},
+      siteSettings: {},
       postCount: 0,
       posts: []
     })
@@ -49,7 +49,7 @@ describe('taxonomy pages', () => {
 
   it('returns 404 for an out-of-range category page', () => {
     getContentCategoryProps.mockReturnValue({
-      NOTION_CONFIG: {},
+      siteSettings: {},
       postCount: 3,
       posts: []
     })
@@ -63,7 +63,7 @@ describe('taxonomy pages', () => {
 
   it('returns 404 for an unknown tag', () => {
     getContentTagProps.mockReturnValue({
-      NOTION_CONFIG: {},
+      siteSettings: {},
       postCount: 0,
       posts: []
     })
@@ -75,7 +75,7 @@ describe('taxonomy pages', () => {
 
   it('returns 404 for an out-of-range tag page', () => {
     getContentTagProps.mockReturnValue({
-      NOTION_CONFIG: {},
+      siteSettings: {},
       postCount: 3,
       posts: []
     })

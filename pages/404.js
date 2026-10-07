@@ -9,7 +9,7 @@ import { DynamicLayout } from '@/themes/theme'
  * @returns
  */
 const NoFound = props => {
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return <DynamicLayout theme={theme} layoutName='Layout404' {...props} />
 }
 

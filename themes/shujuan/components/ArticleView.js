@@ -1,6 +1,5 @@
 import Comment from '@/components/Comment'
 import MdxArticle from '@/components/MdxArticle'
-import NotionPage from '@/components/NotionPage'
 import SmartLink from '@/components/SmartLink'
 import { siteConfig } from '@/lib/config'
 import CONFIG from '../config'
@@ -76,11 +75,7 @@ export default function ArticleView(props) {
         </aside>
 
         <article className='prose' id='article-wrapper'>
-          {post.source === 'mdx' ? (
-            <MdxArticle source={post.body} indent={post.textIndent === true} />
-          ) : (
-            <NotionPage post={post} />
-          )}
+          <MdxArticle source={post.body} indent={post.textIndent === true} />
           <div className='art-end'>
             <span className='seal cjk'>閒</span>
             <span className='art-end__note cjk'>全 文 完</span>

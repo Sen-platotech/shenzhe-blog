@@ -12,7 +12,7 @@ describe('siteConfig', () => {
 
   it('preserves explicit false values from global config', () => {
     useGlobalMock.mockReturnValue({
-      NOTION_CONFIG: {
+      siteSettings: {
         FIREWORKS: false
       },
       THEME_CONFIG: {

@@ -10,7 +10,7 @@ module.exports = {
   // 例：如想連結改成前綴 article + 時間戳記，可變更為： 'article/%year%/%month%/%day%'
 
   POST_SCHEDULE_PUBLISH:
-    process.env.NEXT_PUBLIC_NOTION_SCHEDULE_PUBLISH || true, // 按照文章的发布时间字段，控制自动上下架
+    process.env.NEXT_PUBLIC_SCHEDULE_PUBLISH || true, // 按照文章的发布时间字段，控制自动上下架
 
   // 分享条
   POST_SHARE_BAR_ENABLE: process.env.NEXT_PUBLIC_POST_SHARE_BAR || 'true', //文章底部分享条开关
@@ -30,7 +30,7 @@ module.exports = {
     process.env.NEXT_PUBLIC_POSTS_PER_PAGE ||
     process.env.NEXT_PUBLIC_POST_PER_PAGE ||
     12, // post counts per page
-  POSTS_SORT_BY: process.env.NEXT_PUBLIC_POST_SORT_BY || 'notion', // 排序方式 'date'按时间,'notion'由notion控制
+  POSTS_SORT_BY: process.env.NEXT_PUBLIC_POST_SORT_BY || 'date', // 按文章日期排序
 
   // 文章过期提醒配置 p.s. 目前此功能暂时只适用于heo主题
   ARTICLE_EXPIRATION_DAYS:

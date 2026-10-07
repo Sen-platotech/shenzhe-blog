@@ -7,7 +7,7 @@ const Index = props => {
   const { keyword } = props
   props = { ...props, currentSearch: keyword }
 
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return <DynamicLayout theme={theme} layoutName='LayoutSearch' {...props} />
 }
 
@@ -19,20 +19,13 @@ const Index = props => {
 export function getStaticProps({ params: { keyword, page }, locale }) {
   const props = getContentSearchProps(keyword, page, { forcePaginate: true })
   return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-          'NEXT_REVALIDATE_SECOND',
-          BLOG.NEXT_REVALIDATE_SECOND,
-          props.NOTION_CONFIG
-        )
+    props
   }
 }
 
 export function getStaticPaths() {
   return {
-    paths: [{ params: { keyword: 'NotionNext', page: '1' } }],
+    paths: [],
     fallback: true
   }
 }

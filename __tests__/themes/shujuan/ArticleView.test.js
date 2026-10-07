@@ -13,12 +13,6 @@ jest.mock('@/components/MdxArticle', () => {
   }
   return MockMdxArticle
 })
-jest.mock('@/components/NotionPage', () => {
-  function MockNotionPage() {
-    return null
-  }
-  return MockNotionPage
-})
 jest.mock('@/components/SmartLink', () => {
   function MockSmartLink({ children, href, ...props }) {
     return (

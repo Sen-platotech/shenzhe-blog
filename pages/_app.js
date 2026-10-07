@@ -2,9 +2,7 @@
 import '@/styles/globals.css'
 import '@/styles/utility-patterns.css'
 
-// core styles shared by all of react-notion-x (required)
-import '@/styles/notion.css' //  重写部分notion样式
-import 'react-notion-x/src/styles.css' // 原版的react-notion-x
+import 'katex/dist/katex.min.css'
 
 // 「书卷 · 夜读」主题全局样式（设计稿原样搬运）
 // 放在 styles/ 下而非 themes/shujuan/，避免被 themes 动态 import 的 webpack 上下文当作非 _app 的全局 CSS
@@ -12,7 +10,6 @@ import '@/styles/shujuan/styles.css'
 import '@/styles/shujuan/article.css'
 import '@/styles/shujuan/extra.css'
 
-import useAdjustStyle from '@/hooks/useAdjustStyle'
 import { GlobalContextProvider } from '@/lib/global'
 import { getBaseLayoutByTheme } from '@/themes/theme'
 import { useRouter } from 'next/router'
@@ -24,12 +21,6 @@ import BLOG from '@/blog.config'
 import ExternalPlugins from '@/components/ExternalPlugins'
 import SEO from '@/components/SEO'
 import StatsTracker from '@/components/StatsTracker'
-import { zhCN } from '@clerk/localizations'
-import dynamic from 'next/dynamic'
-// import { ClerkProvider } from '@clerk/nextjs'
-const ClerkProvider = dynamic(() =>
-  import('@clerk/nextjs').then(m => m.ClerkProvider)
-)
 
 /**
  * App挂载DOM 入口文件
@@ -38,13 +29,12 @@ const ClerkProvider = dynamic(() =>
  */
 const MyApp = ({ Component, pageProps }) => {
   // 一些可能出现 bug 的样式，可以统一放入该钩子进行调整
-  useAdjustStyle()
 
   const route = useRouter()
   const theme = useMemo(() => {
     return (
       getQueryParam(route.asPath, 'theme') ||
-      pageProps?.NOTION_CONFIG?.THEME ||
+      pageProps?.siteSettings?.THEME ||
       BLOG.THEME
     )
   }, [route])
@@ -58,7 +48,6 @@ const MyApp = ({ Component, pageProps }) => {
     [theme]
   )
 
-  const enableClerk = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
   const content = (
     <GlobalContextProvider {...pageProps}>
       <GLayout {...pageProps}>
@@ -71,11 +60,7 @@ const MyApp = ({ Component, pageProps }) => {
   )
   return (
     <>
-      {enableClerk ? (
-        <ClerkProvider localization={zhCN}>{content}</ClerkProvider>
-      ) : (
-        content
-      )}
+      {content}
     </>
   )
 }

@@ -25,7 +25,7 @@ const { getContentSearchIndexProps } = require('@/lib/content/site-data')
 describe('pages/search', () => {
   it('uses the full search index props for /search?s= client-side filtering', () => {
     const props = {
-      NOTION_CONFIG: {},
+      siteSettings: {},
       allPages: [{ title: 'First page post' }, { title: 'Later page post' }],
       posts: [{ title: 'First page post' }, { title: 'Later page post' }]
     }

@@ -9,7 +9,7 @@ import { DynamicLayout } from '@/themes/theme'
  * @returns
  */
 export default function Category(props) {
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return (
     <DynamicLayout theme={theme} layoutName='LayoutCategoryIndex' {...props} />
   )
@@ -18,13 +18,6 @@ export default function Category(props) {
 export function getStaticProps({ locale }) {
   const props = getContentCategoryIndexProps()
   return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-          'NEXT_REVALIDATE_SECOND',
-          BLOG.NEXT_REVALIDATE_SECOND,
-          props.NOTION_CONFIG
-        )
+    props
   }
 }

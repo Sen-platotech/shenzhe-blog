@@ -26,44 +26,6 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   pagination: PaginationParams
 }
 
-// Notion 相关类型
-export interface NotionPage {
-  id: string
-  title: string
-  slug: string
-  status: 'Published' | 'Draft' | 'Archived'
-  type: 'Post' | 'Page' | 'Menu'
-  category?: string
-  tags?: string[]
-  summary?: string
-  date: Timestamp
-  lastEditedTime: Timestamp
-  cover?: string
-  icon?: string
-  password?: string
-  content?: any[]
-}
-
-export interface NotionPost extends NotionPage {
-  type: 'Post'
-  category: string
-  tags: string[]
-  wordCount?: number
-  readTime?: number
-}
-
-export interface NotionCategory {
-  name: string
-  count: number
-  color?: string
-}
-
-export interface NotionTag {
-  name: string
-  count: number
-  color?: string
-}
-
 // 站点配置类型
 export interface SiteConfig {
   title: string
@@ -230,7 +192,6 @@ export interface EnvironmentVariables {
   NODE_ENV: 'development' | 'production' | 'test'
   NEXT_PUBLIC_THEME: string
   NEXT_PUBLIC_LANG: string
-  NOTION_PAGE_ID: string
   REDIS_URL?: string
   VERCEL_ENV?: string
   ANALYZE?: string
@@ -238,5 +199,4 @@ export interface EnvironmentVariables {
 
 // 导出所有类型
 // export * from './blog'
-// export * from './notion'
 // export * from './theme'

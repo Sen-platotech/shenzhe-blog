@@ -22,7 +22,7 @@ export function Feature({ post, siteInfo }) {
         <div className='feature__meta'>
           {post.category && <span>{post.category}</span>}
           <span className='dot' />
-          <span>{readingTime(post.body)}</span>
+          <span>{post.readingMinutes ? `约 ${post.readingMinutes} 分钟` : readingTime(post.body)}</span>
           <span className='dot' />
           <span>{author()}</span>
         </div>

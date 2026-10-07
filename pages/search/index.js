@@ -41,7 +41,7 @@ const Search = props => {
 
   props = { ...props, posts: filteredPosts }
 
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return <DynamicLayout theme={theme} layoutName='LayoutSearch' {...props} />
 }
 
@@ -51,14 +51,7 @@ const Search = props => {
 export function getStaticProps({ locale }) {
   const props = getContentSearchIndexProps()
   return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-          'NEXT_REVALIDATE_SECOND',
-          BLOG.NEXT_REVALIDATE_SECOND,
-          props.NOTION_CONFIG
-        )
+    props
   }
 }
 

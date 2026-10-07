@@ -126,7 +126,7 @@ function processCrossNodeSpoilers(root, className, spoilerTag) {
 function textToSpoiler(spoilerTag) {
   const intervalID = setInterval(() => {
     const articleElement = document.querySelector(
-      '#article-wrapper #notion-article main'
+      '#article-wrapper .mdx-article'
     )
     if (articleElement) {
       setTimeout(() => {

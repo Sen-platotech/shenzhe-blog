@@ -9,7 +9,6 @@ process.env.NEXT_PUBLIC_AUTHOR = 'Test Author'
 process.env.NEXT_PUBLIC_LANG = 'zh-CN'
 process.env.NEXT_PUBLIC_THEME = 'test'
 process.env.NEXT_PUBLIC_LINK = 'https://test.com'
-process.env.NOTION_PAGE_ID = 'test-notion-id'
 
 // Disable console warnings in tests
 const originalWarn = console.warn

@@ -16,6 +16,7 @@ const customJestConfig = {
   // Module name mapping for path aliases
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^@theme-components$': '<rootDir>/themes/shujuan',
     '^@/components/(.*)$': '<rootDir>/components/$1',
     '^@/lib/(.*)$': '<rootDir>/lib/$1',
     '^@/pages/(.*)$': '<rootDir>/pages/$1',
@@ -39,7 +40,8 @@ const customJestConfig = {
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
     '<rootDir>/out/',
-    '<rootDir>/.vercel/'
+    '<rootDir>/.vercel/',
+    '<rootDir>/stats-dashboard/'
   ],
   
   // Transform files

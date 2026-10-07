@@ -93,34 +93,6 @@ describe('Validator', () => {
     })
   })
 
-  describe('isValidNotionId', () => {
-    it('validates correct Notion IDs', () => {
-      const validIds = [
-        '123e4567-e89b-12d3-a456-426614174000',
-        '123e4567e89b12d3a456426614174000',
-        'abcdef12-3456-7890-abcd-ef1234567890'
-      ]
-
-      validIds.forEach(id => {
-        expect(Validator.isValidNotionId(id)).toBe(true)
-      })
-    })
-
-    it('rejects invalid Notion IDs', () => {
-      const invalidIds = [
-        'not-a-uuid',
-        '123-456-789',
-        '',
-        null,
-        undefined
-      ]
-
-      invalidIds.forEach(id => {
-        expect(Validator.isValidNotionId(id)).toBe(false)
-      })
-    })
-  })
-
   describe('isValidLength', () => {
     it('validates string length correctly', () => {
       expect(Validator.isValidLength('hello', 1, 10)).toBe(true)

@@ -7,7 +7,7 @@ import {
 import { DynamicLayout } from '@/themes/theme'
 
 const Tag = props => {
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return <DynamicLayout theme={theme} layoutName='LayoutPostList' {...props} />
 }
 
@@ -20,14 +20,7 @@ export function getStaticProps({ params: { tag, page }, locale }) {
   }
 
   return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-          'NEXT_REVALIDATE_SECOND',
-          BLOG.NEXT_REVALIDATE_SECOND,
-          props.NOTION_CONFIG
-        )
+    props
   }
 }
 

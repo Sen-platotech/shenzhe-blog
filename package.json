@@ -1,14 +1,14 @@
 {
-  "name": "notion-next",
+  "name": "shenzhe-blog",
   "version": "4.9.3.1",
-  "homepage": "https://github.com/tangly1024/NotionNext.git",
+  "homepage": "https://shenzhe.org",
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tangly1024/NotionNext.git"
+    "url": "https://github.com/Sen-platotech/shenzhe-blog.git"
   },
   "author": {
     "name": "tangly",
@@ -46,15 +46,12 @@
     "test:ci": "jest --ci --coverage --watchAll=false",
     "secret:scan": "node scripts/secret-scan.js",
     "generate-content": "node scripts/generate-content-artifacts.js",
-    "import-public-posts": "node scripts/import-public-posts.js",
     "validate-content": "node scripts/validate-content.js",
     "health-check": "node scripts/health-check.js",
     "validate": "npm run health-check",
     "final-validation": "node scripts/final-validation.js"
   },
   "dependencies": {
-    "@clerk/localizations": "^3.17.1",
-    "@clerk/nextjs": "^5.7.5",
     "@headlessui/react": "^1.7.19",
     "@next/bundle-analyzer": "^12.3.7",
     "@vercel/analytics": "^1.5.0",
@@ -62,22 +59,19 @@
     "axios": "^1.7.2",
     "critters": "^0.0.23",
     "feed": "^4.2.2",
-    "ioredis": "^5.6.1",
     "js-md5": "^0.8.3",
     "lodash.throttle": "^4.1.1",
-    "memory-cache": "^0.2.0",
     "next": "14.2.35",
-    "notion-client": "7.10.0",
-    "notion-utils": "7.10.0",
     "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-facebook": "^8.1.4",
     "react-hotkeys-hook": "^4.6.2",
-    "react-notion-x": "7.7.1",
     "react-share": "^5.2.2",
     "react-tweet-embed": "~2.0.0",
-    "sharp": "0.34.5"
+    "sharp": "0.34.5",
+    "katex": "0.16.22",
+    "@fisch0920/medium-zoom": "1.0.7"
   },
   "devDependencies": {
     "@types/node": "22.15.3",
@@ -112,7 +106,6 @@
     "axios": ">=0.21.1"
   },
   "bugs": {
-    "url": "https://github.com/tangly/NotionNext/issues",
-    "email": "tlyong1992@hotmail.com"
+    "url": "https://github.com/Sen-platotech/shenzhe-blog/issues"
   }
 }

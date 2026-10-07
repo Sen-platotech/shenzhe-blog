@@ -4,7 +4,7 @@ import { getContentSearchProps } from '@/lib/content/site-data'
 import { DynamicLayout } from '@/themes/theme'
 
 const Index = props => {
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
+  const theme = siteConfig('THEME', BLOG.THEME, props.siteSettings)
   return <DynamicLayout theme={theme} layoutName='LayoutSearch' {...props} />
 }
 
@@ -16,20 +16,13 @@ const Index = props => {
 export function getStaticProps({ params: { keyword }, locale }) {
   const props = getContentSearchProps(keyword)
   return {
-    props,
-    revalidate: process.env.EXPORT
-      ? undefined
-      : siteConfig(
-          'NEXT_REVALIDATE_SECOND',
-          BLOG.NEXT_REVALIDATE_SECOND,
-          props.NOTION_CONFIG
-        )
+    props
   }
 }
 
 export function getStaticPaths() {
   return {
-    paths: [{ params: { keyword: 'NotionNext' } }],
+    paths: [],
     fallback: true
   }
 }

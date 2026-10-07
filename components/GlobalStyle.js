@@ -8,7 +8,7 @@ import { siteConfig } from '@/lib/config'
  * @returns
  */
 const GlobalStyle = () => {
-  // 从NotionConfig中读取样式
+  // 从站点配置中读取样式
   const GLOBAL_CSS = siteConfig('GLOBAL_CSS')
   // 如果这个字符串不为空，则打印显示
   if (GLOBAL_CSS && GLOBAL_CSS.trim() !== '') {

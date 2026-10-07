@@ -20,23 +20,12 @@ jest.mock('@/lib/content/site-data', () => ({
   getContentSinglePostPaths: jest.fn()
 }))
 
-jest.mock('@/lib/db/SiteDataApi', () => ({
-  fetchGlobalAllData: jest.fn(),
-  resolvePostProps: jest.fn()
-}))
 
-jest.mock('@/lib/db/notion/getPageTableOfContents', () => ({
-  getPageTableOfContents: jest.fn(() => [])
-}))
 
 jest.mock('@/lib/global', () => ({
   useGlobal: jest.fn(() => ({ locale: { COMMON: { ARTICLE_UNLOCK_TIPS: '' } } }))
 }))
 
-jest.mock('@/lib/routes/legacy', () => ({
-  ENABLE_NOTION_FALLBACK: false,
-  ENABLE_NOTION_STATIC_PATHS: false
-}))
 
 jest.mock('@/lib/utils/password', () => ({
   getPasswordQuery: jest.fn(() => [])
@@ -63,9 +52,8 @@ describe('pages/[prefix]', () => {
     })
   })
 
-  it('resolves single-segment MDX props before Notion fallback', async () => {
+  it('resolves single-segment MDX props from local content', async () => {
     const mdxProps = {
-      NOTION_CONFIG: {},
       post: { slug: 'about', title: 'About' },
       mdxContent: 'About body'
     }

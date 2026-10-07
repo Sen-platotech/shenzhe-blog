@@ -2,7 +2,6 @@ const { THEME } = require('./blog.config')
 const fs = require('fs')
 const path = require('path')
 const BLOG = require('./blog.config')
-const { extractLangPrefix } = require('./lib/utils/pageId')
 
 // 打包时是否分析代码
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -12,25 +11,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 // 扫描项目 /themes下的目录名
 const themes = scanSubdirectories(path.resolve(__dirname, 'themes'))
 // 检测用户开启的多语言
-const locales = (function () {
-  // 根据BLOG_NOTION_PAGE_ID 检查支持多少种语言数据.
-  // 支持如下格式配置多个语言的页面id xxx,zh:xxx,en:xxx
-  const langs = [BLOG.LANG]
-  if (BLOG.NOTION_PAGE_ID.indexOf(',') > 0) {
-    const siteIds = BLOG.NOTION_PAGE_ID.split(',')
-    for (let index = 0; index < siteIds.length; index++) {
-      const siteId = siteIds[index]
-      const prefix = extractLangPrefix(siteId)
-      // 如果包含前缀 例如 zh , en 等
-      if (prefix) {
-        if (!langs.includes(prefix)) {
-          langs.push(prefix)
-        }
-      }
-    }
-  }
-  return langs
-})()
+const locales = [BLOG.LANG]
 
 // 编译前执行
 // eslint-disable-next-line no-unused-vars
@@ -82,6 +63,9 @@ const nextConfig = {
       : undefined,
   staticPageGenerationTimeout: 120,
 
+  // 内容随 Git 构建发布；不在 Node 堆中缓存整页数据。
+  cacheMaxMemorySize: 0,
+
   // 性能优化配置
   compress: true,
   poweredByHeader: false,
@@ -114,7 +98,6 @@ const nextConfig = {
     // 允许next/image加载的图片 域名
     domains: [
       'gravatar.com',
-      'www.notion.so',
       'avatars.githubusercontent.com',
       'images.unsplash.com',
       'source.unsplash.com',
@@ -124,6 +107,7 @@ const nextConfig = {
     ],
     // 图片加载器优化
     loader: 'default',
+    unoptimized: Boolean(process.env.EXPORT),
     // 图片缓存优化
     minimumCacheTTL: 60 * 60 * 24 * 7, // 7天
     // 危险的允许SVG
@@ -144,53 +128,6 @@ const nextConfig = {
         ]
       },
   // 重写url
-  rewrites: process.env.EXPORT
-    ? undefined
-    : () => {
-        // 处理多语言重定向
-        const langsRewrites = []
-        if (BLOG.NOTION_PAGE_ID.indexOf(',') > 0) {
-          const siteIds = BLOG.NOTION_PAGE_ID.split(',')
-          const langs = []
-          for (let index = 0; index < siteIds.length; index++) {
-            const siteId = siteIds[index]
-            const prefix = extractLangPrefix(siteId)
-            // 如果包含前缀 例如 zh , en 等
-            if (prefix) {
-              langs.push(prefix)
-            }
-            console.log('[Locales]', siteId)
-          }
-
-          // 映射多语言
-          // 示例： source: '/:locale(zh|en)/:path*' ; :locale() 会将语言放入重写后的 `?locale=` 中。
-          langsRewrites.push(
-            {
-              source: `/:locale(${langs.join('|')})/:path*`,
-              destination: '/:path*'
-            },
-            // 匹配没有路径的情况，例如 [domain]/zh 或 [domain]/en
-            {
-              source: `/:locale(${langs.join('|')})`,
-              destination: '/'
-            },
-            // 匹配没有路径的情况，例如 [domain]/zh/ 或 [domain]/en/
-            {
-              source: `/:locale(${langs.join('|')})/`,
-              destination: '/'
-            }
-          )
-        }
-
-        return [
-          ...langsRewrites,
-          // 伪静态重写
-          {
-            source: '/:path*.html',
-            destination: '/:path*'
-          }
-        ]
-      },
   headers: process.env.EXPORT
     ? undefined
     : () => {
@@ -226,7 +163,7 @@ const nextConfig = {
             //       "default-src 'self'",
             //       "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.gstatic.com *.google-analytics.com *.googletagmanager.com",
             //       "style-src 'self' 'unsafe-inline' *.googleapis.com *.gstatic.com",
-            //       "img-src 'self' data: blob: *.notion.so *.unsplash.com *.githubusercontent.com *.gravatar.com",
+            //       "img-src 'self' data: blob: *.unsplash.com *.githubusercontent.com *.gravatar.com",
             //       "font-src 'self' *.googleapis.com *.gstatic.com",
             //       "connect-src 'self' *.google-analytics.com *.googletagmanager.com",
             //       "frame-src 'self' *.youtube.com *.vimeo.com",

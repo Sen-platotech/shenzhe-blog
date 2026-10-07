@@ -97,7 +97,7 @@ function checkEnvFile() {
   }
   
   // 检查必要的环境变量
-  const requiredVars = ['NOTION_PAGE_ID']
+  const requiredVars = []
   const envContent = fs.readFileSync(envLocal, 'utf8')
   
   const missingVars = requiredVars.filter(varName => {
@@ -345,7 +345,7 @@ function main() {
       generateDocs()
       break
     default:
-      log('🛠️  NotionNext 开发工具', 'magenta')
+      log('🛠️  Shenzhe Blog 开发工具', 'magenta')
       log('\n可用命令:', 'cyan')
       log('  init              - 初始化开发环境', 'cyan')
       log('  clean             - 清理项目文件', 'cyan')
