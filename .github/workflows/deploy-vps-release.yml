@@ -1,0 +1,58 @@
+name: Build VPS production release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: vps-production-release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      NEXT_BUILD_STANDALONE: 'true'
+      NEXT_TELEMETRY_DISABLED: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+      - name: Install pinned dependencies
+        run: yarn install --frozen-lockfile
+      - name: Validate public content and credentials
+        run: npm run validate-content && npm run secret:scan
+      - name: Build production server
+        run: npm run build
+      - name: Include static resources
+        run: |
+          cp -a public .next/standalone/public
+          cp -a .next/static .next/standalone/.next/static
+      - name: Build VPS analytics module
+        run: |
+          npm ci --prefix stats-dashboard
+          stats-dashboard/node_modules/.bin/esbuild stats-dashboard/src/index.ts --bundle --format=esm --platform=node --target=node22 --outfile=.next/standalone/vps/stats-worker.mjs
+      - name: Package immutable release
+        run: |
+          node -e 'require("fs").writeFileSync(".next/standalone/.vps-deploy.json", JSON.stringify({sha:process.env.GITHUB_SHA, builtAt:new Date().toISOString()}))'
+          tar -czf "blog-${GITHUB_SHA}.tar.gz" -C .next/standalone .
+          node - <<'JS'
+          const fs = require('fs')
+          const crypto = require('crypto')
+          const sha = process.env.GITHUB_SHA
+          const filename = `blog-${sha}.tar.gz`
+          const sha256 = crypto.createHash('sha256').update(fs.readFileSync(filename)).digest('hex')
+          fs.writeFileSync('vps-manifest.json', JSON.stringify({sha, filename, sha256, url:`https://github.com/${process.env.GITHUB_REPOSITORY}/releases/download/vps-artifacts/${filename}`}, null, 2))
+          JS
+      - name: Publish for outbound VPS download
+        run: |
+          if ! gh release view vps-artifacts >/dev/null 2>&1; then
+            gh release create vps-artifacts --target "$GITHUB_SHA" --title "VPS deployment artifacts" --notes "Linux production builds for the self-hosted blog. The manifest identifies the current source commit." --latest=false
+          fi
+          gh release upload vps-artifacts "blog-${GITHUB_SHA}.tar.gz" vps-manifest.json --clobber

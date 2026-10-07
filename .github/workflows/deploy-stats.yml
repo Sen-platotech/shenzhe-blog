@@ -1,10 +1,10 @@
-name: Deploy private stats dashboard
+name: Build VPS stats runtime
 
 on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -12,30 +12,17 @@ jobs:
       run:
         working-directory: stats-dashboard
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '22'
           cache: npm
           cache-dependency-path: stats-dashboard/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Verify Worker
-        run: npm run check && npm test && npm run deploy:dry
-
-      - name: Apply D1 migrations
-        run: npx wrangler d1 migrations apply shenzhe-stats --remote
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Deploy Worker and custom domain
-        run: npx wrangler deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - run: npm ci
+      - run: npm run check && npm test
+      - name: Build VPS analytics module
+        run: npx esbuild src/index.ts --bundle --format=esm --platform=node --target=node22 --outfile=dist/stats-worker.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vps-stats-runtime
+          path: stats-dashboard/dist/stats-worker.mjs
