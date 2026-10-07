@@ -52,7 +52,6 @@ export default function Footer() {
             <div className='foot__col'>
               <h4>联系</h4>
               <SmartLink href='/about'>关于我</SmartLink>
-              <SmartLink href='/rss/feed.xml'>RSS 订阅</SmartLink>
               <a href='https://stats.shenzhe.org/privacy'>访问统计与隐私</a>
               <a href='#'>电子邮件</a>
             </div>

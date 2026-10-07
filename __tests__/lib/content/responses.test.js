@@ -1,6 +1,5 @@
 const { getPosts } = require('@/lib/content')
 const {
-  serveRss,
   serveSearchIndex,
   serveSitemap
 } = require('@/lib/content/responses')
@@ -25,15 +24,6 @@ function captureResponse(handler) {
 }
 
 describe('content responses', () => {
-  it('serves RSS from MDX posts', () => {
-    const { body, headers } = captureResponse(serveRss)
-
-    expect(headers['Content-Type']).toContain('application/rss+xml')
-    expect(body).toContain('<rss version="2.0">')
-    expect(body).toContain('进步的牢笼')
-    expect(body).not.toContain('\\&quot;')
-  })
-
   it('serves sitemap without preview or concatenated URLs', () => {
     const { body, headers } = captureResponse(serveSitemap)
 

@@ -1,6 +1,5 @@
 const {
   generateRedirectMap,
-  generateRss,
   generateSearchIndex,
   generateSitemap
 } = require('@/lib/content/generators')
@@ -23,12 +22,6 @@ const posts = [
 ]
 
 describe('content generators', () => {
-  it('generates RSS with post URLs', () => {
-    const rss = generateRss(posts)
-    expect(rss).toContain('<rss version="2.0">')
-    expect(rss).toContain('<link>https://shenzhe.org/article/welcome</link>')
-  })
-
   it('generates sitemap without preview domains', () => {
     const sitemap = generateSitemap(posts)
     expect(sitemap).toContain('<loc>https://shenzhe.org/article/welcome</loc>')

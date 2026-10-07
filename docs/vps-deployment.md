@@ -1,6 +1,6 @@
 # VPS 发布与运行
 
-正式主站 shenzhe.org 已迁至 VPS。www.shenzhe.org 跳转到主站。文章、主题、路由及 RSS 的主源仍为本仓库 main 分支。
+正式主站 shenzhe.org 已迁至 VPS。www.shenzhe.org 跳转到主站。文章、主题和路由的主源仍为本仓库 main 分支。
 
 ## 日常发布
 
@@ -27,3 +27,5 @@ Node 22、Nginx 及 cloudflared 由 systemd 管理。公网 80/443 保持供现�
 原 D1、原 Worker、GitHub Pages 与迁移前备份保留为恢复来源。统计或报价数据库回退前，应先导出切换后新增数据，不能用旧快照覆盖正在使用的数据。
 
 完整运维入口：`/Users/shen/Documents/美西 VPS 管理/outputs/2026-10-07-统一迁移/README.md`。服务器管理员、服务密码与所有密钥不进入本仓库。
+
+2026-10-07：本地清理版已暂时移除 RSS；发布器候选健康检查改用首页和 sitemap.xml。上线状态以 VPS 管理项目最新记录为准。
