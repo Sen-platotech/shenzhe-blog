@@ -1,0 +1,96 @@
+:root {
+      color-scheme: light;
+      --ink: #292d2f;
+      --muted: #8a9295;
+      --accent: #4e777d;
+      --paper: #fff;
+      --canvas: #f2f4f3;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--canvas); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+        "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    .reading-progress {
+      position: fixed;
+      z-index: 10;
+      inset: 0 auto auto 0;
+      height: 3px;
+      width: 0;
+      background: var(--accent);
+      transition: width .08s linear;
+    }
+    .page-shell { min-height: 100vh; padding: 34px 0 76px; }
+    .reader {
+      width: min(100% - 32px, 820px);
+      margin: 0 auto;
+      padding: 48px 70px 76px;
+      background: var(--paper);
+      box-shadow: 0 7px 32px rgba(37, 50, 49, .07);
+    }
+    .article-header {
+      width: min(100%, 680px);
+      margin: 0 auto 22px;
+    }
+    h1 {
+      margin: 0 0 14px;
+      color: #252a2c;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .byline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .byline span { color: #576b95; }
+    .byline time { color: #888; }
+    .article-content {
+      width: min(100%, 680px);
+      margin: 0 auto;
+      overflow-wrap: anywhere;
+    }
+    #js_content { margin: 0; font-size: 17px; color: rgba(0,0,0,.9); text-align: justify; overflow: hidden; }
+    #js_content * { max-width: 100% !important; box-sizing: border-box !important; word-wrap: break-word !important; }
+    #js_content img {
+      display: block;
+      max-width: 100% !important;
+      height: auto !important;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #js_content a { color: #4e777d; text-decoration-thickness: .06em; }
+    #js_content a:hover { color: #345d62; }
+    #js_content p { clear: both; min-height: 1em; overflow-wrap: anywhere; }
+    #js_content h2, #js_content h3 { scroll-margin-top: 20px; }
+    @media (max-width: 700px) {
+      html, body { background: var(--paper); }
+      .page-shell { padding: 0; }
+      .reader {
+        width: 100%;
+        padding: 20px 20px 58px;
+        box-shadow: none;
+      }
+      .article-header { margin-bottom: 22px; }
+      .article-content { width: 100%; }
+    }
+    @media (max-width: 390px) {
+      .reader { padding-right: 18px; padding-left: 18px; }
+      h1 { font-size: 22px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reading-progress { transition: none; }
+    }
